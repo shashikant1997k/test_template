@@ -109,6 +109,7 @@ td:nth-child(3) input {
     padding-top: 4px;
     padding-bottom: 4px;
     padding-right: 10px;
+    outline: none;
   }
   #masterSheetTable .all_td::before {
     content: attr(data-label);
@@ -124,6 +125,15 @@ td:nth-child(3) input {
   #masterSheetTable td[name="buttons"] {
     display: flex;
     justify-content: center;
+  }
+
+  .main_val {
+    padding: 2px 2px 2px 5px;
+    width: 100%;
+  }
+
+  .main_val:focus {
+    outline: 1.4px solid #35a630;
   }
 
   .first_td {
