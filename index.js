@@ -62,13 +62,13 @@ $(document).ready(function () {
             if (i <= 1) {
               td_data += `<td data-label="${resultArray.headers[i]}" class="text-center input-text-center all_td first_td">${val}</td>`;
             } else if (i == 2 || i == 3) {
-              td_data += `<td contenteditable="true" data-label="${resultArray.headers[i]}" class="text-center input-text-center all_td first_td">${val}</td>`;
+              td_data += `<td contenteditable="true" data-label="${resultArray.headers[i]}" class="text-center input-text-center all_td first_td"><div class="main_val" tabindex="-1">${val}</div></td>`;
             } else {
               td_data += `<td contenteditable="true" data-label="${
                 resultArray.headers[i]
               }" class="text-center input-text-center all_td hidden_class hidden_class_${
                 index + 1
-              }">${val}</td>`;
+              }"><div class="main_val" tabindex="-1">${val}</div></td>`;
             }
           });
           tr_data += `<tr class="row_${
@@ -236,8 +236,7 @@ $(document).ready(function () {
 
     if (imgData != undefined) {
       var fileType = ["csv", "xsls", "xls", "xlsx"];
-      var file_typ = imgData.name.substring(imgData.name.indexOf(".") + 1);
-
+      var file_typ = imgData.name.substring(imgData.name.lastIndexOf(".") + 1);
       if (fileType.indexOf(file_typ) < 0) {
         $(".upload_master_sheet").val("");
         alert("file not supported");
@@ -250,10 +249,12 @@ $(document).ready(function () {
         var fileData = reader.result;
         var wb = XLSX.read(fileData, { type: "binary" });
         wb.SheetNames.forEach(function (sheetName) {
-          _csvData = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
+          let csv_data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
             header: 1,
           });
+          _csvData = csv_data.length ? csv_data : _csvData;
         });
+
         createDummyTable(_csvData);
       };
 
