@@ -2,6 +2,7 @@ $(document).ready(function () {
   var mobileVar = 0;
   var val1 = 2;
   var val2 = 3;
+  var categories = [];
   var screenWidth = window.matchMedia("(max-width: 600px)");
   if (screenWidth.matches) {
     mobileVar = 1;
@@ -78,6 +79,7 @@ $(document).ready(function () {
           }">Show Details</button></td></tr>`;
         }
       });
+
       $(".table_body").html(tr_data);
     }
 
@@ -89,6 +91,26 @@ $(document).ready(function () {
         $(`.${cls} td[data-label='Category']`).html(`${con1} (${con2})`);
       });
     }
+  }
+
+  function createCategoryBtn(resultArray) {
+    resultArray.file_data.forEach((item, index) => {
+      if (categories.indexOf(item[0]) == -1) {
+        categories.push(item[0]);
+      }
+    });
+
+    var catBtn = "";
+    categories.forEach((val) => {
+      console.log("hihih");
+      catBtn += `<button type="button" class="btn btn-sm btn-toggle switch_btn ${val}_Cat" data-val="${val}" data-toggle="button" aria-pressed="false" autocomplete="off"><div class="handle"></div></button>`;
+
+      $("head").append(
+        `<style>.${val}_Cat:before,.${val}_Cat:after{content: "${val}"}</style>`
+      );
+    });
+
+    $(".category_btn").html(catBtn);
   }
 
   function createDummyTable(res) {
@@ -112,6 +134,7 @@ $(document).ready(function () {
       }
     }
     $(".table_main").show();
+    $(".csv_files,.csv_dummy_files,.back_btn, .submit_btn,.next_btn").hide();
     $(".second_page").hide();
     $(".first_page,.next_btn").show();
     $(".first_page table tbody").html(`${tData}`);
@@ -171,10 +194,11 @@ $(document).ready(function () {
       resultArray.file_data = file_data;
 
       createTable(resultArray);
+      createCategoryBtn(resultArray);
     }
   });
 
-  const serachResult = (input, sel) => {
+  const searchResult = (input, sel) => {
     let { headers, file_data } = resultArray;
 
     let result = {
@@ -195,7 +219,18 @@ $(document).ready(function () {
     }
     if (input.length > 0) {
       let val = input.toLowerCase();
-      result.file_data = val
+
+      let result1 = val
+        ? result?.file_data.filter((v) => {
+            return (
+              v[0]?.toLowerCase()?.startsWith(val) ||
+              v[1]?.toLowerCase()?.startsWith(val) ||
+              v[2]?.toLowerCase()?.startsWith(val)
+            );
+          })
+        : result?.file_data;
+
+      let result2 = val
         ? result?.file_data.filter((v) => {
             return (
               v[0]?.toLowerCase()?.includes(val) ||
@@ -204,31 +239,37 @@ $(document).ready(function () {
             );
           })
         : result?.file_data;
+      console.log(result1);
+      result.file_data = [...result1, ...result2];
     }
-
+    console.log(result);
     createTable(result);
   };
   let input = "";
   let sel = [];
   $("#searchInput").keyup(function () {
     input = $(this).val();
-    serachResult(input, sel);
+    searchResult(input, sel);
   });
 
   $(document).on("click", ".switch_btn", function () {
     let cls1 = $(this).attr("class");
     let d_val = "";
+
+    console.log(cls1);
     if (cls1.includes("active")) {
       $(this).removeClass("active");
       d_val = $(this).data("val");
       sel = sel.filter((v) => v != d_val.toLocaleLowerCase());
     } else {
+      console.log($(this));
       $(this).addClass("active");
       d_val = $(this).data("val");
+      console.log($(this).attr("class"));
       sel.push(d_val.toLocaleLowerCase());
     }
 
-    serachResult(input, sel);
+    searchResult(input, sel);
   });
 
   $(".upload_master_sheet").change(function () {
