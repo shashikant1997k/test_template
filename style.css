@@ -32,11 +32,8 @@ td:nth-child(3) input {
   pointer-events: none;
 }
 
+.second_page,
 .show_btn_td {
-  display: none;
-}
-
-.second_page {
   display: none;
 }
 
@@ -181,31 +178,14 @@ td:nth-child(3) input {
   left: -0.4rem;
   width: 4.25rem;
 }
-.btn-toggle:after {
-  left: 0.6rem;
-}
 
 .btn-toggle:before {
   text-align: right;
 }
 .btn-toggle:after {
+  left: 0.6rem;
   text-align: left;
   opacity: 0;
-}
-
-.BI_Cat:before,
-.BI_Cat:after {
-  content: "BI";
-}
-
-.SX_Cat:before,
-.SX_Cat:after {
-  content: "SX";
-}
-
-.ND_Cat:before,
-.ND_Cat:after {
-  content: "ND";
 }
 
 .btn-toggle > .handle {
@@ -224,7 +204,7 @@ td:nth-child(3) input {
 }
 .btn-toggle.active {
   transition: background-color 0.25s;
-  background-color: #1565c1;
+  background-color: #35a630;
 }
 .btn-toggle.active:before {
   opacity: 0;
