@@ -182,14 +182,14 @@ $(document).ready(function () {
           val.toLowerCase() == "item name" ||
           val.toLowerCase() == "rfa qty"
         ) {
-          th_data += `<th>${val}</th>`;
+          th_data += `<th style="background: #E6E7EB;">${val}</th>`;
         } else if (
           val.toLowerCase() == "category" ||
           val.toLowerCase() == "item code"
         ) {
           th_data += ``;
         } else {
-          th_data += `<th class="" style="" data-breakpoints="xs">${val}</th>`;
+          th_data += `<th class="" style="background: #E6E7EB;" data-breakpoints="xs">${val}</th>`;
         }
 
         if (val.toLowerCase() == "rfa qty") {
