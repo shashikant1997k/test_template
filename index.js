@@ -329,7 +329,7 @@ $(document).ready(function () {
       let v3 = $(this).attr("data-index");
       if (!v2.includes(`<input type="text"`)) {
         $(this).html(
-          `<input type='text' class="_input _input_${v3}" style='width:100%;' data-id="${v3}" value='${v1}' />`
+          `<input type='text' pattern="\d*" class="_input _input_${v3}" style='width:100%;' data-id="${v3}" value='${v1}' />`
         );
         if (mobileVar == 1) {
           $(this).css({ color: "#000", "font-weight": "normal" });
