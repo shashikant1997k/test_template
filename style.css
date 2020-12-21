@@ -2,19 +2,40 @@ body {
   background: #fbfbfb;
 }
 
-.category_btn input {
-  display: none;
+.category_btn_main::-webkit-scrollbar {
+  height: 6px;
+  visibility: hidden;
 }
-.category_btn {
-  width: max-content;
+
+.category_btn_main::-webkit-scrollbar-track {
+  background-color: #eeebf2;
+  border-radius: 6px;
+}
+
+.category_btn_main::-webkit-scrollbar-thumb {
+  background-color: #bcbcc2;
+  border-radius: 6px;
+}
+
+.category_btn_main {
+  width: 100%;
   border: 1px solid #ddd;
   display: flex;
   flex-direction: row;
   border: 1px solid #eee;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.36);
+  border-radius: 6px;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.36);
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 22px;
+  overflow: auto;
+}
+.category_btn input {
+  display: none;
+}
+.category_btn {
+  display: flex;
+  flex-direction: row;
+  border-right: 1px solid #ddd;
 }
 .category_btn input:checked + label,
 .category_btn input:checked + label:active {
@@ -55,13 +76,10 @@ body {
   text-align: center;
 }
 
-.sheets_upload {
-  padding: 50px;
-}
-
 .category_style {
   display: flex;
   flex-direction: row;
+  margin-left: 14px;
 }
 
 .name_code_style {
@@ -91,6 +109,14 @@ body {
   font-size: 0.8em;
 }
 
+.ui-autocomplete,
+.scrollable-dropdown {
+  height: auto;
+  max-height: 220px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .first_visible_td {
   display: flex !important;
   flex-direction: row;
@@ -118,13 +144,43 @@ table > tbody > tr > td > span.footable-toggle {
   margin-bottom: 20px;
   margin-top: 20px;
 }
-.table_main {
+.main {
   width: 100%;
   overflow-x: auto;
   max-width: 1100px;
   margin: auto;
   padding: 5px;
+}
+.table_main {
   display: none;
+}
+
+.topDatatable {
+  width: 100%;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.36);
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 20px !important;
+}
+
+.topDatatable td {
+  vertical-align: top;
+  font-weight: 600;
+  color: #666;
+}
+
+.topDatatable .title_ {
+  white-space: nowrap;
+  color: #888;
+  padding: 15px 0px 10px 20px;
+}
+
+.topDatatable .value_ {
+  padding: 15px 0px 10px 5px;
+}
+
+.tr_1td {
+  border-bottom: 1px solid #ddd;
 }
 
 .panel-default,
@@ -166,21 +222,36 @@ table > tbody > tr > td > span.footable-toggle {
   text-decoration: none;
 }
 
-.panel2 {
+.TotalSumQty,
+.TotalSumValues {
   font-weight: 600;
-  font-size: 0.9em;
+  font-size: 0.85em;
+  color: #666;
 }
 
-.more_details {
-  font-size: 0.8em;
-  color: blue;
+.totalRows {
+  font-size: 0.85em;
+  color: #666;
+}
+
+.more_details_main {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   cursor: pointer;
   border-top: 1px solid #e2e2e2;
   margin-top: 25px;
   padding-top: 7px;
   margin-bottom: 7px;
+}
+
+.more_details {
+  font-size: 0.8em;
+  color: blue;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .more_details .fa {
@@ -245,9 +316,18 @@ table > tbody > tr > td > span.footable-toggle {
   align-items: center;
 }
 
+.masterSheetTable tbody td {
+  position: relative;
+}
+
 table > tbody > tr > td > span.footable-toggle {
   color: #35a630 !important;
   opacity: 1 !important;
+  position: absolute;
+  top: 10px;
+  left: 4px;
+  width: 96%;
+  height: -webkit-fill-available;
 }
 
 @media only screen and (max-width: 600px) {
@@ -273,4 +353,98 @@ table > tbody > tr > td > span.footable-toggle {
     flex-direction: row;
     align-items: center;
   }
+
+  .topDatatable .title_ {
+    white-space: normal;
+    padding: 8px 0px 10px 5px;
+  }
+
+  .topDatatable .value_ {
+    padding: 8px 0px 10px 5px;
+  }
+}
+
+.sheets_upload {
+  position: relative;
+  height: 90px;
+  margin-bottom: 2%;
+}
+
+.uploadFiles_label {
+  display: block;
+  color: black;
+  font-weight: bold;
+  letter-spacing: 1.2px;
+  font-size: 18px;
+  padding-bottom: 5px;
+}
+input[id="uploadFiles"] {
+  display: none;
+}
+label[for="uploadFiles"] {
+  background: #fff;
+  height: inherit;
+  /* background-image: url("https://image.flaticon.com/icons/svg/126/126477.svg"); */
+  background-repeat: no-repeat;
+  background-position: top 18px center;
+  position: absolute;
+  background-size: 7%;
+  color: transparent;
+  width: 250px;
+  top: 2%;
+  left: 0;
+  border: 1px solid #a2a1a7;
+  box-sizing: border-box;
+}
+label[for="uploadFiles"]:before {
+  content: "Choose a file or drag it here";
+  display: block;
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #202020;
+  font-weight: 400;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+label[for="uploadFiles"]:after {
+  display: block;
+  content: "Browse";
+  background: #16a317;
+  width: 86px;
+  height: 27px;
+  line-height: 27px;
+  position: absolute;
+  bottom: 6px;
+  font-size: 14px;
+  color: white;
+  font-weight: 500;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+label[for="uploadFiles"].changed,
+label[for="uploadFiles"]:hover {
+  background-color: #e3f2fd;
+}
+label[for="uploadFiles"] {
+  cursor: pointer;
+  transition: 400ms ease;
+}
+.file_names {
+  display: block;
+  position: absolute;
+  color: black;
+  font-weight: 600 !important;
+  font-size: 13px;
+  font-weight: 300;
+  top: 8%;
+  left: 38%;
 }
