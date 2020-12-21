@@ -10,6 +10,8 @@ $(document).ready(function () {
     headers: [],
     file_data: [],
   };
+  var topData = {};
+  var _totalValue;
 
   // map table uploaded sheet column from pre-define values
   function tableColumnMapping(output) {
@@ -136,6 +138,31 @@ $(document).ready(function () {
 
   // Create the table from uploaded sheet
   function createTable(resultArray, mappedObj) {
+    if (resultArray.file_data.length == 0) {
+      $(".panel_group").html(
+        "<div class='text-center' style='padding:10px;font-size:16px;width:100%;border:1.5px solid #DDD;font-weight:600;'>No Data</div>"
+      );
+      return false;
+    }
+
+    // Create the topbar data info table
+    var topDataTable = `<table class="topDatatable">
+                          <tr>
+                            <td class="tr_1td title_">WD Name:</td>
+                            <td class="tr_1td value_">${topData["wd name"]}</td>
+                            <td class="tr_1td title_">WD Address:</td>
+                            <td class="tr_1td value_">${topData["wd address"]}</td>
+                          </tr>
+                          <tr>
+                            <td class="title_">Task Number:</td>
+                            <td class="value_">${topData["task number"]}</td>
+                            <td class="title_">Total Value:</td>
+                            <td class="value_">${_totalValue}</span></td>
+                          </tr>
+                        </table>`;
+
+    $(".topDataInfo").html(topDataTable);
+
     var headLen = resultArray.headers.length;
     var dataLen = resultArray.file_data[0].length;
     let num1;
@@ -157,22 +184,20 @@ $(document).ready(function () {
     /////////////////////////////
 
     var th_data = ``;
-    var cnt;
+    var rfaQty;
     var itmCode;
     var categoryVar;
     var itemName;
+    var totalValue;
+    var salvQty;
+    var salvValue;
+    var rfaValue;
 
     $(".table_main").show();
     $(".second_page,.back_btn,.submit_btn,.category_btn").show();
     $(".first_page,.first_page_1,.next_btn,.next_btn_1").hide();
 
     // creating the table data
-    if (resultArray.file_data.length == 0) {
-      $("#masterSheetTable .table_body").html(
-        "<tr><td class='text-center' colspan='11' style='padding:10px;font-size:16px;'>No Data</td></tr>"
-      );
-      return false;
-    }
     if (
       Array.isArray(Object.values(mappedObj)) &&
       Object.values(mappedObj).length != 0
@@ -191,18 +216,29 @@ $(document).ready(function () {
         } else {
           th_data += `<th class="" style="background: #E6E7EB;" data-breakpoints="xs">${val}</th>`;
         }
-
-        if (val.toLowerCase() == "rfa qty") {
-          cnt = i;
+        if (val.toLowerCase() == "category") {
+          categoryVar = i;
         }
         if (val.toLowerCase() == "item code") {
           itmCode = i;
         }
-        if (val.toLowerCase() == "category") {
-          categoryVar = i;
-        }
         if (val.toLowerCase() == "item name") {
           itemName = i;
+        }
+        if (val.toLowerCase() == "rfa qty") {
+          rfaQty = i;
+        }
+        if (val.toLowerCase() == "total value") {
+          totalValue = i;
+        }
+        if (val.toLowerCase() == "salv qty") {
+          salvQty = i;
+        }
+        if (val.toLowerCase() == "salv value") {
+          salvValue = i;
+        }
+        if (val.toLowerCase() == "rfa value") {
+          rfaValue = i;
         }
       });
       $(".table_head_row").html(`<tr>${th_data}</tr>`);
@@ -213,6 +249,7 @@ $(document).ready(function () {
     for (const [key, value] of Object.entries(arr1)) {
       var tr_data = "";
       var totalRfaQty = 0;
+      var totalSumValue = 0;
       ct++;
       value.forEach((item, index) => {
         if (item.length == headLen || item.length == dataLen) {
@@ -220,33 +257,62 @@ $(document).ready(function () {
           item.forEach((val, i) => {
             if (i == categoryVar || i == itmCode) {
               td_data += ``;
-            } else if (i == cnt) {
+            } else if (i == rfaQty) {
               td_data += `<td class="${
                 mobileVar == 1
                   ? "editable_cell editable_cell_style"
                   : "editable_cell"
-              }" data-id="${val}" data-index="${index}" data-itemCode="${
+              }" data-id="${parseInt(
+                val
+              )}" data-index="${index}" data-category="${key}" data-itemCode="${
                 item[itmCode]
-              }">${val}</td>`;
+              }">${parseInt(val)}</td>`;
               totalRfaQty += Number(val);
             } else if (i == itemName) {
               td_data += `<td class="first_visible_td">
                   <div class="category_style">
-                    <div><div class="category_icon">${item[categoryVar]}</div></div>
+                    <div>
+                      ${
+                        key.toLowerCase() == "bi"
+                          ? `<div class="category_icon">${item[categoryVar]}</div>`
+                          : key.toLowerCase() == "cf"
+                          ? `<div class="category_icon" style="background-color:#e08f62;border-color:#e08f62;">${item[categoryVar]}</div>`
+                          : key.toLowerCase() == "nd"
+                          ? `<div class="category_icon" style="background-color:#583d72;border-color:#583d72;">${item[categoryVar]}</div>`
+                          : key.toLowerCase() == "sx"
+                          ? `<div class="category_icon" style="background-color:#cc7351;border-color:#cc7351;">${item[categoryVar]}</div>`
+                          : key.toLowerCase() == "at"
+                          ? `<div class="category_icon" style="background-color:#a685e2;border-color:#a685e2;">${item[categoryVar]}</div>`
+                          : key.toLowerCase() == "ju"
+                          ? `<div class="category_icon" style="background-color:#ffd66b;border-color:#ffd66b;">${item[categoryVar]}</div>`
+                          : `${item[categoryVar]}`
+                      }
+                    </div>
                     <div class="name_code_style">
                       <div>${val}</div>
                       <div class="item_code">${item[itmCode]}</div>
                     </div>
                   </div>
                 </td>`;
+            } else if (i == totalValue) {
+              totalSumValue += Number(val);
+              td_data += `<td class="update_tVal_${key}_${index}">${val}</td>`;
+            } else if (i == salvQty) {
+              td_data += `<td class="update_slvQty_${key}_${index}">${val}</td>`;
+            } else if (i == salvValue) {
+              td_data += `<td class="update_slvVal_${key}_${index}">${val}</td>`;
+            } else if (i == rfaValue) {
+              td_data += `<td class="update_rfaVal_${key}_${index}">${val}</td>`;
             } else {
-              td_data += `<td class="">${val}</td>`;
+              td_data += `<td class="update_${val}">${val}</td>`;
             }
           });
 
-          tr_data += `<tr ${
-            index == 0 ? "data-expanded='true'" : ""
-          }>${td_data}</tr>`;
+          // tr_data += `<tr ${
+          //   index == 0 ? "data-expanded='true'" : ""
+          // }>${td_data}</tr>`;
+
+          tr_data += `<tr>${td_data}</tr>`;
         }
       });
 
@@ -254,37 +320,47 @@ $(document).ready(function () {
                     <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="padding: 2px 15px;">
                         <div class="panel-title">
                             <div class="panel1">
-                              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse_${key}" aria-expanded="true" aria-controls="collapse_${key}">
                                   <div style="display:flex;flex-direction:row;align-items:center;">
-                                    <span class="category_icon">${key}</span>
-                                    <span style="margin-left:10px;font-size:0.8em;">${
+                                    
+                                    ${
                                       key.toLowerCase() == "bi"
-                                        ? "Bi-Biscuits"
+                                        ? `<span class="category_icon">${key}</span><span style="margin-left:10px;font-size:0.8em;">Bi-Biscuits</span>`
                                         : key.toLowerCase() == "cf"
-                                        ? "CF-Confectionery"
+                                        ? `<span class="category_icon" style="background-color:#e08f62;border-color:#e08f62;">${key}</span><span style="margin-left:10px;font-size:0.8em;">CF-Confectionery</span>`
                                         : key.toLowerCase() == "nd"
-                                        ? "ND-Noodles"
+                                        ? `<span class="category_icon" style="background-color:#583d72;border-color:#583d72;">${key}</span><span style="margin-left:10px;font-size:0.8em;">ND-Noodles</span>`
                                         : key.toLowerCase() == "sx"
-                                        ? "SX-Snacks"
+                                        ? `<span class="category_icon" style="background-color:#cc7351;border-color:#cc7351;">${key}</span><span style="margin-left:10px;font-size:0.8em;">SX-Snacks</span>`
                                         : key.toLowerCase() == "at"
-                                        ? "AT-Atta"
-                                        : key.toLowerCase() == "at"
-                                        ? "JU-Juice"
-                                        : key
-                                    }</span>
+                                        ? `<span class="category_icon" style="background-color:#a685e2;border-color:#a685e2;">${key}</span><span style="margin-left:10px;font-size:0.8em;">AT-Atta</span>`
+                                        : key.toLowerCase() == "ju"
+                                        ? `<span class="category_icon" style="background-color:#ffd66b;border-color:#ffd66b;">${key}</span><span style="margin-left:10px;font-size:0.8em;">JU-Juice</span>`
+                                        : `<span class="category_icon">${key}</span> ${key}`
+                                    }
                                   </div>
-                              </a>
-                              <div class="panel2">Total Rows: <span class="total_rows">${
-                                value.length
-                              }</span></div>
-                              <div class="panel2">Total Qty.: <span class="total_rfaQty">${totalRfaQty}</span></div>
+                              <div class="TotalSumValues">Total Value: <span class="total_value">${totalSumValue.toFixed(
+                                2
+                              )}</span></div>
+                              <div class="TotalSumQty">Total Qty.: <span class="total_rfaQty">${totalRfaQty.toFixed(
+                                2
+                              )}</span></div>
                             </div>
-                            <div class="more_details" data-id="${key}"><span>More Details </span><span class="collapse_caret collapse_icon_${key}"><i class="fa fa-angle-down" aria-hidden="true"></i></span></div>
+                            <div class="more_details_main">
+                              <div class="more_details">
+                                <span>More Details </span><span class="collapse_caret collapse_icon_${key}"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                              </div>
+                              <div class="totalRows">Rows: <span class="total_rows">${
+                                value.length
+                              }</span>
+                              </div>
+                            </div>
                         </div>
                     </div>
-                    <div id="collapse_${key}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_${key}">
+                    <div id="collapse_${key}" class="panel-collapse collapse ${
+        ct == 1 ? "in" : ""
+      }" role="tabpanel" aria-labelledby="heading_${key}">
                         <div class="panel-body">
-                            <table id="collapse-table-${key}" class="table table-bordered masterSheetTable" data-editing-allow-edit="true" data-filtering="true" data-sorting="true">
+                            <table id="collapse-table-${key}" class="table table-bordered masterSheetTable" data-sorting="true">
                               <thead>${th_data}</thead>
                               <tbody>${tr_data}</tbody>
                             </table>
@@ -299,7 +375,7 @@ $(document).ready(function () {
       $(".masterSheetTable").footable();
     });
 
-    $(`.more_details`).click(function () {
+    $(`.collapse_heading`).click(function () {
       let id = $(this).data("id");
       let cl = $(`#collapse_${id}`).attr("class");
       if (cl.includes("in")) {
@@ -308,6 +384,12 @@ $(document).ready(function () {
           "background-color: #FFF !important; padding: 2px 15px;"
         );
         $(`#collapse_${id}`).removeClass("in");
+        if (!sel.includes(id.toLowerCase())) {
+          $(`.switch_btn_${id}`).removeClass("active");
+          $(`#_btns_${id}`)[0].checked = false;
+          // sel = sel.filter((v) => v != id.toLocaleLowerCase());
+        }
+
         $(`.collapse_icon_${id}`).html(
           '<i class="fa fa-angle-down" aria-hidden="true"></i>'
         );
@@ -317,6 +399,13 @@ $(document).ready(function () {
           "background-color: #F5F5F5 !important; padding: 2px 15px;"
         );
         $(`#collapse_${id}`).addClass("in");
+        $(`.switch_btn_${id}`).addClass("active");
+        $(`#_btns_${id}`)[0].checked = true;
+
+        // if (!sel.includes(id.toLowerCase())) {
+        //   sel.push(id.toLocaleLowerCase());
+        // }
+
         $(`.collapse_icon_${id}`).html(
           '<i class="fa fa-angle-up" aria-hidden="true"></i>'
         );
@@ -349,12 +438,13 @@ $(document).ready(function () {
             $(this).css({ color: "#5d78ff", "font-weight": "600" });
           }
 
-          let c2 = $(this).children().val();
+          let updateRfaQty = $(this).children().val();
+          $(this).html(parseInt(updateRfaQty));
+          $(this).data("id", parseInt(updateRfaQty));
+          let updatedItemCode = $(this).attr("data-itemCode");
+          let indexNo = $(this).attr("data-index");
+          let categoryName = $(this).attr("data-category");
 
-          $(this).html(c2);
-          $(this).data("id", c2);
-          let c3 = $(this).attr("data-itemCode");
-          console.log(c2, c3);
           $(".loading").show();
           setTimeout(() => {
             $(".loading").hide();
@@ -362,6 +452,21 @@ $(document).ready(function () {
         }
       });
     }
+
+    $(document).on("keypress", "._input", function (event) {
+      if (
+        event.code == "ArrowLeft" ||
+        event.code == "ArrowRight" ||
+        event.code == "ArrowUp" ||
+        event.code == "ArrowDown" ||
+        event.code == "Delete" ||
+        event.code == "Backspace"
+      ) {
+        return;
+      } else if (event.key.search(/\d/) == -1) {
+        event.preventDefault();
+      }
+    });
 
     $(document).on("keypress", function (e) {
       var key = e.keyCode || e.charCode;
@@ -373,20 +478,9 @@ $(document).ready(function () {
 
     $(document).click(function () {
       if (!$("._input").is(":focus")) {
-        console.log($("._input").is(":focus"));
         removeInput();
       }
     });
-
-    // var input_index;
-    // $(document).on("focus", "._input", function () {
-    //   let indx = $(this).data("id");
-    //   console.log(input_index, indx);
-    //   input_index = $(this).data("id");
-    //   if (input_index != undefined && input_index != indx) {
-    //     removeInput();
-    //   }
-    // });
   }
 
   // create all category filter button
@@ -398,12 +492,15 @@ $(document).ready(function () {
     });
 
     var catBtn = "";
-    var catBtn2 = "";
+    var catBtn2 =
+      '<li><a data-id="all" class="dropDownItem dropDownItem_all" href="#">All</a></li>';
     categories.forEach((val) => {
-      catBtn += `<input id="_btns_${val}" type="checkbox"><label class="switch_btn" data-val="${val}" for="_btns_${val}">${val}</label>`;
+      catBtn += `<input id="_btns_${val}" class="checkbox_btns" type="checkbox"><label class="switch_btn switch_btn_${val}" data-val="${val}" for="_btns_${val}">${val}</label>`;
+      catBtn2 += `<li><a data-id="${val}" class="dropDownItem dropDownItem_${val}" href="#">${val}</a></li>`;
     });
 
     $(".category_btn").html(catBtn);
+    $(".scrollable-dropdown").html(catBtn2);
   }
 
   // create as it is table like uploaded sheet
@@ -485,9 +582,8 @@ $(document).ready(function () {
         csv2.push(v.trim().replace(":", ""));
       });
 
-      var topData = {};
       for (let i = 0; i < csv2.length; i = i + 2) {
-        topData[csv2[i]] = csv2[i + 1];
+        topData[csv2[i].toLowerCase()] = csv2[i + 1];
       }
 
       var headers =
@@ -508,8 +604,15 @@ $(document).ready(function () {
         }
       }
 
-      if (Array.isArray(temp) && temp.length > 0) {
-        temp.forEach((arr) => {
+      var tempArr = [];
+      for (let c = 0; c < temp.length; c++) {
+        if (Array.isArray(temp[c]) && temp[c].length > 0) {
+          tempArr.push(temp[c]);
+        }
+      }
+
+      if (Array.isArray(tempArr) && tempArr.length > 0) {
+        tempArr.forEach((arr) => {
           if (Array.isArray(arr) && arr.length > 0) {
             for (let c = 0; c < arr.length - 1; c++) {
               if (!emptyIndxArr.includes(c)) {
@@ -526,6 +629,9 @@ $(document).ready(function () {
           }
         });
       }
+
+      let totValArr = tempArr[file_data.length].filter((v) => v);
+      _totalValue = totValArr[1];
 
       resultArray.headers = headers;
       resultArray.file_data = file_data;
@@ -578,7 +684,7 @@ $(document).ready(function () {
     createTable(resultArray, mappedResult);
   });
 
-  const searchResult = (sel) => {
+  const searchResult = (input, sel) => {
     let { headers, file_data } = resultArray;
     let result = {
       headers,
@@ -592,16 +698,108 @@ $(document).ready(function () {
           })
         : result?.file_data;
     }
+    if (input.length > 0) {
+      let val = input.toLowerCase();
+      let allItemName = [];
+      result.file_data.forEach((v) => {
+        allItemName.push(v[2]);
+      });
+
+      $("#searchInput").autocomplete({
+        source: allItemName,
+      });
+
+      result.file_data = val
+        ? result?.file_data.filter((v) => {
+            return (
+              v[0]?.toLowerCase()?.includes(val) ||
+              v[1]?.toLowerCase()?.includes(val) ||
+              v[2]?.toLowerCase()?.includes(val)
+            );
+          })
+        : result?.file_data;
+    }
 
     createTable(result, mappedResult);
   };
 
-  let sel = [];
+  var input = "";
+  var sel = [];
+  $("#searchInput").on("change keyup paste", function () {
+    input = $(this).val();
+    searchResult(input, sel);
+  });
+
+  function searchClicked(input, sel) {
+    $(`.collapse_heading`).each(function () {
+      let id = $(this).data("id");
+      let cl = $(`#collapse_${id}`).attr("class");
+      if (cl.includes("in")) {
+        $("#search_concept").html(id);
+
+        // $(`#collapse_${id}`).addClass("in");
+        // $(`.switch_btn_${id}`).addClass("active");
+        // $(`#_btns_${id}`)[0].checked = true;
+        // if (!sel.includes(id.toLowerCase())) {
+        //   sel.push(id.toLocaleLowerCase());
+        // }
+      } else {
+        // $(`#collapse_${id}`).removeClass("in");
+        // $(`.switch_btn_${id}`).removeClass("active");
+        // $(`#_btns_${id}`)[0].checked = false;
+        // sel = sel.filter((v) => v != id.toLocaleLowerCase());
+      }
+    });
+    setTimeout(() => {
+      $("#searchInput").blur();
+    }, 10);
+
+    searchResult(input, sel);
+  }
+
+  $("#searchInput").on("keydown", function search(e) {
+    if (e.keyCode == 13) {
+      searchClicked(input, sel);
+    }
+  });
+
+  $(".searchButton").click(function () {
+    searchClicked(input, sel);
+  });
+
+  $(document).on("click", ".dropDownItem", function (e) {
+    e.preventDefault();
+    // $("#searchInput").val("");
+    // input = "";
+    var selectedCat = $(this).text();
+    var lowerCaseCategory = [];
+    categories.forEach((v) => {
+      lowerCaseCategory.push(v.toLowerCase());
+    });
+    $(".search-panel span#search_concept").text(selectedCat);
+    $(".checkbox_btns").each(function () {
+      $(this)[0].checked = false;
+    });
+    $(".switch_btn").each(function () {
+      $(this).removeClass("active");
+    });
+    sel.length = 0;
+
+    if (selectedCat == "All") {
+      searchResult(input, lowerCaseCategory);
+    } else {
+      $(`#_btns_${selectedCat}`)[0].checked = true;
+      $(`.switch_btn_${selectedCat}`).addClass("active");
+      sel.push(selectedCat.toLocaleLowerCase());
+      searchResult(input, [selectedCat.toLocaleLowerCase()]);
+    }
+  });
+
   // Filter record based on cateogry
   $(document).on("click", ".switch_btn", function () {
     let cls1 = $(this).attr("class");
     let d_val = "";
-
+    $("#search_concept").html("All");
     if (cls1.includes("active")) {
       $(this).removeClass("active");
       d_val = $(this).data("val");
@@ -612,12 +810,15 @@ $(document).ready(function () {
       sel.push(d_val.toLocaleLowerCase());
     }
 
-    searchResult(sel);
+    searchResult(input, sel);
   });
 
   // upload sheet
-  $(".upload_master_sheet").change(function () {
-    var imgData = $(".upload_master_sheet")[0].files[0];
+  $(".upload_master_sheet").change(function () {});
+
+  function uploadSheet(files) {
+    // var imgData = $(".upload_master_sheet")[0].files[0];
+    var imgData = files;
 
     if (imgData != undefined) {
       var fileType = ["csv", "xsls", "xls", "xlsx"];
@@ -645,26 +846,56 @@ $(document).ready(function () {
 
       reader.readAsBinaryString(imgData);
     }
-  });
+  }
 
   // download the sheet after updating table
   $("#download").click(function () {
-    var tble = document.getElementById("masterSheetTable");
-    var row = tble.rows;
-
-    for (let i = 0; i < row[0].cells.length; i++) {
-      var str = row[0].cells[i];
-      var id = $(str).data("id");
-      if (id == "edit_row") {
-        for (var j = 0; j < row.length; j++) {
-          row[j].deleteCell(i);
-        }
-      }
-    }
-
-    let table = document.querySelector("#masterSheetTable");
-    TableToExcel.convert(table, {
-      name: "masterSheet.xlsx",
-    });
+    // var tble = document.getElementById("masterSheetTable");
+    // var row = tble.rows;
+    // for (let i = 0; i < row[0].cells.length; i++) {
+    //   var str = row[0].cells[i];
+    //   var id = $(str).data("id");
+    //   if (id == "edit_row") {
+    //     for (var j = 0; j < row.length; j++) {
+    //       row[j].deleteCell(i);
+    //     }
+    //   }
+    // }
+    // let table = document.querySelector("#masterSheetTable");
+    // TableToExcel.convert(table, {
+    //   name: "masterSheet.xlsx",
+    // });
   });
+
+  $("#uploadFiles").on("click", function () {
+    $(".file_names").html("");
+  });
+  if ($("#uploadFiles")[0]) {
+    var fileInput = document.querySelector('label[for="uploadFiles"]');
+    fileInput.ondragover = function () {
+      this.className = "uploadFiles_label changed";
+      return false;
+    };
+    fileInput.ondragleave = function () {
+      this.className = "uploadFiles_label";
+      return false;
+    };
+    fileInput.ondrop = function (e) {
+      e.preventDefault();
+      var fileNames = e.dataTransfer.files;
+      uploadSheet(fileNames[0]);
+      $ = jQuery.noConflict();
+      $('label[for="uploadFiles"]').append(
+        "<div class='file_names'>" + fileNames[0].name + "</div>"
+      );
+    };
+    $("#uploadFiles").change(function () {
+      uploadSheet($("#uploadFiles")[0].files[0]);
+      var fileNames = $("#uploadFiles")[0].files[0].name;
+      $('label[for="uploadFiles"]').append(
+        "<div class='file_names'>" + fileNames + "</div>"
+      );
+      $('label[for="uploadFiles"]').css("background-color", "##eee9ff");
+    });
+  }
 });
