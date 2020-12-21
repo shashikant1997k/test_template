@@ -752,7 +752,7 @@ $(document).ready(function () {
     });
     setTimeout(() => {
       $("#searchInput").blur();
-    }, 10);
+    }, 100);
 
     searchResult(input, sel);
   }
