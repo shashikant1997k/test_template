@@ -39,6 +39,10 @@ $(document).ready(function () {
     return color;
   }
 
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   // map table uploaded sheet column from pre-define values
   function tableColumnMapping(output) {
     $(".table_main").show();
@@ -177,13 +181,17 @@ $(document).ready(function () {
                             <td class="tr_1td title_">WD Name:</td>
                             <td class="tr_1td value_">${topData["wd name"]}</td>
                             <td class="tr_1td title_">WD Address:</td>
-                            <td class="tr_1td value_">${topData["wd address"]}</td>
+                            <td class="tr_1td value_">${
+                              topData["wd address"]
+                            }</td>
                           </tr>
                           <tr>
                             <td class="title_">Task Number:</td>
                             <td class="value_">${topData["task number"]}</td>
                             <td class="title_">Total Value:</td>
-                            <td class="value_">${_totalValue}</span></td>
+                            <td class="value_">${numberWithCommas(
+                              _totalValue
+                            )}</span></td>
                           </tr>
                         </table>`;
 
@@ -317,7 +325,9 @@ $(document).ready(function () {
                 </td>`;
             } else if (i == totalValue) {
               totalSumValue += Number(val);
-              td_data += `<td class="update_tVal_${key}_${index}">${val}</td>`;
+              td_data += `<td class="update_tVal_${key}_${index}">${numberWithCommas(
+                val
+              )}</td>`;
             } else if (i == salvQty) {
               td_data += `<td class="update_slvQty_${key}_${index}">${val}</td>`;
             } else if (i == salvValue) {
@@ -364,11 +374,11 @@ $(document).ready(function () {
                                       </span>`
                                     }
                                   </div>
-                              <div class="TotalSumValues">Total Value: <span class="total_value">${totalSumValue.toFixed(
-                                2
+                              <div class="TotalSumValues">Total Value: <span class="total_value">${numberWithCommas(
+                                totalSumValue.toFixed(2)
                               )}</span></div>
-                              <div class="TotalSumQty">Total Qty.: <span class="total_rfaQty">${totalRfaQty.toFixed(
-                                2
+                              <div class="TotalSumQty">Total Qty.: <span class="total_rfaQty">${numberWithCommas(
+                                totalRfaQty.toFixed(2)
                               )}</span></div>
                             </div>
                             <div class="more_details_main">
@@ -797,14 +807,31 @@ $(document).ready(function () {
     }
   });
 
+  function tog(v) {
+    return v ? "addClass" : "removeClass";
+  }
+  $(document)
+    .on("input", "#searchInput", function () {
+      $(this)[tog(this.value)]("x");
+    })
+    .on("mousemove", ".x", function (e) {
+      $(this)[
+        tog(
+          this.offsetWidth - 18 < e.clientX - this.getBoundingClientRect().left
+        )
+      ]("onX");
+    })
+    .on("touchstart click", ".onX", function (ev) {
+      ev.preventDefault();
+      $(this).removeClass("x onX").val("").change();
+    });
+
   $(".searchButton").click(function () {
     searchClicked(input, sel);
   });
 
   $(document).on("click", ".dropDownItem", function (e) {
     e.preventDefault();
-    // $("#searchInput").val("");
-    // input = "";
     var selectedCat = $(this).text();
     var lowerCaseCategory = [];
     categories.forEach((v) => {
@@ -879,26 +906,6 @@ $(document).ready(function () {
       reader.readAsBinaryString(imgData);
     }
   }
-
-  // download the sheet after updating table
-  $("#download").click(function () {
-    // let aa = new FooTable.Export(new FooTable.Table("#collapse-table-BI"));
-    // var tble = document.getElementById("masterSheetTable");
-    // var row = tble.rows;
-    // for (let i = 0; i < row[0].cells.length; i++) {
-    //   var str = row[0].cells[i];
-    //   var id = $(str).data("id");
-    //   if (id == "edit_row") {
-    //     for (var j = 0; j < row.length; j++) {
-    //       row[j].deleteCell(i);
-    //     }
-    //   }
-    // }
-    // let table = document.querySelector("#masterSheetTable");
-    // TableToExcel.convert(table, {
-    //   name: "masterSheet.xlsx",
-    // });
-  });
 
   $("#uploadFiles").on("click", function () {
     $(".file_names").html("");
