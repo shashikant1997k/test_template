@@ -12,6 +12,32 @@ $(document).ready(function () {
   };
   var topData = {};
   var _totalValue;
+  var tempCat = ["bi", "cf", "nd", "sx", "at", "ju"];
+  var catgName = [
+    "Bi-Biscuits",
+    "CF-Confectionery",
+    "ND-Noodles",
+    "SX-Snacks",
+    "AT-Atta",
+    "JU-Juice",
+  ];
+  var CatgColor = [
+    "#35a630",
+    "#e08f62",
+    "#583d72",
+    "#cc7351",
+    "#a685e2",
+    "#ffd66b",
+  ];
+
+  function getRandomColor() {
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
 
   // map table uploaded sheet column from pre-define values
   function tableColumnMapping(output) {
@@ -272,21 +298,16 @@ $(document).ready(function () {
               td_data += `<td class="first_visible_td">
                   <div class="category_style">
                     <div>
-                      ${
-                        key.toLowerCase() == "bi"
-                          ? `<div class="category_icon">${item[categoryVar]}</div>`
-                          : key.toLowerCase() == "cf"
-                          ? `<div class="category_icon" style="background-color:#e08f62;border-color:#e08f62;">${item[categoryVar]}</div>`
-                          : key.toLowerCase() == "nd"
-                          ? `<div class="category_icon" style="background-color:#583d72;border-color:#583d72;">${item[categoryVar]}</div>`
-                          : key.toLowerCase() == "sx"
-                          ? `<div class="category_icon" style="background-color:#cc7351;border-color:#cc7351;">${item[categoryVar]}</div>`
-                          : key.toLowerCase() == "at"
-                          ? `<div class="category_icon" style="background-color:#a685e2;border-color:#a685e2;">${item[categoryVar]}</div>`
-                          : key.toLowerCase() == "ju"
-                          ? `<div class="category_icon" style="background-color:#ffd66b;border-color:#ffd66b;">${item[categoryVar]}</div>`
-                          : `${item[categoryVar]}`
-                      }
+                    ${
+                      tempCat.indexOf(key.toLowerCase()) != -1
+                        ? `<div class="category_icon" style="background-color:${
+                            CatgColor[tempCat.indexOf(key.toLowerCase())]
+                          };border-color:${
+                            CatgColor[tempCat.indexOf(key.toLowerCase())]
+                          };">${item[categoryVar]}</div>`
+                        : `<div class="category_icon" style="background-color:#35a630;border-color:#35a630;">${item[categoryVar]}</div>`
+                    }
+                      
                     </div>
                     <div class="name_code_style">
                       <div>${val}</div>
@@ -321,21 +342,26 @@ $(document).ready(function () {
                         <div class="panel-title">
                             <div class="panel1">
                                   <div style="display:flex;flex-direction:row;align-items:center;">
-                                    
                                     ${
-                                      key.toLowerCase() == "bi"
-                                        ? `<span class="category_icon">${key}</span><span style="margin-left:10px;font-size:0.8em;">Bi-Biscuits</span>`
-                                        : key.toLowerCase() == "cf"
-                                        ? `<span class="category_icon" style="background-color:#e08f62;border-color:#e08f62;">${key}</span><span style="margin-left:10px;font-size:0.8em;">CF-Confectionery</span>`
-                                        : key.toLowerCase() == "nd"
-                                        ? `<span class="category_icon" style="background-color:#583d72;border-color:#583d72;">${key}</span><span style="margin-left:10px;font-size:0.8em;">ND-Noodles</span>`
-                                        : key.toLowerCase() == "sx"
-                                        ? `<span class="category_icon" style="background-color:#cc7351;border-color:#cc7351;">${key}</span><span style="margin-left:10px;font-size:0.8em;">SX-Snacks</span>`
-                                        : key.toLowerCase() == "at"
-                                        ? `<span class="category_icon" style="background-color:#a685e2;border-color:#a685e2;">${key}</span><span style="margin-left:10px;font-size:0.8em;">AT-Atta</span>`
-                                        : key.toLowerCase() == "ju"
-                                        ? `<span class="category_icon" style="background-color:#ffd66b;border-color:#ffd66b;">${key}</span><span style="margin-left:10px;font-size:0.8em;">JU-Juice</span>`
-                                        : `<span class="category_icon">${key}</span> ${key}`
+                                      tempCat.indexOf(key.toLowerCase()) != -1
+                                        ? `<span class="category_icon" style="background-color:${
+                                            CatgColor[
+                                              tempCat.indexOf(key.toLowerCase())
+                                            ]
+                                          };border-color:${
+                                            CatgColor[
+                                              tempCat.indexOf(key.toLowerCase())
+                                            ]
+                                          };">${key}</span><span style="margin-left:10px;font-size:0.8em;">
+                                          ${
+                                            catgName[
+                                              tempCat.indexOf(key.toLowerCase())
+                                            ]
+                                          }
+                                        </span>`
+                                        : `<span class="category_icon" style="background-color:#35a630;border-color:#35a630;">${key}</span><span style="margin-left:10px;font-size:0.8em;">
+                                        ${key}
+                                      </span>`
                                     }
                                   </div>
                               <div class="TotalSumValues">Total Value: <span class="total_value">${totalSumValue.toFixed(
@@ -448,6 +474,14 @@ $(document).ready(function () {
           $(".loading").show();
           setTimeout(() => {
             $(".loading").hide();
+
+            swal({
+              title: "Successfully Updated!",
+              text: "Successfully Updated",
+              icon: "success",
+              buttons: false,
+              timer: 1500,
+            });
           }, 1000);
         }
       });
@@ -813,9 +847,7 @@ $(document).ready(function () {
     searchResult(input, sel);
   });
 
-  // upload sheet
-  $(".upload_master_sheet").change(function () {});
-
+  // upload master sheet to edit
   function uploadSheet(files) {
     // var imgData = $(".upload_master_sheet")[0].files[0];
     var imgData = files;
@@ -850,6 +882,7 @@ $(document).ready(function () {
 
   // download the sheet after updating table
   $("#download").click(function () {
+    // let aa = new FooTable.Export(new FooTable.Table("#collapse-table-BI"));
     // var tble = document.getElementById("masterSheetTable");
     // var row = tble.rows;
     // for (let i = 0; i < row[0].cells.length; i++) {
