@@ -108,6 +108,25 @@ body {
   font-size: 0.8em;
 }
 
+#searchInput {
+  background: #fff url("http://i.stack.imgur.com/mJotv.gif") no-repeat right -10px
+    center;
+  border: 1px solid #999;
+  padding: 3px 18px 3px 4px;
+  transition: background 0.4s;
+  background-size: 9px;
+}
+#searchInput.x {
+  background-position: right 5px center;
+}
+#searchInput.onX {
+  cursor: pointer;
+}
+#searchInput::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
 .ui-autocomplete,
 .scrollable-dropdown {
   height: auto;
@@ -451,5 +470,10 @@ label[for="uploadFiles"] {
 @media only screen and (max-width: 768px) {
   .category_style {
     margin-left: 14px;
+  }
+
+  .editable_cell {
+    color: #5d78ff;
+    font-weight: 600;
   }
 }
