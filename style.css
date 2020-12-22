@@ -79,7 +79,6 @@ body {
 .category_style {
   display: flex;
   flex-direction: row;
-  margin-left: 14px;
 }
 
 .name_code_style {
@@ -225,12 +224,12 @@ table > tbody > tr > td > span.footable-toggle {
 .TotalSumQty,
 .TotalSumValues {
   font-weight: 600;
-  font-size: 0.85em;
+  font-size: 0.8em;
   color: #666;
 }
 
 .totalRows {
-  font-size: 0.85em;
+  font-size: 0.8em;
   color: #666;
 }
 
@@ -330,40 +329,6 @@ table > tbody > tr > td > span.footable-toggle {
   height: -webkit-fill-available;
 }
 
-@media only screen and (max-width: 600px) {
-  ._mobile_select_td {
-    display: flex;
-  }
-  ._select_td {
-    display: none;
-  }
-  .first_table_1 tbody {
-    display: none;
-  }
-  .first_table_1 {
-    width: 100% !important;
-  }
-  .mob_tr {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .mob_head_style {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .topDatatable .title_ {
-    white-space: normal;
-    padding: 8px 0px 10px 5px;
-  }
-
-  .topDatatable .value_ {
-    padding: 8px 0px 10px 5px;
-  }
-}
-
 .sheets_upload {
   position: relative;
   height: 90px;
@@ -447,4 +412,44 @@ label[for="uploadFiles"] {
   font-weight: 300;
   top: 8%;
   left: 38%;
+}
+
+@media only screen and (max-width: 600px) {
+  ._mobile_select_td {
+    display: flex;
+  }
+  ._select_td {
+    display: none;
+  }
+  .first_table_1 tbody {
+    display: none;
+  }
+  .first_table_1 {
+    width: 100% !important;
+  }
+  .mob_tr {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mob_head_style {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .topDatatable .title_ {
+    white-space: normal;
+    padding: 8px 0px 10px 5px;
+  }
+
+  .topDatatable .value_ {
+    padding: 8px 0px 10px 5px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .category_style {
+    margin-left: 14px;
+  }
 }
