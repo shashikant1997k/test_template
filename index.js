@@ -1,7 +1,7 @@
 $(document).ready(function () {
   var mobileVar = 0;
-  var categories = [];
-  var screenWidth = window.matchMedia("(max-width: 600px)");
+  var categories;
+  var screenWidth = window.matchMedia("(max-width: 768px)");
   if (screenWidth.matches) {
     mobileVar = 1;
   }
@@ -43,6 +43,14 @@ $(document).ready(function () {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
+  var toTitleCase = (str) => {
+    return str
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   // map table uploaded sheet column from pre-define values
   function tableColumnMapping(output) {
     $(".table_main").show();
@@ -55,19 +63,31 @@ $(document).ready(function () {
     var optionRow = "";
     var mobileOptionRow = "";
 
-    var map_array = {
-      Category: "Category",
-      "Item Code": "Item Code",
-      "Item Name": "Item Name",
-      "RFA Qty": "RFA Qty",
-      "Total Value": "Total Value",
-      "Salv Qty": "Salv Qty",
-      UOM: "UOM",
-      "Salv Value": "Salv Value",
-      "RFA Value": "RFA Value",
-    };
+    // var map_array = {
+    //   Category: "Category",
+    //   "Item Code": "Item Code",
+    //   "Item Name": "Item Name",
+    //   "RFA Qty": "RFA Qty",
+    //   "Total Value": "Total Value",
+    //   "Salv Qty": "Salv Qty",
+    //   UOM: "UOM",
+    //   "Salv Value": "Salv Value",
+    //   "RFA Value": "RFA Value",
+    //   Others: "Others",
+    // };
 
-    // headers[j].toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase())
+    var map_array = {
+      Category: "category",
+      "Item Code": "item_code",
+      "Item Name": "item_name",
+      "Rfa Qty": "rfa_qty",
+      "Total Value": "total_value",
+      "Salv Qty": "salv_qty",
+      UOM: "uom",
+      "Salv Value": "salv_value",
+      "Rfa Value": "rfa_value",
+      Others: "others",
+    };
 
     // creating column mapping dropdown
     if (Array.isArray(headers) && headers.length) {
@@ -77,9 +97,9 @@ $(document).ready(function () {
           if (mobileVar) {
             let mobileSelect = "";
             for (var key in map_array) {
-              let con1 = headers[j];
+              let con1 = headers[j].split(" ").join("_");
               mobileSelect += `<option ${
-                con1 == map_array[key] ? "selected" : ""
+                con1.toLowerCase() == map_array[key] ? "selected" : ""
               } value="${map_array[key]}" align='center'>${key}</option>`;
             }
             mobileOptionRow = `<div class="_mobile_select_td">
@@ -123,9 +143,9 @@ $(document).ready(function () {
                     <option value="">Select</option>`;
 
             for (var key in map_array) {
-              let con1 = headers[j];
+              let con1 = headers[j].split(" ").join("_");
               optionRow += `<option ${
-                con1 == map_array[key] ? "selected" : ""
+                con1.toLowerCase() == map_array[key] ? "selected" : ""
               } value="${map_array[key]}" align='center'>${key}</option>`;
             }
 
@@ -174,6 +194,7 @@ $(document).ready(function () {
       );
       return false;
     }
+    $(".addItemForm").hide();
 
     // Create the topbar data info table
     var topDataTable = `<table class="topDatatable">
@@ -182,7 +203,17 @@ $(document).ready(function () {
                             <td class="tr_1td value_">${topData["wd name"]}</td>
                             <td class="tr_1td title_">WD Address:</td>
                             <td class="tr_1td value_">${
-                              topData["wd address"]
+                              mobileVar == 1
+                                ? topData["wd address"].length <= 35
+                                  ? topData["wd address"]
+                                  : `<span class="addressTooltip">${
+                                      topData["wd address"].slice(0, 35) + "..."
+                                    } 
+                                  <span>
+                                    ${topData["wd address"]}
+                                  </span>
+                                  </span>`
+                                : topData["wd address"]
                             }</td>
                           </tr>
                           <tr>
@@ -201,7 +232,7 @@ $(document).ready(function () {
     var dataLen = resultArray.file_data[0].length;
     let num1;
     Object.values(mappedObj).forEach((v, i) => {
-      if (v.toLowerCase() == "category") {
+      if (v == "category") {
         num1 = i;
       }
     });
@@ -237,41 +268,39 @@ $(document).ready(function () {
       Object.values(mappedObj).length != 0
     ) {
       Object.values(mappedObj).forEach((val, i) => {
-        if (
-          val.toLowerCase() == "item name" ||
-          val.toLowerCase() == "rfa qty"
-        ) {
-          th_data += `<th style="background: #E6E7EB;">${val}</th>`;
-        } else if (
-          val.toLowerCase() == "category" ||
-          val.toLowerCase() == "item code"
-        ) {
+        if (val == "item_name" || val == "rfa_qty") {
+          th_data += `<th style="background: #E6E7EB;">${toTitleCase(
+            val
+          )}</th>`;
+        } else if (val == "category" || val == "item_code") {
           th_data += ``;
         } else {
-          th_data += `<th class="" style="background: #E6E7EB;" data-breakpoints="xs">${val}</th>`;
+          th_data += `<th class="" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+            val
+          )}</th>`;
         }
-        if (val.toLowerCase() == "category") {
+        if (val == "category") {
           categoryVar = i;
         }
-        if (val.toLowerCase() == "item code") {
+        if (val == "item_code") {
           itmCode = i;
         }
-        if (val.toLowerCase() == "item name") {
+        if (val == "item_name") {
           itemName = i;
         }
-        if (val.toLowerCase() == "rfa qty") {
+        if (val == "rfa_qty") {
           rfaQty = i;
         }
-        if (val.toLowerCase() == "total value") {
+        if (val == "total_value") {
           totalValue = i;
         }
-        if (val.toLowerCase() == "salv qty") {
+        if (val == "salv_qty") {
           salvQty = i;
         }
-        if (val.toLowerCase() == "salv value") {
+        if (val == "salv_value") {
           salvValue = i;
         }
-        if (val.toLowerCase() == "rfa value") {
+        if (val == "rfa_value") {
           rfaValue = i;
         }
       });
@@ -284,6 +313,7 @@ $(document).ready(function () {
       var tr_data = "";
       var totalRfaQty = 0;
       var totalSumValue = 0;
+      var randCol = getRandomColor();
       ct++;
       value.forEach((item, index) => {
         if (item.length == headLen || item.length == dataLen) {
@@ -308,12 +338,8 @@ $(document).ready(function () {
                     <div>
                     ${
                       tempCat.indexOf(key.toLowerCase()) != -1
-                        ? `<div class="category_icon" style="background-color:${
-                            CatgColor[tempCat.indexOf(key.toLowerCase())]
-                          };border-color:${
-                            CatgColor[tempCat.indexOf(key.toLowerCase())]
-                          };">${item[categoryVar]}</div>`
-                        : `<div class="category_icon" style="background-color:#35a630;border-color:#35a630;">${item[categoryVar]}</div>`
+                        ? `<div class="category_icon" style="background-color:${randCol};border-color:${randCol};">${item[categoryVar]}</div>`
+                        : `<div class="category_icon" style="background-color:${randCol};border-color:${randCol};">${item[categoryVar]}</div>`
                     }
                       
                     </div>
@@ -354,22 +380,14 @@ $(document).ready(function () {
                                   <div style="display:flex;flex-direction:row;align-items:center;">
                                     ${
                                       tempCat.indexOf(key.toLowerCase()) != -1
-                                        ? `<span class="category_icon" style="background-color:${
-                                            CatgColor[
-                                              tempCat.indexOf(key.toLowerCase())
-                                            ]
-                                          };border-color:${
-                                            CatgColor[
-                                              tempCat.indexOf(key.toLowerCase())
-                                            ]
-                                          };">${key}</span><span style="margin-left:10px;font-size:0.8em;">
+                                        ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span style="margin-left:10px;font-size:0.8em;">
                                           ${
                                             catgName[
                                               tempCat.indexOf(key.toLowerCase())
                                             ]
                                           }
                                         </span>`
-                                        : `<span class="category_icon" style="background-color:#35a630;border-color:#35a630;">${key}</span><span style="margin-left:10px;font-size:0.8em;">
+                                        : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span style="margin-left:10px;font-size:0.8em;">
                                         ${key}
                                       </span>`
                                     }
@@ -529,6 +547,7 @@ $(document).ready(function () {
 
   // create all category filter button
   function createCategoryBtn(resultArray) {
+    categories = [];
     resultArray.file_data.forEach((item, index) => {
       if (categories.indexOf(item[0]) == -1) {
         categories.push(item[0]);
@@ -620,6 +639,7 @@ $(document).ready(function () {
     }
     if (_csvData.length > 0) {
       var csv1 = [..._csvData[0], ..._csvData[1]];
+
       csv1 = csv1.filter((v) => v);
       var csv2 = [];
       csv1.forEach((v) => {
@@ -636,6 +656,9 @@ $(document).ready(function () {
       var temp1 = temp[0].filter((v) => v);
       var _len = temp1.length;
       var file_data = [];
+
+      console.log(_csvData);
+      // console.log(temp);
 
       const emptyIndexes = _csvData[rowNum]
         .map((val, i) => (val != null ? i : -1))
@@ -654,6 +677,8 @@ $(document).ready(function () {
           tempArr.push(temp[c]);
         }
       }
+
+      console.log(tempArr);
 
       if (Array.isArray(tempArr) && tempArr.length > 0) {
         tempArr.forEach((arr) => {
@@ -679,12 +704,15 @@ $(document).ready(function () {
 
       resultArray.headers = headers;
       resultArray.file_data = file_data;
+
+      console.log(resultArray);
       tableColumnMapping(resultArray);
       createCategoryBtn(resultArray);
     }
   });
 
   var mappedResult;
+  var mappedKeyIndex = {};
   // click next button after mapping all column and got to final table
   $(document).on("click", ".next_btn_1", function () {
     mappedResult = {};
@@ -705,11 +733,14 @@ $(document).ready(function () {
       }
     }
     for (let i = 0; i < input1.length; i++) {
-      mappedVal.push($(input1[i]).data("value"));
+      let mpgVal = $(input1[i]).data("value");
+      mpgVal = mpgVal.split(" ").join("_");
+      mappedVal.push(mpgVal.toLowerCase());
     }
 
     mappedVal.forEach((key, i) => {
       if (mappingVal[i] != 1) {
+        mappedKeyIndex[key] = i;
         mappedResult[key] = mappingVal[i];
       }
     });
@@ -724,7 +755,8 @@ $(document).ready(function () {
     if (error_val == 1) {
       return false;
     }
-
+    console.log(resultArray);
+    console.log(mappedResult);
     createTable(resultArray, mappedResult);
   });
 
@@ -938,4 +970,55 @@ $(document).ready(function () {
       $('label[for="uploadFiles"]').css("background-color", "##eee9ff");
     });
   }
+
+  $(".addItem").click(function () {
+    if ($(".addItemForm").css("display") != "none") {
+      $(".addItemForm").hide();
+    } else {
+      $(".addItemForm").show();
+    }
+  });
+
+  $(".close_btn span").click(function () {
+    $(".addItemForm").hide();
+  });
+
+  $(".add_item_form").on("submit", function (e) {
+    e.preventDefault();
+    let add_category = $("#add_category").val();
+    let add_itemcode = $("#add_itemcode").val();
+    let add_itemname = $("#add_itemname").val();
+    let add_rfaqty = $("#add_rfaqty").val();
+
+    let addCatId = $("#add_category").data("id");
+    let additCodeId = $("#add_itemcode").data("id");
+    let additmNameID = $("#add_itemname").data("id");
+    let addrfaQtyID = $("#add_rfaqty").data("id");
+
+    let keyValObj = {
+      [addCatId]: add_category.toUpperCase(),
+      [additCodeId]: add_itemcode.toUpperCase(),
+      [additmNameID]: add_itemname.toUpperCase(),
+      [addrfaQtyID]: add_rfaqty,
+    };
+
+    let addedItem = [];
+    for (const key in mappedKeyIndex) {
+      if (key == "uom") {
+        addedItem[mappedKeyIndex[key]] = "PAC";
+      } else {
+        addedItem[mappedKeyIndex[key]] = keyValObj[key]
+          ? keyValObj[key]
+          : "0.00";
+      }
+    }
+
+    resultArray.file_data.push(addedItem);
+    createTable(resultArray, mappedResult);
+    createCategoryBtn(resultArray);
+
+    $(".add_item_form input").each(function () {
+      $(this).val("");
+    });
+  });
 });
