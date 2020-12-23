@@ -650,13 +650,22 @@ $(document).ready(function () {
         topData[csv2[i].toLowerCase()] = csv2[i + 1];
       }
 
-      var headers =
+      let _head =
         _csvData[rowNum].length > 0 && _csvData[rowNum].filter((v) => v);
-      var temp = _csvData.slice(rowNum + 1, _csvData.length);
-      var temp1 = temp[0].filter((v) => v);
-      var _len = temp1.length;
-      var file_data = [];
 
+      let headerIndexArr = [];
+      var headers = [];
+      for (let x = 0; x < _head.length; x++) {
+        if (headers.indexOf(_head[x]) == -1) {
+          headers.push(_head[x]);
+        } else {
+          headerIndexArr.push(x);
+        }
+      }
+
+      var temp = _csvData.slice(rowNum + 1, _csvData.length);
+
+      var file_data = [];
       const emptyIndexes = _csvData[rowNum]
         .map((val, i) => (val != null ? i : -1))
         .filter((index) => index !== -1);
@@ -675,6 +684,18 @@ $(document).ready(function () {
         }
       }
 
+      var temp1 = temp[0];
+      for (let c = 0; c < temp1.length - 1; c++) {
+        if (!emptyIndxArr.includes(c)) {
+          if (temp1[0]) {
+            temp1[c] = temp1[c] ? temp1[c] : "";
+          }
+        }
+      }
+
+      var temp1 = temp1.filter((v, i) => !emptyIndxArr.includes(i));
+      var _len = temp1.length;
+
       if (Array.isArray(tempArr) && tempArr.length > 0) {
         tempArr.forEach((arr) => {
           if (Array.isArray(arr) && arr.length > 0) {
@@ -685,8 +706,8 @@ $(document).ready(function () {
                 }
               }
             }
-
             var temp2 = arr.filter((v, i) => !emptyIndxArr.includes(i));
+            temp2 = temp2.filter((v, i) => !headerIndexArr.includes(i));
             if (temp2.length == _len || temp2.length == headers.length) {
               file_data.push(temp2);
             }
@@ -699,7 +720,6 @@ $(document).ready(function () {
 
       resultArray.headers = headers;
       resultArray.file_data = file_data;
-
       tableColumnMapping(resultArray);
       createCategoryBtn(resultArray);
     }
@@ -1007,7 +1027,6 @@ $(document).ready(function () {
           : "0.00";
       }
     }
-
     resultArray.file_data.push(addedItem);
     createTable(resultArray, mappedResult);
     createCategoryBtn(resultArray);
