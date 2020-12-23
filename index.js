@@ -657,9 +657,6 @@ $(document).ready(function () {
       var _len = temp1.length;
       var file_data = [];
 
-      console.log(_csvData);
-      // console.log(temp);
-
       const emptyIndexes = _csvData[rowNum]
         .map((val, i) => (val != null ? i : -1))
         .filter((index) => index !== -1);
@@ -677,8 +674,6 @@ $(document).ready(function () {
           tempArr.push(temp[c]);
         }
       }
-
-      console.log(tempArr);
 
       if (Array.isArray(tempArr) && tempArr.length > 0) {
         tempArr.forEach((arr) => {
@@ -705,7 +700,6 @@ $(document).ready(function () {
       resultArray.headers = headers;
       resultArray.file_data = file_data;
 
-      console.log(resultArray);
       tableColumnMapping(resultArray);
       createCategoryBtn(resultArray);
     }
@@ -740,7 +734,9 @@ $(document).ready(function () {
 
     mappedVal.forEach((key, i) => {
       if (mappingVal[i] != 1) {
-        mappedKeyIndex[key] = i;
+        if (!mappedKeyIndex.hasOwnProperty(key)) {
+          mappedKeyIndex[key] = i;
+        }
         mappedResult[key] = mappingVal[i];
       }
     });
@@ -755,8 +751,7 @@ $(document).ready(function () {
     if (error_val == 1) {
       return false;
     }
-    console.log(resultArray);
-    console.log(mappedResult);
+
     createTable(resultArray, mappedResult);
   });
 
