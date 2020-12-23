@@ -19,7 +19,6 @@ body {
 
 .category_btn_main {
   width: 100%;
-  border: 1px solid #ddd;
   display: flex;
   flex-direction: row;
   border: 1px solid #eee;
@@ -85,6 +84,7 @@ body {
   display: flex;
   flex-direction: column;
   margin-left: 10px;
+  word-break: break-all;
 }
 
 .item_code {
@@ -106,6 +106,51 @@ body {
   border-radius: 22px;
   font-weight: 600;
   font-size: 0.8em;
+}
+
+.searchMain {
+  display: flex;
+  flex-direction: row;
+}
+.addMoreBtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  padding-right: 0px;
+  padding-left: 0px;
+  position: relative;
+}
+
+.searchButton {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.addItemForm {
+  background: white;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.36);
+  width: 400px;
+  display: none;
+  position: absolute;
+  top: 55px;
+  z-index: 10;
+}
+.add_item_form {
+  padding: 15px;
+}
+.close_btn {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.close_btn span {
+  font-size: 1.8em;
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
 }
 
 #searchInput {
@@ -433,7 +478,51 @@ label[for="uploadFiles"] {
   left: 38%;
 }
 
+.addressTooltip {
+  position: relative;
+}
+.addressTooltip span {
+  margin-left: -999em;
+  position: absolute;
+  padding: 0.5em;
+  background: #fff;
+}
+.addressTooltip:hover span {
+  border-radius: 5px 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.36);
+  -webkit-box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.36);
+  -moz-box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.36);
+  font-family: Calibri, Tahoma, Geneva, sans-serif;
+  position: absolute;
+  left: -2em;
+  top: 2em;
+  z-index: 99;
+  margin-left: 0;
+  width: 250px;
+}
+.addressTooltip:hover img {
+  border: 0;
+  margin: -10px 0 0 -55px;
+  float: left;
+  position: absolute;
+}
+.addressTooltip:hover em {
+  font-family: Candara, Tahoma, Geneva, sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  display: block;
+  padding: 0.2em 0 0.6em 0;
+}
+
 @media only screen and (max-width: 600px) {
+  .addItemForm {
+    width: 300px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
   ._mobile_select_td {
     display: flex;
   }
@@ -465,9 +554,7 @@ label[for="uploadFiles"] {
   .topDatatable .value_ {
     padding: 8px 0px 10px 5px;
   }
-}
 
-@media only screen and (max-width: 768px) {
   .category_style {
     margin-left: 14px;
   }
@@ -475,5 +562,9 @@ label[for="uploadFiles"] {
   .editable_cell {
     color: #5d78ff;
     font-weight: 600;
+  }
+
+  .searchMain {
+    flex-direction: column;
   }
 }
