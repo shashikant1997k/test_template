@@ -10,6 +10,9 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ==" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
     <script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
@@ -47,11 +50,68 @@
     
 
     <div class="main">
-        <div class="sheets_upload">
-            <!-- <input type="file" class="upload_master_sheet"> -->
-            <label for="uploadFiles" class="uploadFiles_label">Enter</label>
-            <input type="file" id="uploadFiles" class="file-upload upload_master_sheet">
+        <div class="topHeader">
+            <div class="searchMain">
+                <div class="input-group" style="margin-bottom: 0px;">
+                    <div class="input-group-btn search-panel">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span id="search_concept">All</span> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu scrollable-dropdown" role="menu">
+                            
+                        </ul>
+                    </div>
+                    <input type="hidden" name="search_param" value="all" id="search_param">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default searchButton" type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                    
+                </div>
+                <div class="addMoreBtn">
+                    <button class="btn btn-default moreColumn" type="button" data-toggle="modal" data-target="#moreColumnModal" style="margin-right: 15px;margin-left: 15px;">
+                        <span class="glyphicon glyphicon-cog"></span>
+                        <span class="dnone_mob">More</span>
+                    </button>
+                    <button class="btn btn-default addItem" type="submit">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        <span class="dnone_mob">Add Item</span>
+                    </button>
+
+                </div>
+            </div>
+            <div class="sheets_upload" style="margin-left: 15px;">
+                <label for="uploadFiles" class="uploadFiles_label"></label>
+                <input type="file" id="uploadFiles" class="file-upload upload_master_sheet">
+            </div>
+
+
+            <div class="addItemForm">
+                <div class="close_btn"><span>&times;</span></div>
+                <form class="add_item_form">
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <input type="text" data-id="category" id="add_category" class="form-control" placeholder="Category" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Item Code:</label>
+                        <input type="text" data-id="item_code" id="add_itemcode" class="form-control" placeholder="Item Code" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Item Name:</label>
+                        <input type="text" data-id="item_name" id="add_itemname" class="form-control" placeholder="Item Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Item Qty:</label>
+                        <input type="number" data-id="item_qty" id="add_itemqty" class="form-control" placeholder="Item Qty" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary addItemSubmit">Submit</button>
+                </form>
+            </div>
         </div>
+        
   
         <div class="table_main">
     
@@ -61,14 +121,60 @@
             </div> -->
 
             <div class="first_page">
-                <table class="table table-bordered first_table">
-                    <tbody class="table_body">
-                        
-                    </tbody>
-                </table>
+                <div class="stepperMain">
+                    <div class="stepperInner">
+                        <p>Input or Select</p>
+                        <div class="step_1 _steps">
+                            <div id="fromDate" class="input-group date" data-date-format="dd/mm/yyyy" style="margin-bottom: 15px;">
+                                <input class="form-control" type="text" placeholder="From Date"/>
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                            <div id="toDate" class="input-group date" data-date-format="dd/mm/yyyy">
+                                <input class="form-control" type="text" placeholder="To Date"/>
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                        <div class="step_2 _steps" style="display: none;">
+                            <input type="text" class="form-control" name="wdname" placeholder="WD Name"/>
+                        </div>
+                        <div class="step_3 _steps" style="display: none;">
+                            <input type="text" class="form-control" name="tasknumber" placeholder="Task Number"/>
+                        </div>
+                        <div class="step_4 _steps" style="display: none;">
+                            <div id="scheduledDate" class="input-group date" data-date-format="dd/mm/yyyy">
+                                <input class="form-control" type="text" name="scheduleddate" placeholder="Scheduled Date"/>
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                        <p class="stepErrorMsg">Field is required!</p>
+                        <div class="steps-inner">
+                            <div class="steps">
+                                <span style="font-weight: 600;" class="currentStep">1</span> 
+                                <span style="font-size: 1.3em;">/</span> 
+                                <span>4</span>
+                            </div>
+                            <div class="stepBtn">
+                                <button class="btn btn-default btn-sm stepBack" style="display: none;">Back</button>
+                                <button class="btn btn-default btn-sm stepNext">Next</button>
+                            </div>
+                        </div>
+        
+                    </div>
+                </div>
+        
+                <div class="first_page_table_div">
+                    <table class="table table-bordered first_table">
+                        <tbody class="table_body">
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
             </div>
     
             <div class="first_page_1">
+                <p class="selectErrorMsg">Please Select <b>Category</b>, <b>Item Name</b>, <b>UOM</b> and <b>Item Qty.</b> </p>
+                <p class="sameValueErrorMsg">Two or more value should not be same.</b> </p>
                 <table class="table table-bordered first_table_1">
                     <thead>
                         <tr id="thead" class="mob_tr"></tr>
@@ -85,60 +191,8 @@
                 <div class="category_btn_main">
                     <div class="category_btn"></div>
                 </div>
-                <div class="searchMain">
-                    <div class="input-group col-sm-8 col-md-6" style="margin-bottom: 20px;">
-                        <div class="input-group-btn search-panel">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                <span id="search_concept">All</span> <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu scrollable-dropdown" role="menu">
-                                
-                            </ul>
-                        </div>
-                        <input type="hidden" name="search_param" value="all" id="search_param">
-                        <input type="text" class="form-control" id="searchInput" placeholder="Search">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default searchButton" type="submit">
-                                <span class="glyphicon glyphicon-search"></span>
-                            </button>
-                        </span>
-                        
-                    </div>
-                    <div class="col-sm-4 col-md-6 addMoreBtn">
-                        <!-- <button class="btn btn-default" type="submit" style="margin-right: 15px;">
-                            More
-                        </button> -->
-                        <button class="btn btn-default addItem" type="submit">
-                            <span class="glyphicon glyphicon-plus"></span>
-                            Add Item
-                        </button>
-
-                        <div class="addItemForm">
-                            <div class="close_btn"><span>&times;</span></div>
-                            <form class="add_item_form">
-                                <div class="form-group">
-                                    <label>Category:</label>
-                                    <input type="text" data-id="category" id="add_category" class="form-control" placeholder="Category" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Item Code:</label>
-                                    <input type="text" data-id="item_code" id="add_itemcode" class="form-control" placeholder="Item Code" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Item Name:</label>
-                                    <input type="text" data-id="item_name" id="add_itemname" class="form-control" placeholder="Item Name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>RFA Qty:</label>
-                                    <input type="number" data-id="rfa_qty" id="add_rfaqty" class="form-control" placeholder="RFA Qty" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary addItemSubmit">Submit</button>
-                            </form>
-                        </div>
-                        
-                    </div>
-                </div>
                 
+
                 <div class="panel-group panel_group" id="accordion" role="tablist" aria-multiselectable="true">
                     
                 </div>
@@ -151,6 +205,27 @@
                 <button class="btn btn-primary submit_btn" type="submit" style="display: none;">Submit</button>
             </div>
         </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="moreColumnModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content" style="border-radius: 0px !important;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Show More Column</h4>
+        </div>
+        <div class="modal-body">
+            <div class="row"></div>
+        </div>
+        <div class="modal-footer" style="padding: 8px 12px !important;">
+            <button type="button" class="btn btn-default" style="border-radius: 0px !important;" data-dismiss="modal">Close</button>
+        </div>
+        </div>
+        
+    </div>
     </div>
     
     
