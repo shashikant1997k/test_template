@@ -11,6 +11,7 @@ $(document).ready(function () {
     file_data: [],
   };
   var topData = {};
+  var sheetTopInfo = {};
   var _totalValue;
   var tempCat = ["bi", "cf", "nd", "sx", "at", "ju"];
   var catgName = [
@@ -55,7 +56,7 @@ $(document).ready(function () {
   function tableColumnMapping(output) {
     $(".table_main").show();
     $(".first_page_1,.back_btn,.category_btn,.next_btn_1").show();
-    $(".first_page,.second_page,.next_btn,.submit_btn").hide();
+    $(".first_page,.second_page,.next_btn,.submit_btn,.searchMain").hide();
     var headers = output.headers || [];
     var file_data = output.file_data || [];
     var tData = "";
@@ -63,30 +64,17 @@ $(document).ready(function () {
     var optionRow = "";
     var mobileOptionRow = "";
 
-    // var map_array = {
-    //   Category: "Category",
-    //   "Item Code": "Item Code",
-    //   "Item Name": "Item Name",
-    //   "RFA Qty": "RFA Qty",
-    //   "Total Value": "Total Value",
-    //   "Salv Qty": "Salv Qty",
-    //   UOM: "UOM",
-    //   "Salv Value": "Salv Value",
-    //   "RFA Value": "RFA Value",
-    //   Others: "Others",
-    // };
-
     var map_array = {
       Category: "category",
       "Item Code": "item_code",
       "Item Name": "item_name",
-      "Rfa Qty": "rfa_qty",
+      "Item Qty": "item_qty",
       "Total Value": "total_value",
       "Salv Qty": "salv_qty",
       UOM: "uom",
       "Salv Value": "salv_value",
-      "Rfa Value": "rfa_value",
-      Others: "others",
+      "Item Value": "item_value",
+      "No Mapping": "no_mapping",
     };
 
     // creating column mapping dropdown
@@ -186,11 +174,32 @@ $(document).ready(function () {
     );
   }
 
+  function hideExtraColumn() {
+    let moa = Object.values(mappedResult);
+    for (const [key, val] of Object.entries(mappedResult)) {
+      let i = moa.indexOf(val);
+      moa[i] = `${val}_${i}`;
+      if (val == "no_mapping") {
+        if (mobileVar == 1) {
+          $(`.footable-details .tdata_${i}`)
+            .parent()
+            .attr("style", "display:none !important;");
+        } else {
+          $(`.${key}_${i}`).attr(
+            "style",
+            "background: #E6E7EB;display:none !important;"
+          );
+          $(`.tdata_${i}`).attr("style", "display:none !important;");
+        }
+      }
+    }
+  }
+
   // Create the table from uploaded sheet
   function createTable(resultArray, mappedObj) {
     if (resultArray.file_data.length == 0) {
       $(".panel_group").html(
-        "<div class='text-center' style='padding:10px;font-size:16px;width:100%;border:1.5px solid #DDD;font-weight:600;'>No Data</div>"
+        "<div class='text-center noDataDiv' style='padding:10px;font-size:16px;width:100%;border:1.5px solid #DDD;font-weight:600;'>No Data</div>"
       );
       return false;
     }
@@ -200,29 +209,29 @@ $(document).ready(function () {
     var topDataTable = `<table class="topDatatable">
                           <tr>
                             <td class="tr_1td title_">WD Name:</td>
-                            <td class="tr_1td value_">${topData["wd name"]}</td>
-                            <td class="tr_1td title_">WD Address:</td>
                             <td class="tr_1td value_">${
-                              mobileVar == 1
-                                ? topData["wd address"].length <= 35
-                                  ? topData["wd address"]
-                                  : `<span class="addressTooltip">${
-                                      topData["wd address"].slice(0, 35) + "..."
-                                    } 
-                                  <span>
-                                    ${topData["wd address"]}
-                                  </span>
-                                  </span>`
-                                : topData["wd address"]
+                              sheetTopInfo["wd_name"]
+                            }</td>
+                            <td class="tr_1td title_">Destruction Period:</td>
+                            <td class="tr_1td value_">${
+                              sheetTopInfo["destruction_period"]
                             }</td>
                           </tr>
                           <tr>
-                            <td class="title_">Task Number:</td>
-                            <td class="value_">${topData["task number"]}</td>
-                            <td class="title_">Total Value:</td>
-                            <td class="value_">${numberWithCommas(
-                              _totalValue
-                            )}</span></td>
+                            <td class="tr_1td title_">Task Number:</td>
+                            <td class="tr_1td value_">${
+                              sheetTopInfo["task_number"]
+                            }</td>
+                            <td class="tr_1td title_">Scheduled date:</td>
+                            <td class="tr_1td value_">${
+                              sheetTopInfo["date"]
+                            }</td>
+                          </tr>
+                          <tr>
+                          <td class="title_">Total Value:</td>
+                          <td class="value_">${numberWithCommas(
+                            _totalValue
+                          )}</span></td>
                           </tr>
                         </table>`;
 
@@ -249,35 +258,46 @@ $(document).ready(function () {
     /////////////////////////////
 
     var th_data = ``;
-    var rfaQty;
+    var itemQty;
     var itmCode;
     var categoryVar;
     var itemName;
     var totalValue;
     var salvQty;
     var salvValue;
-    var rfaValue;
+    var itemValue;
+    var showMoreColumn = "";
 
     $(".table_main").show();
     $(".second_page,.back_btn,.submit_btn,.category_btn").show();
+    $(".searchMain").css("display", "flex");
     $(".first_page,.first_page_1,.next_btn,.next_btn_1").hide();
-
+    let mappedObjArr = Object.values(mappedObj);
     // creating the table data
     if (
       Array.isArray(Object.values(mappedObj)) &&
       Object.values(mappedObj).length != 0
     ) {
-      Object.values(mappedObj).forEach((val, i) => {
-        if (val == "item_name" || val == "rfa_qty") {
-          th_data += `<th style="background: #E6E7EB;">${toTitleCase(
+      for (const [key, val] of Object.entries(mappedObj)) {
+        // Object.values(mappedObj).forEach((val, i) => {
+        let i = mappedObjArr.indexOf(val);
+        mappedObjArr[i] = `${val}_${i}`;
+        if (val == "item_name" || val == "item_qty") {
+          th_data += `<th class="${key}_${i}" style="background: #E6E7EB;">${toTitleCase(
             val
           )}</th>`;
         } else if (val == "category" || val == "item_code") {
           th_data += ``;
         } else {
-          th_data += `<th class="" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
-            val
-          )}</th>`;
+          if (val == "no_mapping") {
+            th_data += `<th class="${key}_${i}" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+              key
+            )}</th>`;
+          } else {
+            th_data += `<th class="${key}_${i}" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+              val
+            )}</th>`;
+          }
         }
         if (val == "category") {
           categoryVar = i;
@@ -288,8 +308,8 @@ $(document).ready(function () {
         if (val == "item_name") {
           itemName = i;
         }
-        if (val == "rfa_qty") {
-          rfaQty = i;
+        if (val == "item_qty") {
+          itemQty = i;
         }
         if (val == "total_value") {
           totalValue = i;
@@ -300,10 +320,23 @@ $(document).ready(function () {
         if (val == "salv_value") {
           salvValue = i;
         }
-        if (val == "rfa_value") {
-          rfaValue = i;
+        if (val == "item_value") {
+          itemValue = i;
         }
-      });
+
+        if (!["category", "item_code", "item_name", "item_qty"].includes(val)) {
+          showMoreColumn += `<div class="col-sm-4 col-xs-6 d-flex-row">
+                                  <input type="checkbox" class="inputShowColumn" ${
+                                    val == "no_mapping" ? "" : "checked"
+                                  } id="more_checkbox_${i}" style="margin-right: 5px;" data-id="${i}" value="${key}_${i}">
+                                  <label for="more_checkbox_${i}">${
+            val == "no_mapping" ? toTitleCase(key) : toTitleCase(val)
+          }</label><br></div>`;
+        }
+
+        // });
+      }
+      $("#moreColumnModal .modal-body .row").html(showMoreColumn);
       $(".table_head_row").html(`<tr>${th_data}</tr>`);
     }
 
@@ -311,7 +344,7 @@ $(document).ready(function () {
     var ct = 0;
     for (const [key, value] of Object.entries(arr1)) {
       var tr_data = "";
-      var totalRfaQty = 0;
+      var totalItemQty = 0;
       var totalSumValue = 0;
       var randCol = getRandomColor();
       ct++;
@@ -321,19 +354,19 @@ $(document).ready(function () {
           item.forEach((val, i) => {
             if (i == categoryVar || i == itmCode) {
               td_data += ``;
-            } else if (i == rfaQty) {
+            } else if (i == itemQty) {
               td_data += `<td class="${
                 mobileVar == 1
                   ? "editable_cell editable_cell_style"
                   : "editable_cell"
-              }" data-id="${parseInt(
+              } tdata_${i}" data-id="${parseInt(
                 val
               )}" data-index="${index}" data-category="${key}" data-itemCode="${
                 item[itmCode]
               }">${parseInt(val)}</td>`;
-              totalRfaQty += Number(val);
+              totalItemQty += Number(val);
             } else if (i == itemName) {
-              td_data += `<td class="first_visible_td">
+              td_data += `<td class="first_visible_td tdata_${i}">
                   <div class="category_style">
                     <div>
                     ${
@@ -345,23 +378,28 @@ $(document).ready(function () {
                     </div>
                     <div class="name_code_style">
                       <div>${val}</div>
-                      <div class="item_code">${item[itmCode]}</div>
+                      <div class="item_code">${
+                        item[itmCode] != undefined ? item[itmCode] : ""
+                      }</div>
                     </div>
                   </div>
                 </td>`;
             } else if (i == totalValue) {
               totalSumValue += Number(val);
-              td_data += `<td class="update_tVal_${key}_${index}">${numberWithCommas(
-                val
-              )}</td>`;
+              td_data += `<td class="update_tVal_${key}_${index} tdata_${i}">
+              ${numberWithCommas(val)}
+              </td>`;
             } else if (i == salvQty) {
-              td_data += `<td class="update_slvQty_${key}_${index}">${val}</td>`;
+              td_data += `<td class="update_slvQty_${key}_${index} tdata_${i}">
+              ${numberWithCommas(val)}</td>`;
             } else if (i == salvValue) {
-              td_data += `<td class="update_slvVal_${key}_${index}">${val}</td>`;
-            } else if (i == rfaValue) {
-              td_data += `<td class="update_rfaVal_${key}_${index}">${val}</td>`;
+              td_data += `<td class="update_slvVal_${key}_${index} tdata_${i}">
+              ${numberWithCommas(val)}</td>`;
+            } else if (i == itemValue) {
+              td_data += `<td class="update_itemVal_${key}_${index} tdata_${i}">
+              ${numberWithCommas(val)}</td>`;
             } else {
-              td_data += `<td class="update_${val}">${val}</td>`;
+              td_data += `<td class="tdata_${i}">${val}</td>`;
             }
           });
 
@@ -374,20 +412,20 @@ $(document).ready(function () {
       });
 
       tables += `<div class="panel panel-default panel_default" data-id="${key}">
-                    <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="padding: 2px 15px;">
+                    <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="">
                         <div class="panel-title">
                             <div class="panel1">
                                   <div style="display:flex;flex-direction:row;align-items:center;">
                                     ${
                                       tempCat.indexOf(key.toLowerCase()) != -1
-                                        ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span style="margin-left:10px;font-size:0.8em;">
+                                        ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
                                           ${
                                             catgName[
                                               tempCat.indexOf(key.toLowerCase())
                                             ]
                                           }
                                         </span>`
-                                        : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span style="margin-left:10px;font-size:0.8em;">
+                                        : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
                                         ${key}
                                       </span>`
                                     }
@@ -395,8 +433,8 @@ $(document).ready(function () {
                               <div class="TotalSumValues">Total Value: <span class="total_value">${numberWithCommas(
                                 totalSumValue.toFixed(2)
                               )}</span></div>
-                              <div class="TotalSumQty">Total Qty.: <span class="total_rfaQty">${numberWithCommas(
-                                totalRfaQty.toFixed(2)
+                              <div class="TotalSumQty">Total Qty.: <span class="total_itemQty">${numberWithCommas(
+                                totalItemQty.toFixed(2)
                               )}</span></div>
                             </div>
                             <div class="more_details_main">
@@ -429,13 +467,16 @@ $(document).ready(function () {
       $(".masterSheetTable").footable();
     });
 
+    setTimeout(() => {
+      hideExtraColumn();
+    }, 1000);
     $(`.collapse_heading`).click(function () {
       let id = $(this).data("id");
       let cl = $(`#collapse_${id}`).attr("class");
       if (cl.includes("in")) {
         $(`.collapse_heading_${id}`).attr(
           "style",
-          "background-color: #FFF !important; padding: 2px 15px;"
+          "background-color: #FFF !important;"
         );
         $(`#collapse_${id}`).removeClass("in");
         if (!sel.includes(id.toLowerCase())) {
@@ -450,7 +491,7 @@ $(document).ready(function () {
       } else {
         $(`.collapse_heading_${id}`).attr(
           "style",
-          "background-color: #F5F5F5 !important; padding: 2px 15px;"
+          "background-color: #F5F5F5 !important;"
         );
         $(`#collapse_${id}`).addClass("in");
         $(`.switch_btn_${id}`).addClass("active");
@@ -492,9 +533,9 @@ $(document).ready(function () {
             $(this).css({ color: "#5d78ff", "font-weight": "600" });
           }
 
-          let updateRfaQty = $(this).children().val();
-          $(this).html(parseInt(updateRfaQty));
-          $(this).data("id", parseInt(updateRfaQty));
+          let updateItemQty = $(this).children().val();
+          $(this).html(parseInt(updateItemQty));
+          $(this).data("id", parseInt(updateItemQty));
           let updatedItemCode = $(this).attr("data-itemCode");
           let indexNo = $(this).attr("data-index");
           let categoryName = $(this).attr("data-category");
@@ -543,6 +584,32 @@ $(document).ready(function () {
         removeInput();
       }
     });
+
+    $(".inputShowColumn").click(function () {
+      let ch1 = $(this).data("id");
+      let ch2 = $(this).val();
+      if ($(this).prop("checked")) {
+        if (mobileVar == 1) {
+          $(`.footable-details .tdata_${ch1}`).parent().show();
+        } else {
+          $(`.${ch2}`).show();
+          $(`.tdata_${ch1}`).show();
+        }
+      } else {
+        if (mobileVar == 1) {
+          $(`.footable-details .tdata_${ch1}`).parent().hide();
+        } else {
+          $(`.${ch2}`).hide();
+          $(`.tdata_${ch1}`).hide();
+        }
+      }
+    });
+
+    $(document).on("click", ".footable-toggle", function () {
+      setTimeout(() => {
+        hideExtraColumn();
+      }, 100);
+    });
   }
 
   // create all category filter button
@@ -572,9 +639,9 @@ $(document).ready(function () {
     var optionRow = "";
     if (Array.isArray(res) && res.length) {
       for (var i = 0; i < (res.length >= 8 ? 8 : res.length); i++) {
-        tData += `<tr class="option_row" data-id="${i}"><td>${i}</td>`;
+        tData += `<tr class="option_row option_row_${i}" data-id="${i}"><td class="">${i}</td>`;
         for (var j = 0; j <= res[i].length; j++) {
-          tData += `<td class="_data_td${j}">${
+          tData += `<td data-id="${res[i][j]}" class="_data_td${j}">${
             res[i][j] != undefined
               ? res[i][j].length < 20
                 ? res[i][j]
@@ -582,15 +649,14 @@ $(document).ready(function () {
               : ""
           }</td>`;
         }
-
         tData += `</tr>`;
       }
     }
     $(".table_main").show();
     $(
-      ".csv_files,.csv_dummy_files,.back_btn, .submit_btn,.next_btn,.next_btn_1"
+      ".csv_files,.csv_dummy_files,.back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain"
     ).hide();
-    $(".second_page,.category_btn").hide();
+    $(".second_page,.category_btn,.first_page_1").hide();
     $(".first_page,.next_btn").show();
     $(".first_page table tbody").html(`${tData}`);
   }
@@ -598,24 +664,183 @@ $(document).ready(function () {
   var rowNum = null;
   $(document).on("click", ".option_row", function () {
     rowNum = $(this).data("id");
-    $(".error_msg").hide();
+    $(".error_msg,.stepErrorMsg").hide();
     let va1 = $(this).attr("class");
+    $(".stepperMain").hide();
     if (va1.includes("option_row_color")) {
       $(this).removeClass("option_row_color");
+      for (let j = rowNum - 1; j >= 0; j--) {
+        $(`.option_row_${j}`).addClass("option_row");
+        $(`.option_row_${j}`).removeClass("stepper_option_row");
+      }
+      rowNum = null;
     } else {
       $(".option_row").removeClass("option_row_color");
       $(this).addClass("option_row_color");
+      for (let j = rowNum - 1; j >= 0; j--) {
+        $(`.option_row_${j}`).removeClass("option_row");
+        $(`.option_row_${j}`).addClass("stepper_option_row");
+      }
+      $(".stepperMain").show();
     }
+  });
+
+  var tdClickedCount = 0;
+  $(document)
+    .on("mouseenter", ".stepper_option_row td", function () {
+      if (tdClickedCount < 4) {
+        $(this).css({
+          cursor: "pointer",
+          "background-color": " #35a630 !important",
+          color: "#FFF",
+        });
+      }
+    })
+    .on("mouseleave", ".stepper_option_row td", function () {
+      if (!$(this).attr("class").includes("option_row_color")) {
+        $(this).css({
+          cursor: "default",
+          "background-color": "#FFF !important",
+          color: "#000",
+        });
+      }
+    });
+
+  var dataCountV = 0;
+  var sheetTopData = {};
+  $(document).on("click", ".stepper_option_row td", function () {
+    let va2 = $(this).attr("class");
+    if (va2.includes("option_row_color")) {
+      tdClickedCount--;
+      $(this).removeClass("option_row_color");
+      dataCountV = $(this).attr("data-count");
+      delete sheetTopData[`val_${dataCountV}`];
+    } else {
+      if (tdClickedCount < 4) {
+        tdClickedCount++;
+        $(this).addClass("option_row_color");
+        $(this).attr("data-count", tdClickedCount);
+      }
+    }
+
+    if ($(this).data("id") == "undefined" || $(this).data("id") == "") {
+      $(".stepErrorMsg").show();
+      return false;
+    }
+
+    if (dataCountV == 0) {
+      if (tdClickedCount > 0 && tdClickedCount < 4) {
+        $("._steps").hide();
+        $(".stepBack").show();
+        $(`.step_${tdClickedCount + 1}`).show();
+        $(".currentStep").html(Number(tdClickedCount) + 1);
+      }
+      if (tdClickedCount < 5) {
+        let val11 = $(this).data("id");
+        sheetTopData[`val_${tdClickedCount}`] = val11;
+        if (
+          val11.toLowerCase().includes("from") &&
+          val11.toLowerCase().includes("to")
+        ) {
+          let wdate = val11.toLowerCase().split("from")[1].split("to");
+          console.log(wdate);
+          $(`.step_${tdClickedCount} #fromDate input`).val(wdate[0].trim());
+          $(`.step_${tdClickedCount} #toDate input`).val(wdate[1].trim());
+        } else {
+          $(`.step_${tdClickedCount} input`).val(val11);
+        }
+      }
+    } else {
+      if (!va2.includes("option_row_color")) {
+        $("._steps").hide();
+        sheetTopData[`val_${dataCountV}`] = $(this).data("id");
+        $(`.step_${dataCountV}`).show();
+        $(".currentStep").html(Number(dataCountV));
+        $(this).attr("data-count", dataCountV);
+        $(`.step_${dataCountV} input`).val($(this).data("id"));
+        if (dataCountV > 1) {
+          $(".stepBack").show();
+        }
+      } else {
+        let shTopDKey = Object.keys(sheetTopData);
+
+        for (let a = 1; a <= 4; a++) {
+          $("._steps").hide();
+          if (!shTopDKey.includes(`val_${a}`)) {
+            $(`.step_${a}`).show();
+            $(`.step_${a} input`).val("");
+            $(".currentStep").html(Number(a));
+            return;
+          }
+        }
+      }
+    }
+  });
+
+  $(".stepNext").click(function (e) {
+    $(".stepErrorMsg").hide();
+    if ($(".currentStep").html() == 1) {
+      if (
+        $(`.step_${$(".currentStep").html()} #fromDate input`).val() == "" ||
+        $(`.step_${$(".currentStep").html()} #toDate input`).val() == ""
+      ) {
+        $(".stepErrorMsg").show();
+        return false;
+      }
+    } else {
+      if ($(`.step_${$(".currentStep").html()} input`).val() == "") {
+        $(".stepErrorMsg").show();
+        return false;
+      }
+    }
+
+    if (Number($(".currentStep").html()) < 4) {
+      $(".currentStep").html(Number($(".currentStep").html()) + 1);
+      $("._steps").hide();
+      $(`.step_${$(".currentStep").html()}`).show();
+      if (Number($(".currentStep").html()) > 1) {
+        $(".stepBack").show();
+      } else {
+        $(".stepBack").hide();
+      }
+    }
+  });
+
+  $(".stepBack").click(function () {
+    $(".stepErrorMsg").hide();
+    $(".currentStep").html(Number($(".currentStep").html()) - 1);
+    $("._steps").hide();
+    if (Number($(".currentStep").html()) > 1) {
+      $(`.step_${$(".currentStep").html()}`).show();
+      $(".stepBack").show();
+    } else {
+      $(`.step_${$(".currentStep").html()}`).show();
+      $(".stepBack").hide();
+    }
+  });
+
+  $("#scheduledDate").datepicker({
+    autoclose: true,
+    todayHighlight: true,
+  });
+
+  $("#fromDate").datepicker({
+    autoclose: true,
+    todayHighlight: true,
+  });
+
+  $("#toDate").datepicker({
+    autoclose: true,
+    todayHighlight: true,
   });
 
   // Go back from pages
   $(document).on("click", ".back_btn", function () {
     let d1 = $(".first_page_1").css("display");
     let d2 = $(".second_page").css("display");
-
     $(".table_main").show();
     $(
-      ".csv_files,.csv_dummy_files,.back_btn, .submit_btn,.next_btn,.next_btn_1,.next_btn"
+      ".csv_files,.csv_dummy_files,.back_btn, .submit_btn,.next_btn,.next_btn_1,.next_btn,.searchMain"
     ).hide();
     if (d1 != "none") {
       $(".second_page,.first_page_1,.category_btn").hide();
@@ -629,6 +854,7 @@ $(document).ready(function () {
   selectMapping = (el) => {
     var id1 = $(el).attr("id").split("_select_")[1];
     $(`#ErrorMessage${id1}`).hide();
+    $(".selectErrorMsg,.sameValueErrorMsg").hide();
   };
 
   // click next button to go on column mapping page
@@ -637,6 +863,47 @@ $(document).ready(function () {
       $(".error_msg").show();
       return false;
     }
+
+    if (rowNum == 0) {
+    } else {
+      let fd = $(".step_1 #fromDate input").val();
+      let td = $(".step_1 #toDate input").val();
+      sheetTopInfo = {
+        destruction_period: fd && td ? `From ${fd} To ${td}` : "",
+        wd_name: $(".step_2 input").val(),
+        task_number: $(".step_3 input").val(),
+        date: $(".step_4 input").val(),
+      };
+
+      // for (const key in sheetTopInfo) {
+      //   if (sheetTopInfo[key] == "") {
+      //     $("._steps").hide();
+      //     $(".stepErrorMsg").show();
+      //     if (key == "destruction_period") {
+      //       console.log(key);
+      //       $(".step_1").show();
+      //       $(".currentStep").html("1");
+      //       return false;
+      //     } else if (key == "wd_name") {
+      //       console.log(key);
+      //       $(".step_2").show();
+      //       $(".currentStep").html("2");
+      //       return false;
+      //     } else if (key == "task_number") {
+      //       $(".step_3").show();
+      //       $(".currentStep").html("3");
+      //       return false;
+      //     } else if (key == "date") {
+      //       $(".step_4").show();
+      //       $(".currentStep").html("4");
+      //       return false;
+      //     }
+      //   }
+      // }
+    }
+
+    console.log(sheetTopInfo);
+    console.log(sheetTopData);
     if (_csvData.length > 0) {
       var csv1 = [..._csvData[0], ..._csvData[1]];
 
@@ -664,7 +931,6 @@ $(document).ready(function () {
       }
 
       var temp = _csvData.slice(rowNum + 1, _csvData.length);
-
       var file_data = [];
       const emptyIndexes = _csvData[rowNum]
         .map((val, i) => (val != null ? i : -1))
@@ -761,7 +1027,23 @@ $(document).ready(function () {
       }
     });
 
+    let error_val2 = ["category", "item_name", "item_qty", "uom"].every((val) =>
+      mappingVal.includes(val)
+    );
+
+    console.log(mappingVal);
+    if (!error_val2) {
+      $(`.selectErrorMsg`).show();
+      return false;
+    }
+
+    let temprArr = [];
     for (var i = 0; i < mappingVal.length; i++) {
+      if (temprArr.includes(mappingVal[i]) && mappingVal[i] != "no_mapping") {
+        $(".sameValueErrorMsg").show();
+        return false;
+      }
+      temprArr.push(mappingVal[i]);
       if (mappingVal[i] == "") {
         error_val = 1;
         $(`#ErrorMessage${i}`).show();
@@ -954,35 +1236,11 @@ $(document).ready(function () {
     }
   }
 
-  $("#uploadFiles").on("click", function () {
-    $(".file_names").html("");
-  });
   if ($("#uploadFiles")[0]) {
     var fileInput = document.querySelector('label[for="uploadFiles"]');
-    fileInput.ondragover = function () {
-      this.className = "uploadFiles_label changed";
-      return false;
-    };
-    fileInput.ondragleave = function () {
-      this.className = "uploadFiles_label";
-      return false;
-    };
-    fileInput.ondrop = function (e) {
-      e.preventDefault();
-      var fileNames = e.dataTransfer.files;
-      uploadSheet(fileNames[0]);
-      $ = jQuery.noConflict();
-      $('label[for="uploadFiles"]').append(
-        "<div class='file_names'>" + fileNames[0].name + "</div>"
-      );
-    };
     $("#uploadFiles").change(function () {
       uploadSheet($("#uploadFiles")[0].files[0]);
       var fileNames = $("#uploadFiles")[0].files[0].name;
-      $('label[for="uploadFiles"]').append(
-        "<div class='file_names'>" + fileNames + "</div>"
-      );
-      $('label[for="uploadFiles"]').css("background-color", "##eee9ff");
     });
   }
 
@@ -1003,18 +1261,18 @@ $(document).ready(function () {
     let add_category = $("#add_category").val();
     let add_itemcode = $("#add_itemcode").val();
     let add_itemname = $("#add_itemname").val();
-    let add_rfaqty = $("#add_rfaqty").val();
+    let add_itemqty = $("#add_itemqty").val();
 
     let addCatId = $("#add_category").data("id");
     let additCodeId = $("#add_itemcode").data("id");
     let additmNameID = $("#add_itemname").data("id");
-    let addrfaQtyID = $("#add_rfaqty").data("id");
+    let additemQtyID = $("#add_itemqty").data("id");
 
     let keyValObj = {
       [addCatId]: add_category.toUpperCase(),
       [additCodeId]: add_itemcode.toUpperCase(),
       [additmNameID]: add_itemname.toUpperCase(),
-      [addrfaQtyID]: add_rfaqty,
+      [additemQtyID]: add_itemqty,
     };
 
     let addedItem = [];
