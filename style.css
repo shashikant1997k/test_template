@@ -22,9 +22,6 @@ body {
   padding-right: 7%;
 }
 
-/* #1a8c32 */
-/* 26 140 50 1 */
-
 .category_btn_main::-webkit-scrollbar {
   height: 6px;
   visibility: hidden;
@@ -580,7 +577,7 @@ label[for="uploadFiles"]:hover:after {
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.36);
   background: white;
   border-radius: 0px;
-  padding: 20px;
+  padding: 10px 15px;
   margin-bottom: 10px;
   display: none;
 }
@@ -718,7 +715,7 @@ label[for="uploadFiles"]:hover:after {
     font-size: 30px;
     font-weight: 600;
     padding: 0px 6px;
-    padding-top: 12px;
+    padding-top: 24px;
   }
   .topHeader {
     height: 52px;
