@@ -31,6 +31,7 @@ $(document).ready(function () {
     "#ffd66b",
   ];
 
+  // Function to generate random color.
   function getRandomColor() {
     var letters = "0123456789ABCDEF";
     var color = "#";
@@ -40,10 +41,12 @@ $(document).ready(function () {
     return color;
   }
 
+  // Function to seprate number by placing comma on appropriate places.
   function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
+  // Function to Change the sentence to title case (Captlize first letter of each word)
   var toTitleCase = (str) => {
     return str
       .toLowerCase()
@@ -174,6 +177,7 @@ $(document).ready(function () {
     );
   }
 
+  // Hide the extra column which are mapped with 'no_mapping' key.
   function hideExtraColumn() {
     let moa = Object.values(mappedResult);
     for (const [key, val] of Object.entries(mappedResult)) {
@@ -195,7 +199,7 @@ $(document).ready(function () {
     }
   }
 
-  // Create the table from uploaded sheet
+  // Create the table from uploaded sheet after the mapping the column header
   function createTable(resultArray, mappedObj) {
     if (resultArray.file_data.length == 0) {
       $(".panel_group").html(
@@ -470,6 +474,8 @@ $(document).ready(function () {
     setTimeout(() => {
       hideExtraColumn();
     }, 1000);
+
+    // Expand the table clicking on the each category cards.
     $(`.collapse_heading`).click(function () {
       let id = $(this).data("id");
       let cl = $(`#collapse_${id}`).attr("class");
@@ -507,6 +513,7 @@ $(document).ready(function () {
       }
     });
 
+    // Creating the Item Qty editable
     $(".editable_cell").click(function () {
       let v1 = $(this).data("id");
       let v2 = $(this).html();
@@ -525,6 +532,7 @@ $(document).ready(function () {
       }
     });
 
+    // Remove input from td after editing and sumbit the Item Qty.
     function removeInput() {
       $(".editable_cell").each(function () {
         let c1 = $(this).html();
@@ -556,6 +564,7 @@ $(document).ready(function () {
       });
     }
 
+    // Disabling the character other than number.
     $(document).on("keypress", "._input", function (event) {
       if (
         event.code == "ArrowLeft" ||
@@ -585,6 +594,7 @@ $(document).ready(function () {
       }
     });
 
+    // Expand the details (or hiddenn column) clicking on the row.
     $(".inputShowColumn").click(function () {
       let ch1 = $(this).data("id");
       let ch2 = $(this).val();
@@ -612,7 +622,7 @@ $(document).ready(function () {
     });
   }
 
-  // create all category filter button
+  // Creating the filters according to there Category
   function createCategoryBtn(resultArray) {
     categories = [];
     resultArray.file_data.forEach((item, index) => {
@@ -661,6 +671,7 @@ $(document).ready(function () {
     $(".first_page table tbody").html(`${tData}`);
   }
 
+  // Choosing the column header of sheet
   var rowNum = null;
   $(document).on("click", ".option_row", function () {
     rowNum = $(this).data("id");
@@ -685,6 +696,7 @@ $(document).ready(function () {
     }
   });
 
+  // Hovering on single td while choosing the topbar info of sheet
   var tdClickedCount = 0;
   $(document)
     .on("mouseenter", ".stepper_option_row td", function () {
@@ -706,10 +718,13 @@ $(document).ready(function () {
       }
     });
 
+  // Choosing the topbar info data by clicking on single td
   var dataCountV = 0;
   var sheetTopData = {};
   $(document).on("click", ".stepper_option_row td", function () {
     let va2 = $(this).attr("class");
+    $("._steps input").css("border", "1px solid #ccc");
+    $(".stepErrorMsg").hide();
     if (va2.includes("option_row_color")) {
       tdClickedCount--;
       $(this).removeClass("option_row_color");
@@ -723,11 +738,12 @@ $(document).ready(function () {
       }
     }
 
+    console.log(tdClickedCount);
     if ($(this).data("id") == "undefined" || $(this).data("id") == "") {
       $(".stepErrorMsg").show();
       return false;
     }
-
+    // dataCountV > 0 means user clicked on the same td twice or more
     if (dataCountV == 0) {
       if (tdClickedCount > 0 && tdClickedCount < 4) {
         $("._steps").hide();
@@ -736,47 +752,60 @@ $(document).ready(function () {
         $(".currentStep").html(Number(tdClickedCount) + 1);
       }
       if (tdClickedCount < 5) {
-        let val11 = $(this).data("id");
-        sheetTopData[`val_${tdClickedCount}`] = val11;
+        let vl1 = $(this).data("id");
+        sheetTopData[`val_${tdClickedCount}`] = vl1;
         if (
-          val11.toLowerCase().includes("from") &&
-          val11.toLowerCase().includes("to")
+          vl1.toLowerCase().includes("from") &&
+          vl1.toLowerCase().includes("to")
         ) {
-          let wdate = val11.toLowerCase().split("from")[1].split("to");
+          let wdate = vl1.toLowerCase().split("from")[1].split("to");
           console.log(wdate);
           $(`.step_${tdClickedCount} #fromDate input`).val(wdate[0].trim());
           $(`.step_${tdClickedCount} #toDate input`).val(wdate[1].trim());
         } else {
-          $(`.step_${tdClickedCount} input`).val(val11);
+          $(`.step_${tdClickedCount} input`).val(vl1);
         }
       }
     } else {
       if (!va2.includes("option_row_color")) {
         $("._steps").hide();
-        sheetTopData[`val_${dataCountV}`] = $(this).data("id");
+        let vl2 = $(this).data("id");
+        sheetTopData[`val_${dataCountV}`] = vl2;
         $(`.step_${dataCountV}`).show();
         $(".currentStep").html(Number(dataCountV));
         $(this).attr("data-count", dataCountV);
-        $(`.step_${dataCountV} input`).val($(this).data("id"));
+
+        if (
+          vl2.toLowerCase().includes("from") &&
+          vl2.toLowerCase().includes("to")
+        ) {
+          let wdate = vl2.toLowerCase().split("from")[1].split("to");
+          console.log(wdate);
+          $(`.step_${dataCountV} #fromDate input`).val(wdate[0].trim());
+          $(`.step_${dataCountV} #toDate input`).val(wdate[1].trim());
+        } else {
+          $(`.step_${dataCountV} input`).val(vl2);
+        }
+
         if (dataCountV > 1) {
           $(".stepBack").show();
         }
       } else {
         let shTopDKey = Object.keys(sheetTopData);
-
         for (let a = 1; a <= 4; a++) {
           $("._steps").hide();
           if (!shTopDKey.includes(`val_${a}`)) {
             $(`.step_${a}`).show();
             $(`.step_${a} input`).val("");
             $(".currentStep").html(Number(a));
-            return;
+            return false;
           }
         }
       }
     }
   });
 
+  // click on next button to go on the next page to input to select topbar info data
   $(".stepNext").click(function (e) {
     $(".stepErrorMsg").hide();
     if ($(".currentStep").html() == 1) {
@@ -806,6 +835,7 @@ $(document).ready(function () {
     }
   });
 
+  // click on next button to go on the back page to input to select topbar info data
   $(".stepBack").click(function () {
     $(".stepErrorMsg").hide();
     $(".currentStep").html(Number($(".currentStep").html()) - 1);
@@ -857,7 +887,7 @@ $(document).ready(function () {
     $(".selectErrorMsg,.sameValueErrorMsg").hide();
   };
 
-  // click next button to go on column mapping page
+  // Click on next button after selcting the column header row and go on the column mapping page.
   $(document).on("click", ".next_btn", function () {
     if (rowNum == null) {
       $(".error_msg").show();
@@ -875,31 +905,34 @@ $(document).ready(function () {
         date: $(".step_4 input").val(),
       };
 
-      // for (const key in sheetTopInfo) {
-      //   if (sheetTopInfo[key] == "") {
-      //     $("._steps").hide();
-      //     $(".stepErrorMsg").show();
-      //     if (key == "destruction_period") {
-      //       console.log(key);
-      //       $(".step_1").show();
-      //       $(".currentStep").html("1");
-      //       return false;
-      //     } else if (key == "wd_name") {
-      //       console.log(key);
-      //       $(".step_2").show();
-      //       $(".currentStep").html("2");
-      //       return false;
-      //     } else if (key == "task_number") {
-      //       $(".step_3").show();
-      //       $(".currentStep").html("3");
-      //       return false;
-      //     } else if (key == "date") {
-      //       $(".step_4").show();
-      //       $(".currentStep").html("4");
-      //       return false;
-      //     }
-      //   }
-      // }
+      for (const key in sheetTopInfo) {
+        if (sheetTopInfo[key] == "") {
+          $("._steps").hide();
+          $("._steps input").css("border", "1px solid #ccc");
+          $(".stepErrorMsg").show();
+          if (key == "destruction_period") {
+            $(".step_1").show();
+            $(".step_1 input").css("border", "1px solid red");
+            $(".currentStep").html("1");
+            return false;
+          } else if (key == "wd_name") {
+            $(".step_2").show();
+            $(".step_2 input").css("border", "1px solid red");
+            $(".currentStep").html("2");
+            return false;
+          } else if (key == "task_number") {
+            $(".step_3").show();
+            $(".step_3 input").css("border", "1px solid red");
+            $(".currentStep").html("3");
+            return false;
+          } else if (key == "date") {
+            $(".step_4").show();
+            $(".step_4 input").css("border", "1px solid red");
+            $(".currentStep").html("4");
+            return false;
+          }
+        }
+      }
     }
 
     console.log(sheetTopInfo);
@@ -1057,6 +1090,7 @@ $(document).ready(function () {
     createTable(resultArray, mappedResult);
   });
 
+  // Global search function based on the category, item code and item name
   const searchResult = (input, sel) => {
     let { headers, file_data } = resultArray;
     let result = {
@@ -1103,6 +1137,7 @@ $(document).ready(function () {
     searchResult(input, sel);
   });
 
+  // Click on the search button for global search
   function searchClicked(input, sel) {
     $(`.collapse_heading`).each(function () {
       let id = $(this).data("id");
@@ -1159,6 +1194,7 @@ $(document).ready(function () {
     searchClicked(input, sel);
   });
 
+  // dropdown list of all category. Use for searching the particular category.
   $(document).on("click", ".dropDownItem", function (e) {
     e.preventDefault();
     var selectedCat = $(this).text();
@@ -1218,7 +1254,6 @@ $(document).ready(function () {
       }
 
       var reader = new FileReader();
-
       reader.onload = function () {
         var fileData = reader.result;
         var wb = XLSX.read(fileData, { type: "binary" });
@@ -1244,6 +1279,7 @@ $(document).ready(function () {
     });
   }
 
+  // Click on Add Item to add a new row in table by entering some field.
   $(".addItem").click(function () {
     if ($(".addItemForm").css("display") != "none") {
       $(".addItemForm").hide();
@@ -1256,6 +1292,7 @@ $(document).ready(function () {
     $(".addItemForm").hide();
   });
 
+  // Submit the form after filling the form for adding a new row.
   $(".add_item_form").on("submit", function (e) {
     e.preventDefault();
     let add_category = $("#add_category").val();
