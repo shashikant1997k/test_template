@@ -415,7 +415,9 @@ $(document).ready(function () {
         }
       });
 
-      tables += `<div class="panel panel-default panel_default" data-id="${key}">
+      tables += `<div class="panel panel-default panel_default panel_default_${key} ${
+        ct == 1 ? "panel_default_active" : ""
+      }" data-id="${key}">
                     <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="">
                         <div class="panel-title">
                             <div class="panel1">
@@ -443,7 +445,9 @@ $(document).ready(function () {
                             </div>
                             <div class="more_details_main">
                               <div class="more_details">
-                                <span>More Details </span><span class="collapse_caret collapse_icon_${key}"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                                <span>More Details </span><span class="collapse_caret collapse_icon_${key}"><i class="${
+        ct == 1 ? "fa fa-angle-up" : "fa fa-angle-down"
+      } " aria-hidden="true"></i></span>
                               </div>
                               <div class="totalRows">Rows: <span class="total_rows">${
                                 value.length
@@ -485,8 +489,10 @@ $(document).ready(function () {
           "background-color: #FFF !important;"
         );
         $(`#collapse_${id}`).removeClass("in");
+        $(`.panel_default_${id}`).removeClass("panel_default_active");
         if (!sel.includes(id.toLowerCase())) {
           $(`.switch_btn_${id}`).removeClass("active");
+
           $(`#_btns_${id}`)[0].checked = false;
           // sel = sel.filter((v) => v != id.toLocaleLowerCase());
         }
@@ -501,6 +507,7 @@ $(document).ready(function () {
         );
         $(`#collapse_${id}`).addClass("in");
         $(`.switch_btn_${id}`).addClass("active");
+        $(`.panel_default_${id}`).addClass("panel_default_active");
         $(`#_btns_${id}`)[0].checked = true;
 
         // if (!sel.includes(id.toLowerCase())) {
