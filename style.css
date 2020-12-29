@@ -11,7 +11,7 @@ body {
   height: 60px;
   color: black;
   background: #fff;
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.36);
   position: fixed;
   top: 0;
   left: 0;
@@ -346,6 +346,12 @@ table > tbody > tr > td > span.footable-toggle {
   background: white;
   border-radius: 0px !important;
   margin-bottom: 20px !important;
+  border-left: 10px solid #35a630;
+}
+
+.panel_default_active {
+  border: 1px solid #5e7eca;
+  box-shadow: 0 0 6px 0 #5e7eca;
   border-left: 10px solid #35a630;
 }
 
