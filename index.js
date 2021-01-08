@@ -587,6 +587,7 @@ $(document).ready(function () {
 
     // Disabling the character other than number.
     $(document).on("keypress", "._input", function (event) {
+      var key = event.keyCode || event.charCode;
       if (
         event.code == "ArrowLeft" ||
         event.code == "ArrowRight" ||
@@ -596,16 +597,11 @@ $(document).ready(function () {
         event.code == "Backspace"
       ) {
         return;
+      } else if (key == 13) {
+        event.preventDefault();
+        removeInput();
       } else if (event.key.search(/\d/) == -1) {
         event.preventDefault();
-      }
-    });
-
-    $(document).on("keypress", function (e) {
-      var key = e.keyCode || e.charCode;
-      if (key == 13) {
-        e.preventDefault();
-        removeInput();
       }
     });
 
