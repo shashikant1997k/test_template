@@ -12,7 +12,6 @@ $(document).ready(function () {
   };
   var topData = {};
   var sheetTopInfo = {};
-  var _totalValue;
   var tempCat = ["bi", "cf", "nd", "sx", "at", "ju"];
   var catgName = [
     "Bi-Biscuits",
@@ -209,33 +208,27 @@ $(document).ready(function () {
     }
     $(".addItemForm").hide();
 
+    let _totalItemValSum = 0;
+    let _totalItemQtySum = 0;
     // Create the topbar data info table
     var topDataTable = `<table class="topDatatable">
                           <tr>
                             <td class="tr_1td title_">WD Name:</td>
-                            <td class="tr_1td value_">${
-                              sheetTopInfo["wd_name"]
-                            }</td>
+                            <td class="tr_1td value_">${sheetTopInfo["wd_name"]}</td>
                             <td class="tr_1td title_">Destruction Period:</td>
-                            <td class="tr_1td value_">${
-                              sheetTopInfo["destruction_period"]
-                            }</td>
+                            <td class="tr_1td value_">${sheetTopInfo["destruction_period"]}</td>
                           </tr>
                           <tr>
                             <td class="tr_1td title_">Task Number:</td>
-                            <td class="tr_1td value_">${
-                              sheetTopInfo["task_number"]
-                            }</td>
+                            <td class="tr_1td value_">${sheetTopInfo["task_number"]}</td>
                             <td class="tr_1td title_">Scheduled date:</td>
-                            <td class="tr_1td value_">${
-                              sheetTopInfo["date"]
-                            }</td>
+                            <td class="tr_1td value_">${sheetTopInfo["date"]}</td>
                           </tr>
                           <tr>
-                          <td class="title_">Total Value:</td>
-                          <td class="value_">${numberWithCommas(
-                            _totalValue
-                          )}</span></td>
+                            <td class="title_">Total Value:</td>
+                            <td class="value_ _totSumItem"></td>
+                            <td class="title_">Total Weight:</td>
+                            <td class="value_ _totSumWght"></td>
                           </tr>
                         </table>`;
 
@@ -286,12 +279,47 @@ $(document).ready(function () {
         // Object.values(mappedObj).forEach((val, i) => {
         let i = mappedObjArr.indexOf(val);
         mappedObjArr[i] = `${val}_${i}`;
-        if (val == "item_name" || val == "item_qty") {
+
+        if (val == "category") {
+          categoryVar = i;
+          th_data += ``;
+        } else if (val == "item_code") {
+          itmCode = i;
+          th_data += ``;
+        } else if (val == "item_name") {
+          itemName = i;
           th_data += `<th class="${key}_${i}" style="background: #E6E7EB;">${toTitleCase(
             val
           )}</th>`;
-        } else if (val == "category" || val == "item_code") {
-          th_data += ``;
+        } else if (val == "item_qty") {
+          itemQty = i;
+          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;">${toTitleCase(
+            val
+          )}</th>`;
+        } else if (val == "total_value") {
+          totalValue = i;
+          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+            val
+          )}</th>`;
+        } else if (val == "salv_qty") {
+          salvQty = i;
+          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+            val
+          )}</th>`;
+        } else if (val == "salv_value") {
+          salvValue = i;
+          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+            val
+          )}</th>`;
+        } else if (val == "item_value") {
+          itemValue = i;
+          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+            val
+          )}</th>`;
+        } else if (val == "uom") {
+          th_data += `<th class="${key}_${i}" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+            val
+          )}</th>`;
         } else {
           if (val == "no_mapping") {
             th_data += `<th class="${key}_${i}" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
@@ -302,30 +330,6 @@ $(document).ready(function () {
               val
             )}</th>`;
           }
-        }
-        if (val == "category") {
-          categoryVar = i;
-        }
-        if (val == "item_code") {
-          itmCode = i;
-        }
-        if (val == "item_name") {
-          itemName = i;
-        }
-        if (val == "item_qty") {
-          itemQty = i;
-        }
-        if (val == "total_value") {
-          totalValue = i;
-        }
-        if (val == "salv_qty") {
-          salvQty = i;
-        }
-        if (val == "salv_value") {
-          salvValue = i;
-        }
-        if (val == "item_value") {
-          itemValue = i;
         }
 
         if (!["category", "item_code", "item_name", "item_qty"].includes(val)) {
@@ -349,7 +353,7 @@ $(document).ready(function () {
     for (const [key, value] of Object.entries(arr1)) {
       var tr_data = "";
       var totalItemQty = 0;
-      var totalSumValue = 0;
+      var totalItemValue = 0;
       var randCol = getRandomColor();
       ct++;
       value.forEach((item, index) => {
@@ -389,7 +393,6 @@ $(document).ready(function () {
                   </div>
                 </td>`;
             } else if (i == totalValue) {
-              totalSumValue += Number(val);
               td_data += `<td class="update_tVal_${key}_${index} tdata_${i}">
               ${numberWithCommas(val)}
               </td>`;
@@ -400,6 +403,7 @@ $(document).ready(function () {
               td_data += `<td class="update_slvVal_${key}_${index} tdata_${i}">
               ${numberWithCommas(val)}</td>`;
             } else if (i == itemValue) {
+              totalItemValue += Number(val);
               td_data += `<td class="update_itemVal_${key}_${index} tdata_${i}">
               ${numberWithCommas(val)}</td>`;
             } else {
@@ -415,9 +419,7 @@ $(document).ready(function () {
         }
       });
 
-      tables += `<div class="panel panel-default panel_default panel_default_${key} ${
-        ct == 1 ? "panel_default_active" : ""
-      }" data-id="${key}">
+      tables += `<div class="panel panel-default panel_default panel_default_${key}" data-id="${key}">
                     <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="">
                         <div class="panel-title">
                             <div class="panel1">
@@ -436,18 +438,22 @@ $(document).ready(function () {
                                       </span>`
                                     }
                                   </div>
-                              <div class="TotalSumValues">Total Value: <span class="total_value">${numberWithCommas(
-                                totalSumValue.toFixed(2)
+                              <div class="TotalSumItemValues">Total Value: <span class="total_value">
+                              <span style="font-weight: normal">₹ </span>
+                              ${numberWithCommas(
+                                totalItemValue.toFixed(2)
                               )}</span></div>
-                              <div class="TotalSumQty">Total Qty.: <span class="total_itemQty">${numberWithCommas(
-                                totalItemQty.toFixed(2)
-                              )}</span></div>
+                              <div class="TotalSumItemWght">Total Weight: <span class="total_itemWght">0.00 <span> kg</span></span></div>
                             </div>
                             <div class="more_details_main">
                               <div class="more_details">
-                                <span>More Details </span><span class="collapse_caret collapse_icon_${key}"><i class="${
-        ct == 1 ? "fa fa-angle-up" : "fa fa-angle-down"
-      } " aria-hidden="true"></i></span>
+                                <span>More Details </span><span class="collapse_caret collapse_icon_${key}">
+                                <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                              </div>
+                              <div class="TotalSumItemQty">
+                                  Total Qty.: <span class="total_itemQty">
+                                  ${numberWithCommas(totalItemQty.toFixed(2))}
+                                  </span>
                               </div>
                               <div class="totalRows">Rows: <span class="total_rows">${
                                 value.length
@@ -456,9 +462,7 @@ $(document).ready(function () {
                             </div>
                         </div>
                     </div>
-                    <div id="collapse_${key}" class="panel-collapse collapse ${
-        ct == 1 ? "in" : ""
-      }" role="tabpanel" aria-labelledby="heading_${key}">
+                    <div id="collapse_${key}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_${key}">
                         <div class="panel-body">
                             <table id="collapse-table-${key}" class="table table-bordered masterSheetTable" data-sorting="true">
                               <thead>${th_data}</thead>
@@ -467,11 +471,21 @@ $(document).ready(function () {
                         </div>
                     </div>
                 </div>`;
+
+      _totalItemValSum += Number(totalItemValue);
+      _totalItemQtySum += Number(totalItemQty);
     }
+
+    $("._totSumItem").html(
+      `<span style="font-weight: normal">₹ </span>${numberWithCommas(
+        _totalItemValSum.toFixed(2)
+      )}`
+    );
+    $("._totSumWght").html(`0.00<span> kg</span>`);
 
     $(".panel-group").html(tables);
 
-    jQuery(function ($) {
+    $(function ($) {
       $(".masterSheetTable").footable();
     });
 
@@ -627,6 +641,15 @@ $(document).ready(function () {
         hideExtraColumn();
       }, 100);
     });
+
+    (function () {
+      let elmt = document.querySelector(".category_btn");
+      if (elmt.offsetWidth < elmt.scrollWidth) {
+        $(".rightSideScroll, .leftSideScroll").css("display", "flex");
+      } else {
+        $(".rightSideScroll, .leftSideScroll").css("display", "none");
+      }
+    })();
   }
 
   // Creating the filters according to there Category
@@ -894,6 +917,8 @@ $(document).ready(function () {
     $(".selectErrorMsg,.sameValueErrorMsg").hide();
   };
 
+  var _csvData;
+
   // Click on next button after selcting the column header row and go on the column mapping page.
   $(document).on("click", ".next_btn", function () {
     if (rowNum == null) {
@@ -905,6 +930,8 @@ $(document).ready(function () {
     } else {
       let fd = $(".step_1 #fromDate input").val();
       let td = $(".step_1 #toDate input").val();
+
+      console.log(typeof fd);
       sheetTopInfo = {
         destruction_period: fd && td ? `From ${fd} To ${td}` : "",
         wd_name: $(".step_2 input").val(),
@@ -912,34 +939,34 @@ $(document).ready(function () {
         date: $(".step_4 input").val(),
       };
 
-      for (const key in sheetTopInfo) {
-        if (sheetTopInfo[key] == "") {
-          $("._steps").hide();
-          $("._steps input").css("border", "1px solid #ccc");
-          $(".stepErrorMsg").show();
-          if (key == "destruction_period") {
-            $(".step_1").show();
-            $(".step_1 input").css("border", "1px solid red");
-            $(".currentStep").html("1");
-            return false;
-          } else if (key == "wd_name") {
-            $(".step_2").show();
-            $(".step_2 input").css("border", "1px solid red");
-            $(".currentStep").html("2");
-            return false;
-          } else if (key == "task_number") {
-            $(".step_3").show();
-            $(".step_3 input").css("border", "1px solid red");
-            $(".currentStep").html("3");
-            return false;
-          } else if (key == "date") {
-            $(".step_4").show();
-            $(".step_4 input").css("border", "1px solid red");
-            $(".currentStep").html("4");
-            return false;
-          }
-        }
-      }
+      // for (const key in sheetTopInfo) {
+      //   if (sheetTopInfo[key] == "") {
+      //     $("._steps").hide();
+      //     $("._steps input").css("border", "1px solid #ccc");
+      //     $(".stepErrorMsg").show();
+      //     if (key == "destruction_period") {
+      //       $(".step_1").show();
+      //       $(".step_1 input").css("border", "1px solid red");
+      //       $(".currentStep").html("1");
+      //       return false;
+      //     } else if (key == "wd_name") {
+      //       $(".step_2").show();
+      //       $(".step_2 input").css("border", "1px solid red");
+      //       $(".currentStep").html("2");
+      //       return false;
+      //     } else if (key == "task_number") {
+      //       $(".step_3").show();
+      //       $(".step_3 input").css("border", "1px solid red");
+      //       $(".currentStep").html("3");
+      //       return false;
+      //     } else if (key == "date") {
+      //       $(".step_4").show();
+      //       $(".step_4 input").css("border", "1px solid red");
+      //       $(".currentStep").html("4");
+      //       return false;
+      //     }
+      //   }
+      // }
     }
 
     console.log(sheetTopInfo);
@@ -1021,11 +1048,9 @@ $(document).ready(function () {
         });
       }
 
-      let totValArr = tempArr[file_data.length].filter((v) => v);
-      _totalValue = totValArr[1];
-
       resultArray.headers = headers;
       resultArray.file_data = file_data;
+      console.log(resultArray);
       tableColumnMapping(resultArray);
       createCategoryBtn(resultArray);
     }
@@ -1268,9 +1293,10 @@ $(document).ready(function () {
           let csv_data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
             header: 1,
           });
+
           _csvData = csv_data.length ? csv_data : _csvData;
         });
-
+        console.log(_csvData);
         createDummyTable(_csvData);
       };
 
@@ -1336,5 +1362,46 @@ $(document).ready(function () {
     $(".add_item_form input").each(function () {
       $(this).val("");
     });
+  });
+
+  document
+    .querySelector(".rightSideScroll")
+    .addEventListener("click", function (e) {
+      document.querySelector(".category_btn").scrollBy({
+        top: 0,
+        left: 50,
+        behavior: "smooth",
+      });
+    });
+
+  document
+    .querySelector(".leftSideScroll")
+    .addEventListener("click", function (e) {
+      document.querySelector(".category_btn").scrollBy({
+        top: 0,
+        left: -50,
+        behavior: "smooth",
+      });
+    });
+
+  window.onresize = function (event) {
+    let elmt = document.querySelector(".category_btn");
+    if (elmt.offsetWidth < elmt.scrollWidth) {
+      $(".rightSideScroll, .leftSideScroll").css("display", "flex");
+    } else {
+      $(".rightSideScroll, .leftSideScroll").css("display", "none");
+    }
+  };
+
+  $(window).scroll(function () {
+    if ($(this).scrollTop() > 100) {
+      $("#backToTop").fadeIn();
+    } else {
+      $("#backToTop").fadeOut();
+    }
+  });
+  $("#backToTop").click(function () {
+    $("html, body").animate({ scrollTop: 0 }, 600);
+    return false;
   });
 });
