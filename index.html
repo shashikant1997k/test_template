@@ -8,6 +8,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
     
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ==" crossorigin="anonymous" />
@@ -46,6 +47,7 @@
         </g>
     </svg>
     </div>
+    
 
     <div class="main">
         <div class="topHeader">
@@ -112,51 +114,64 @@
   
         <div class="table_main">
             <div class="first_page">
-                <div class="stepperMain">
-                    <div class="stepperInner">
-                        <div class="step_1 _steps">
-                            <label for="">Destruction Period:</label>
-                            <div id="fromDate" class="input-group date" data-date-format="dd/mm/yyyy" style="margin-bottom: 15px;">
-                                <input class="form-control" type="text" placeholder="From Date"/>
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <div class="stepTopmain">
+                    <div class="stepHead">
+                        <div class="stepsC stepsC_1 stepActive">1</div>
+                        <div class="stepLine stepLine_2"></div>
+                        <div class="stepsC stepsC_2">2</div>
+                        <div class="stepLine stepLine_3"></div>
+                        <div class="stepsC stepsC_3">3</div>
+                        <div class="stepLine stepLine_4"></div>
+                        <div class="stepsC stepsC_4">4</div>
+                    </div>
+                    <div class="stepperMain">
+                        <div class="stepperInner">
+                            <div class="step_1 _steps">
+                                <label for="">Destruction Period:</label>
+                                <div id="fromDate" class="input-group date" data-date-format="dd/mm/yyyy" style="margin-bottom: 15px;">
+                                    <input class="form-control" type="text" placeholder="From Date"/>
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                                <div id="toDate" class="input-group date" data-date-format="dd/mm/yyyy">
+                                    <input class="form-control" type="text" placeholder="To Date"/>
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
                             </div>
-                            <div id="toDate" class="input-group date" data-date-format="dd/mm/yyyy">
-                                <input class="form-control" type="text" placeholder="To Date"/>
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            <div class="step_2 _steps" style="display: none;">
+                                <label for="">WD Name:</label>
+                                <input type="text" class="form-control" name="wdname" placeholder="WD Name"/>
                             </div>
-                        </div>
-                        <div class="step_2 _steps" style="display: none;">
-                            <label for="">WD Name:</label>
-                            <input type="text" class="form-control" name="wdname" placeholder="WD Name"/>
-                        </div>
-                        <div class="step_3 _steps" style="display: none;">
-                            <label for="">Task Number:</label>
-                            <input type="text" class="form-control" name="tasknumber" placeholder="Task Number"/>
-                        </div>
-                        <div class="step_4 _steps" style="display: none;">
-                            <label for="">Scheduled Date:</label>
-                            <div id="scheduledDate" class="input-group date" data-date-format="dd/mm/yyyy">
-                                <input class="form-control" type="text" name="scheduleddate" placeholder="Scheduled Date"/>
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            <div class="step_3 _steps" style="display: none;">
+                                <label for="">Task Number:</label>
+                                <input type="text" class="form-control" name="tasknumber" placeholder="Task Number"/>
                             </div>
+                            <div class="step_4 _steps" style="display: none;">
+                                <label for="">Scheduled Date:</label>
+                                <div id="scheduledDate" class="input-group date" data-date-format="dd/mm/yyyy">
+                                    <input class="form-control" type="text" name="scheduleddate" placeholder="Scheduled Date"/>
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
+                            <p class="stepErrorMsg">Field is required!</p>
                         </div>
-                        <p class="stepErrorMsg">Field is required!</p>
-                        <div class="steps-inner">
-                            <div class="steps">
-                                <span style="font-weight: 600;" class="currentStep">1</span>
-                                <span style="font-size: 1.3em;">/</span>
-                                <span>4</span>
+                        <div class="stepperFooter">
+                            <div class="steps-inner">
+                                <div class="steps">
+                                    <span style="font-weight: 600;" class="currentStep">1</span>
+                                    <span style="font-size: 1.3em;">/</span>
+                                    <span>4</span>
+                                </div>
                             </div>
                             <div class="stepBtn">
-                                <button class="btn btn-default btn-sm stepBack" style="display: none;">Back</button>
-                                <button class="btn btn-default btn-sm stepNext">Next</button>
+                                <button type="button" class="btn btn-default btn-sm stepBack" style="display: none;">Back</button>
+                                <button type="button" class="btn btn-default btn-sm stepNext">Next</button>
+                                <button type="button" href="#scrollToFirst" class="btn btn-default btn-sm stepDone" style="display: none;">Done</button>
                             </div>
                         </div>
-        
                     </div>
                 </div>
         
-                <div class="first_page_table_div">
+                <div class="first_page_table_div" id="scrollToFirst">
                     <table class="table table-bordered first_table">
                         <tbody class="table_body">
                             
@@ -197,7 +212,7 @@
                     
                 </div>
             </div>
-            <div class="_btn">
+            <div class="_btn" id="scrollToBtns">
                 <div class="error_msg">Please Choose Header Row</div>
                 <button class="btn btn-primary back_btn" style="display: none;margin-right: 15px;">Back</button>
                 <button class="btn btn-primary next_btn">Next</button>
