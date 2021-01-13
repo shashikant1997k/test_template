@@ -787,7 +787,7 @@ $(document).ready(function () {
         totalExpWt += Number($(this).html());
       });
       if (totalExpWt) {
-        $("._totSumWght").html(totalExpWt);
+        $("._totSumWght").html(totalExpWt.toFixed(2));
       }
     }, 1000);
   } // createTable() end////////
