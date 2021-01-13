@@ -1,6 +1,6 @@
 $(document).ready(function () {
   var mobileVar = 0;
-  var categories;
+  var categories = [];
   var screenWidth = window.matchMedia("(max-width: 768px)");
   if (screenWidth.matches) {
     mobileVar = 1;
@@ -12,14 +12,15 @@ $(document).ready(function () {
   };
   var topData = {};
   var sheetTopInfo = {};
-  var tempCat = ["bi", "cf", "nd", "sx", "at", "ju"];
+  var tempCat = ["bi", "cf", "nd", "sx", "at", "ju", "sn"];
   var catgName = [
-    "Bi-Biscuits",
-    "CF-Confectionery",
-    "ND-Noodles",
-    "SX-Snacks",
-    "AT-Atta",
-    "JU-Juice",
+    "Biscuits",
+    "Confectionery",
+    "Noodles",
+    "Snacks",
+    "Atta",
+    "Juice",
+    "Pasta",
   ];
   var CatgColor = [
     "#35a630",
@@ -28,6 +29,38 @@ $(document).ready(function () {
     "#cc7351",
     "#a685e2",
     "#ffd66b",
+  ];
+
+  // New Code start
+  var fetchedValue = [
+    {
+      category: "BI",
+      bagCount: 12,
+      expectedWt: 20,
+      receivedWt: 121,
+      variance: 121,
+    },
+    {
+      category: "ND",
+      bagCount: 34,
+      expectedWt: 0,
+      receivedWt: 233,
+      variance: 233,
+    },
+    {
+      category: "CF",
+      bagCount: 20,
+      expectedWt: 300,
+      receivedWt: 459,
+      variance: 459,
+    },
+    {
+      category: "AT",
+      bagCount: 456,
+      expectedWt: 0,
+      receivedWt: 2364,
+      variance: 2364,
+    },
   ];
 
   // Function to generate random color.
@@ -122,9 +155,10 @@ $(document).ready(function () {
                   </div>
                   <div style="width:40%;font-wieght:normal;color:#656565;">
                     ${mobileOptionRow}
+                    <div id="ErrorMessage${j}" style="color:red;font-weight:600; display:none; font-size: 11px; text-align: left;  text-transform: capitalize; margin-top: 3px;">Select field</div>
                   </div>
                 </div>
-                <div id="ErrorMessage${i}" style="color:red;margin-left:3.5rem; display:none; font-size: 11px; text-align: left;  text-transform: capitalize; margin-top: 3px;">Select field</div>
+                
                  </td> `;
           } else {
             optionRow += `<td class="_data_td${j}"><div class="_select_td">
@@ -139,7 +173,7 @@ $(document).ready(function () {
               } value="${map_array[key]}" align='center'>${key}</option>`;
             }
 
-            optionRow += `</select></div></div><div id="ErrorMessage${j}" style="color:red;margin-left:3.5rem; display:none; font-size: 11px; text-align: left;  text-transform: capitalize; margin-top: 3px;">Select field</div></td>`;
+            optionRow += `</select></div></div><div id="ErrorMessage${j}" style="color:red;font-weight:600;margin-left:3.5rem; display:none; font-size: 11px; text-align: left;  text-transform: capitalize; margin-top: 3px;">Select field</div></td>`;
 
             thData += `<th align='center' id="_skip_td${j}" data-value="${
               headers[j]
@@ -200,6 +234,7 @@ $(document).ready(function () {
 
   // Create the table from uploaded sheet after the mapping the column header
   function createTable(resultArray, mappedObj) {
+    console.log(resultArray);
     if (resultArray.file_data.length == 0) {
       $(".panel_group").html(
         "<div class='text-center noDataDiv' style='padding:10px;font-size:16px;width:100%;border:1.5px solid #DDD;font-weight:600;'>No Data</div>"
@@ -228,7 +263,7 @@ $(document).ready(function () {
                             <td class="title_">Total Value:</td>
                             <td class="value_ _totSumItem"></td>
                             <td class="title_">Total Weight:</td>
-                            <td class="value_ _totSumWght"></td>
+                            <td class="value_"><span class="_totSumWght"></span><span> kg</span></td>
                           </tr>
                         </table>`;
 
@@ -354,7 +389,7 @@ $(document).ready(function () {
       var tr_data = "";
       var totalItemQty = 0;
       var totalItemValue = 0;
-      var randCol = getRandomColor();
+      let randCol = getRandomColor();
       ct++;
       value.forEach((item, index) => {
         if (item.length == headLen || item.length == dataLen) {
@@ -394,18 +429,18 @@ $(document).ready(function () {
                 </td>`;
             } else if (i == totalValue) {
               td_data += `<td class="update_tVal_${key}_${index} tdata_${i}">
-              ${numberWithCommas(val)}
+              ${numberWithCommas(Number(val).toFixed(2))}
               </td>`;
             } else if (i == salvQty) {
               td_data += `<td class="update_slvQty_${key}_${index} tdata_${i}">
               ${numberWithCommas(val)}</td>`;
             } else if (i == salvValue) {
               td_data += `<td class="update_slvVal_${key}_${index} tdata_${i}">
-              ${numberWithCommas(val)}</td>`;
+              ${numberWithCommas(Number(val).toFixed(2))}</td>`;
             } else if (i == itemValue) {
               totalItemValue += Number(val);
               td_data += `<td class="update_itemVal_${key}_${index} tdata_${i}">
-              ${numberWithCommas(val)}</td>`;
+              ${numberWithCommas(Number(val).toFixed(2))}</td>`;
             } else {
               td_data += `<td class="tdata_${i}">${val}</td>`;
             }
@@ -423,7 +458,7 @@ $(document).ready(function () {
                     <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="">
                         <div class="panel-title">
                             <div class="panel1">
-                                  <div style="display:flex;flex-direction:row;align-items:center;">
+                                  <div class="panel_category">
                                     ${
                                       tempCat.indexOf(key.toLowerCase()) != -1
                                         ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
@@ -438,26 +473,46 @@ $(document).ready(function () {
                                       </span>`
                                     }
                                   </div>
-                              <div class="TotalSumItemValues">Total Value: <span class="total_value">
-                              <span style="font-weight: normal">₹ </span>
-                              ${numberWithCommas(
-                                totalItemValue.toFixed(2)
-                              )}</span></div>
-                              <div class="TotalSumItemWght">Total Weight: <span class="total_itemWght">0.00 <span> kg</span></span></div>
+                                <div class="panel1_rows">
+                                  <div class="panel1_row">
+                                    <div class="fnt_size m_b_4">
+                                      <span style="font-weight:normal">Exp. Weight</span>: <span class="expected_weight expected_${key}">0.00</span> <span> kg</span>
+                                    </div>
+                                    <div class="fnt_size m_b_4">
+                                    <span style="font-weight:normal">Rec. Weight</span>: <span class="received_${key}">0.00</span> <span> kg</span>
+                                    </div>
+                                    <div class="fnt_size">
+                                      <span style="font-weight:normal">Variance</span>: &#8722;<span class="variance_${key}">0.00</span> <span> kg</span>
+                                    </div>
+                                  </div>
+                                </div>
                             </div>
                             <div class="more_details_main">
                               <div class="more_details">
-                                <span>More Details </span><span class="collapse_caret collapse_icon_${key}">
-                                <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                                <span>More Details <i class="fa fa-angle-down" aria-hidden="true"></i></span>
                               </div>
-                              <div class="TotalSumItemQty">
-                                  Total Qty.: <span class="total_itemQty">
-                                  ${numberWithCommas(totalItemQty.toFixed(2))}
-                                  </span>
-                              </div>
-                              <div class="totalRows">Rows: <span class="total_rows">${
-                                value.length
-                              }</span>
+                              <div class="panel2_rows">
+                                <div class="panel2_row">
+                                  <div class="TotalSumItemValues fnt_size m_b_4">
+                                      <span style="font-weight:normal">Total Value</span>:<span class="total_value">
+                                        <span style="font-weight: normal">₹ </span>
+                                        ${numberWithCommas(
+                                          totalItemValue.toFixed(2)
+                                        )}</span>
+                                  </div>
+                                  <div class="TotalSumItemQty fnt_size">
+                                      <span style="font-weight:normal">Pac</span>: <span class="total_itemQty">
+                                      ${numberWithCommas(totalItemQty)}
+                                      </span>
+                                  </div>
+                                  <div class="TotalBagCount fnt_size">
+                                      <span style="font-weight:normal">Bag Count</span>: <span class="bagCount_${key}">0</span>
+                                  </div>
+                                  <div class="totalRows">Rows: <span class="total_rows">${
+                                    value.length
+                                  }</span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                         </div>
@@ -481,9 +536,122 @@ $(document).ready(function () {
         _totalItemValSum.toFixed(2)
       )}`
     );
-    $("._totSumWght").html(`0.00<span> kg</span>`);
+    $("._totSumWght").html(`0.00`);
 
-    $(".panel-group").html(tables);
+    // New Code start
+    // Create the new card for pre-input data which are inputed before upload sheet.
+    let fetchedValueTable = "";
+    if (Array.isArray(fetchedValue) && fetchedValue.length > 0) {
+      fetchedValue.forEach((item, i2) => {
+        let th_data1 = "";
+        let td_data1 = "";
+        let key = item.category.toUpperCase();
+        let randCol = getRandomColor();
+        if (uploadedCategory.includes(key.toUpperCase())) {
+          setTimeout(() => {
+            if (parseInt(item.receivedWt)) {
+              let rwt = $(`.received_${key}`).html();
+              $(`.received_${key}`).html(
+                (Number(item.receivedWt) + Number(rwt)).toFixed(2)
+              );
+            }
+            if (parseInt(item.expectedWt)) {
+              let ewt = $(`.expected_${key}`).html();
+              $(`.expected_${key}`).html(
+                (Number(item.expectedWt) + Number(ewt)).toFixed(2)
+              );
+            }
+            if (parseInt(item.variance)) {
+              let diff = Number($(`.variance_${key}`).html());
+              $(`.variance_${key}`).html(
+                (Number(item.variance) + Number(diff)).toFixed(2)
+              );
+            }
+            if (parseInt(item.bagCount)) {
+              let bct = Number($(`.bagCount_${key}`).html());
+              $(`.bagCount_${key}`).html(Number(item.bagCount) + Number(bct));
+            }
+          }, 500);
+        } else {
+          fetchedValueTable += `<div class="panel panel-default panel_default panel_default_${key}" data-id="${key}">
+          <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="">
+              <div class="panel-title">
+                  <div class="panel1">
+                        <div class="panel_category">
+                          ${
+                            tempCat.indexOf(key.toLowerCase()) != -1
+                              ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
+                                ${catgName[tempCat.indexOf(key.toLowerCase())]}
+                              </span>`
+                              : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
+                              ${key}
+                            </span>`
+                          }
+                        </div>
+                      <div class="panel1_rows">
+                        <div class="panel1_row">
+                          <div class="fnt_size m_b_4">
+                          <span style="font-weight:normal">Exp. Weight</span>: <span class="expected_weight">${numberWithCommas(
+                            item.expectedWt.toFixed(2)
+                          )}</span> <span> kg</span>
+                          </div>
+                          <div class="fnt_size m_b_4">
+                          <span style="font-weight:normal">Rec. Weight</span>: <span class="">${numberWithCommas(
+                            item.receivedWt.toFixed(2)
+                          )} </span><span> kg</span>
+                          </div>
+                          <div class="fnt_size">
+                          <span style="font-weight:normal">Variance</span>: &#8722;<span class="">${numberWithCommas(
+                            item.variance.toFixed(2)
+                          )} </span><span> kg</span></div>
+                        </div>
+    
+                      </div>
+                      
+                  </div>
+                  <div class="more_details_main">
+                    <div class="more_details">
+                      <span>More Details <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                    </div>
+                    <div class="panel2_rows">
+                      <div class="panel2_row">
+                        <div class="TotalSumItemValues fnt_size m_b_4">
+                        <span style="font-weight:normal">Total Value</span>: <span class="total_value">
+                              <span style="font-weight: normal">₹ </span>
+                              0.00</span></div>
+                        <div class="TotalSumItemQty fnt_size ">
+                            <span style="font-weight:normal">Pac</span>: <span class="total_itemQty">
+                            0
+                            </span>
+                        </div>
+                        <div class="TotalBagCount fnt_size">
+                            <span style="font-weight:normal">Bag Count</span>: <span class="bagCount_${key}">${
+            item.bagCount
+          }</span>
+                        </div>
+                        <div class="totalRows">Rows: <span class="total_rows">0</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+          <div id="collapse_${key}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_${key}">
+              <div class="panel-body">
+                  <table id="collapse-table-${key}" class="table table-bordered ${
+            th_data1 != "" ? "masterSheetTable" : ""
+          }" data-sorting="true">
+                    <thead>${th_data1}</thead>
+                    <tbody>${td_data1}</tbody>
+                  </table>
+              </div>
+          </div>
+      </div>`;
+        }
+      });
+    }
+
+    $(".panel-group").html(tables + "" + fetchedValueTable);
 
     $(function ($) {
       $(".masterSheetTable").footable();
@@ -523,11 +691,6 @@ $(document).ready(function () {
         $(`.switch_btn_${id}`).addClass("active");
         $(`.panel_default_${id}`).addClass("panel_default_active");
         $(`#_btns_${id}`)[0].checked = true;
-
-        // if (!sel.includes(id.toLowerCase())) {
-        //   sel.push(id.toLocaleLowerCase());
-        // }
-
         $(`.collapse_icon_${id}`).html(
           '<i class="fa fa-angle-up" aria-hidden="true"></i>'
         );
@@ -646,14 +809,35 @@ $(document).ready(function () {
         $(".rightSideScroll, .leftSideScroll").css("display", "none");
       }
     })();
-  }
 
+    setTimeout(() => {
+      let totalExpWt = 0;
+      $(".expected_weight").each(function () {
+        totalExpWt += Number($(this).html());
+      });
+      if (totalExpWt) {
+        $("._totSumWght").html(totalExpWt);
+      }
+    }, 1000);
+  } // createTable() end////////
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  var uploadedCategory = [];
   // Creating the filters according to there Category
   function createCategoryBtn(resultArray) {
     categories = [];
     resultArray.file_data.forEach((item, index) => {
       if (categories.indexOf(item[0]) == -1) {
-        categories.push(item[0]);
+        categories.push(item[0].toUpperCase());
+      }
+    });
+
+    // New Code start
+    uploadedCategory = [...categories];
+    fetchedValue.forEach((item) => {
+      if (!categories.includes(item.category)) {
+        categories.push(item.category.toUpperCase());
       }
     });
 
@@ -675,7 +859,7 @@ $(document).ready(function () {
     var optionRow = "";
     if (Array.isArray(res) && res.length) {
       for (var i = 0; i < (res.length >= 8 ? 8 : res.length); i++) {
-        tData += `<tr class="option_row option_row_${i}" data-id="${i}"><td class="">${i}</td>`;
+        tData += `<tr class="option_row option_row_${i}" href="#scrollToBtns" data-id="${i}"><td class="">${i}</td>`;
         for (var j = 0; j <= res[i].length; j++) {
           tData += `<td data-id="${res[i][j]}" class="_data_td${j}">${
             res[i][j] != undefined
@@ -692,148 +876,58 @@ $(document).ready(function () {
     $(
       ".csv_files,.csv_dummy_files,.back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain"
     ).hide();
-    $(".second_page,.category_btn,.first_page_1").hide();
-    $(".first_page,.next_btn").show();
+    $(
+      ".second_page,.category_btn,.first_page_1,._steps,.stepDone,.stepBack"
+    ).hide();
+    $(".first_page,.next_btn,.step_1,.stepNext").show();
     $(".first_page table tbody").html(`${tData}`);
+
+    $(".stepsC,.stepLine").removeClass("stepActive");
+    $(".stepsC_1").addClass("stepActive");
+    $("input").val("");
+    $(".currentStep").html("1");
+    $("html, body").animate({ scrollTop: 0 }, 500, "linear");
   }
 
   // Choosing the column header of sheet
   var rowNum = null;
   $(document).on("click", ".option_row", function () {
-    rowNum = $(this).data("id");
-    $(".error_msg,.stepErrorMsg").hide();
-    let va1 = $(this).attr("class");
-    $(".stepperMain").hide();
-    if (va1.includes("option_row_color")) {
-      $(this).removeClass("option_row_color");
-      for (let j = rowNum - 1; j >= 0; j--) {
-        $(`.option_row_${j}`).addClass("option_row");
-        $(`.option_row_${j}`).removeClass("stepper_option_row");
-      }
-      rowNum = null;
-    } else {
-      $(".option_row").removeClass("option_row_color");
-      $(this).addClass("option_row_color");
-      for (let j = rowNum - 1; j >= 0; j--) {
-        $(`.option_row_${j}`).removeClass("option_row");
-        $(`.option_row_${j}`).addClass("stepper_option_row");
-      }
-      $(".stepperMain").show();
-    }
-  });
+    if (setpDoneClicked == 1) {
+      rowNum = $(this).data("id");
+      $(".error_msg,.stepErrorMsg").hide();
+      let va1 = $(this).attr("class");
 
-  // Hovering on single td while choosing the topbar info of sheet
-  var tdClickedCount = 0;
-  $(document)
-    .on("mouseenter", ".stepper_option_row td", function () {
-      if (tdClickedCount < 4) {
-        $(this).css({
-          cursor: "pointer",
-          "background-color": " #35a630 !important",
-          color: "#FFF",
-        });
-      }
-    })
-    .on("mouseleave", ".stepper_option_row td", function () {
-      if (!$(this).attr("class").includes("option_row_color")) {
-        $(this).css({
-          cursor: "default",
-          "background-color": "#FFF !important",
-          color: "#000",
-        });
-      }
-    });
-
-  // Choosing the topbar info data by clicking on single td
-  var dataCountV = 0;
-  var sheetTopData = {};
-  $(document).on("click", ".stepper_option_row td", function () {
-    let va2 = $(this).attr("class");
-    $("._steps input").css("border", "1px solid #ccc");
-    $(".stepErrorMsg").hide();
-    if (va2.includes("option_row_color")) {
-      tdClickedCount--;
-      $(this).removeClass("option_row_color");
-      dataCountV = $(this).attr("data-count");
-      delete sheetTopData[`val_${dataCountV}`];
-    } else {
-      if (tdClickedCount < 4) {
-        tdClickedCount++;
-        $(this).addClass("option_row_color");
-        $(this).attr("data-count", tdClickedCount);
-      }
-    }
-
-    console.log(tdClickedCount);
-    if ($(this).data("id") == "undefined" || $(this).data("id") == "") {
-      $(".stepErrorMsg").show();
-      return false;
-    }
-    // dataCountV > 0 means user clicked on the same td twice or more
-    if (dataCountV == 0) {
-      if (tdClickedCount > 0 && tdClickedCount < 4) {
-        $("._steps").hide();
-        $(".stepBack").show();
-        $(`.step_${tdClickedCount + 1}`).show();
-        $(".currentStep").html(Number(tdClickedCount) + 1);
-      }
-      if (tdClickedCount < 5) {
-        let vl1 = $(this).data("id");
-        sheetTopData[`val_${tdClickedCount}`] = vl1;
-        if (
-          vl1.toLowerCase().includes("from") &&
-          vl1.toLowerCase().includes("to")
-        ) {
-          let wdate = vl1.toLowerCase().split("from")[1].split("to");
-          console.log(wdate);
-          $(`.step_${tdClickedCount} #fromDate input`).val(wdate[0].trim());
-          $(`.step_${tdClickedCount} #toDate input`).val(wdate[1].trim());
-        } else {
-          $(`.step_${tdClickedCount} input`).val(vl1);
-        }
-      }
-    } else {
-      if (!va2.includes("option_row_color")) {
-        $("._steps").hide();
-        let vl2 = $(this).data("id");
-        sheetTopData[`val_${dataCountV}`] = vl2;
-        $(`.step_${dataCountV}`).show();
-        $(".currentStep").html(Number(dataCountV));
-        $(this).attr("data-count", dataCountV);
-
-        if (
-          vl2.toLowerCase().includes("from") &&
-          vl2.toLowerCase().includes("to")
-        ) {
-          let wdate = vl2.toLowerCase().split("from")[1].split("to");
-          console.log(wdate);
-          $(`.step_${dataCountV} #fromDate input`).val(wdate[0].trim());
-          $(`.step_${dataCountV} #toDate input`).val(wdate[1].trim());
-        } else {
-          $(`.step_${dataCountV} input`).val(vl2);
-        }
-
-        if (dataCountV > 1) {
-          $(".stepBack").show();
-        }
+      if (va1.includes("option_row_color")) {
+        $(this).removeClass("option_row_color");
+        $("#scrollToFirst").css("border", "2px solid red");
+        rowNum = null;
       } else {
-        let shTopDKey = Object.keys(sheetTopData);
-        for (let a = 1; a <= 4; a++) {
-          $("._steps").hide();
-          if (!shTopDKey.includes(`val_${a}`)) {
-            $(`.step_${a}`).show();
-            $(`.step_${a} input`).val("");
-            $(".currentStep").html(Number(a));
-            return false;
-          }
-        }
+        $(".option_row").removeClass("option_row_color");
+        $(this).addClass("option_row_color");
+        $("html, body").animate(
+          { scrollTop: $($(this).attr("href")).offset().top },
+          1000,
+          "linear"
+        );
+        $("#scrollToFirst").css("border", "0px");
+        $(".stepperMain").show();
       }
+    } else {
+      $("html, body").animate({ scrollTop: 0 }, 500, "linear");
     }
   });
 
   // click on next button to go on the next page to input to select topbar info data
   $(".stepNext").click(function (e) {
     $(".stepErrorMsg").hide();
+    $(this).css("pointer-events", "none");
+    setTimeout(() => {
+      $(this).css("pointer-events", "auto");
+    }, 200);
+    setpDoneClicked = 0;
+    rowNum = null;
+    $(".option_row").removeClass("option_row_hover");
+    $(".option_row").removeClass("option_row_color");
     if ($(".currentStep").html() == 1) {
       if (
         $(`.step_${$(".currentStep").html()} #fromDate input`).val() == "" ||
@@ -848,11 +942,20 @@ $(document).ready(function () {
         return false;
       }
     }
-
     if (Number($(".currentStep").html()) < 4) {
       $(".currentStep").html(Number($(".currentStep").html()) + 1);
       $("._steps").hide();
-      $(`.step_${$(".currentStep").html()}`).show();
+      $(`.stepsC_${$(".currentStep").html()}`).addClass("stepActive");
+      $(`.stepLine_${$(".currentStep").html()}`).addClass("stepActive");
+      $(`.step_${$(".currentStep").html()}`).show(
+        "slide",
+        { direction: "right" },
+        200
+      );
+      if (Number($(".currentStep").html()) == 4) {
+        $(".stepNext").hide();
+        $(".stepDone").show();
+      }
       if (Number($(".currentStep").html()) > 1) {
         $(".stepBack").show();
       } else {
@@ -864,15 +967,57 @@ $(document).ready(function () {
   // click on next button to go on the back page to input to select topbar info data
   $(".stepBack").click(function () {
     $(".stepErrorMsg").hide();
-    $(".currentStep").html(Number($(".currentStep").html()) - 1);
+    $(".stepDone").hide();
     $("._steps").hide();
+    $(this).css("pointer-events", "none");
+    setTimeout(() => {
+      $(this).css("pointer-events", "auto");
+    }, 200);
+    setpDoneClicked = 0;
+    rowNum = null;
+    $(".option_row").removeClass("option_row_hover");
+    $(".option_row").removeClass("option_row_color");
+    $(".stepperMain").css("border", "2px solid red");
+    $("#scrollToFirst").css("border", "0px");
     if (Number($(".currentStep").html()) > 1) {
-      $(`.step_${$(".currentStep").html()}`).show();
+      $(".currentStep").html(Number($(".currentStep").html()) - 1);
+      $(`.stepsC_${Number($(".currentStep").html()) + 1}`).removeClass(
+        "stepActive"
+      );
+      $(`.stepLine_${Number($(".currentStep").html()) + 1}`).removeClass(
+        "stepActive"
+      );
+      $(`.step_${$(".currentStep").html()}`).show(
+        "slide",
+        { direction: "left" },
+        200
+      );
       $(".stepBack").show();
-    } else {
-      $(`.step_${$(".currentStep").html()}`).show();
-      $(".stepBack").hide();
+      $(".stepNext").show();
+      if (Number($(".currentStep").html()) == 1) {
+        $(".stepBack").hide();
+      }
     }
+  });
+
+  var setpDoneClicked = 0;
+  $(".stepDone").click(function (e) {
+    e.preventDefault();
+    if ($(`.step_4 input`).val() == "") {
+      $(".stepErrorMsg").show();
+      return false;
+    }
+    setpDoneClicked = 1;
+    $(".option_row").addClass("option_row_hover");
+    $(".stepErrorMsg").hide();
+    let mT = mobileVar == 1 ? 60 : 0;
+    $(".stepperMain").css("border", "0px");
+    $("#scrollToFirst").css("border", "2px solid red");
+    $("html, body").animate(
+      { scrollTop: $($(this).attr("href")).offset().top - mT },
+      500,
+      "linear"
+    );
   });
 
   $("#scheduledDate").datepicker({
@@ -922,51 +1067,70 @@ $(document).ready(function () {
       return false;
     }
 
+    $("#scrollToFirst").css("border", "0px");
+
     if (rowNum == 0) {
     } else {
-      let fd = $(".step_1 #fromDate input").val();
-      let td = $(".step_1 #toDate input").val();
+      let fd = $(".step_1 #fromDate input").val().split("/");
+      let td = $(".step_1 #toDate input").val().split("/");
 
-      console.log(typeof fd);
+      let sd = $(".step_4 input").val();
+      let sd1;
+      if (sd && (String(sd).includes("/") || String(sd).includes("-"))) {
+        if (String(sd).includes("-")) {
+          sd = String(sd).split("-");
+        } else if (String(sd).includes("/")) {
+          sd = String(sd).split("/");
+        }
+        sd1 = moment(new Date(sd[2], sd[1] - 1, sd[0])).format("ll");
+      } else {
+        sd1 = moment(
+          new Date(Math.round((Number(sd) - 25569) * 86400 * 1000))
+        ).format("ll");
+      }
+
       sheetTopInfo = {
-        destruction_period: fd && td ? `From ${fd} To ${td}` : "",
+        destruction_period:
+          fd && td
+            ? `${moment(new Date(fd[2], fd[1] - 1, fd[0])).format(
+                "ll"
+              )} - ${moment(new Date(td[2], td[1] - 1, td[0])).format("ll")}`
+            : "",
         wd_name: $(".step_2 input").val(),
         task_number: $(".step_3 input").val(),
-        date: $(".step_4 input").val(),
+        date: sd ? sd1 : "",
       };
 
-      // for (const key in sheetTopInfo) {
-      //   if (sheetTopInfo[key] == "") {
-      //     $("._steps").hide();
-      //     $("._steps input").css("border", "1px solid #ccc");
-      //     $(".stepErrorMsg").show();
-      //     if (key == "destruction_period") {
-      //       $(".step_1").show();
-      //       $(".step_1 input").css("border", "1px solid red");
-      //       $(".currentStep").html("1");
-      //       return false;
-      //     } else if (key == "wd_name") {
-      //       $(".step_2").show();
-      //       $(".step_2 input").css("border", "1px solid red");
-      //       $(".currentStep").html("2");
-      //       return false;
-      //     } else if (key == "task_number") {
-      //       $(".step_3").show();
-      //       $(".step_3 input").css("border", "1px solid red");
-      //       $(".currentStep").html("3");
-      //       return false;
-      //     } else if (key == "date") {
-      //       $(".step_4").show();
-      //       $(".step_4 input").css("border", "1px solid red");
-      //       $(".currentStep").html("4");
-      //       return false;
-      //     }
-      //   }
-      // }
+      for (const key in sheetTopInfo) {
+        if (sheetTopInfo[key] == "") {
+          $("._steps").hide();
+          $("._steps input").css("border", "1px solid #ccc");
+          $(".stepErrorMsg").show();
+          if (key == "destruction_period") {
+            $(".step_1").show();
+            $(".step_1 input").css("border", "1px solid red");
+            $(".currentStep").html("1");
+            return false;
+          } else if (key == "wd_name") {
+            $(".step_2").show();
+            $(".step_2 input").css("border", "1px solid red");
+            $(".currentStep").html("2");
+            return false;
+          } else if (key == "task_number") {
+            $(".step_3").show();
+            $(".step_3 input").css("border", "1px solid red");
+            $(".currentStep").html("3");
+            return false;
+          } else if (key == "date") {
+            $(".step_4").show();
+            $(".step_4 input").css("border", "1px solid red");
+            $(".currentStep").html("4");
+            return false;
+          }
+        }
+      }
     }
 
-    console.log(sheetTopInfo);
-    console.log(sheetTopData);
     if (_csvData.length > 0) {
       var csv1 = [..._csvData[0], ..._csvData[1]];
 
@@ -1046,7 +1210,6 @@ $(document).ready(function () {
 
       resultArray.headers = headers;
       resultArray.file_data = file_data;
-      console.log(resultArray);
       tableColumnMapping(resultArray);
       createCategoryBtn(resultArray);
     }
@@ -1092,8 +1255,8 @@ $(document).ready(function () {
       mappingVal.includes(val)
     );
 
-    console.log(mappingVal);
     if (!error_val2) {
+      $("html, body").animate({ scrollTop: 0 }, 300, "linear");
       $(`.selectErrorMsg`).show();
       return false;
     }
@@ -1102,6 +1265,7 @@ $(document).ready(function () {
     for (var i = 0; i < mappingVal.length; i++) {
       if (temprArr.includes(mappingVal[i]) && mappingVal[i] != "no_mapping") {
         $(".sameValueErrorMsg").show();
+        $("html, body").animate({ scrollTop: 0 }, 300, "linear");
         return false;
       }
       temprArr.push(mappingVal[i]);
@@ -1167,23 +1331,24 @@ $(document).ready(function () {
 
   // Click on the search button for global search
   function searchClicked(input, sel) {
-    $(`.collapse_heading`).each(function () {
+    $(`.collapse_heading`).each(function (index) {
       let id = $(this).data("id");
-      let cl = $(`#collapse_${id}`).attr("class");
-      if (cl.includes("in")) {
-        $("#search_concept").html(id);
+      // let cl = $(`#collapse_${id}`).attr("class");
+      // if (cl.includes("in"))
 
-        // $(`#collapse_${id}`).addClass("in");
-        // $(`.switch_btn_${id}`).addClass("active");
-        // $(`#_btns_${id}`)[0].checked = true;
-        // if (!sel.includes(id.toLowerCase())) {
-        //   sel.push(id.toLocaleLowerCase());
-        // }
+      if (index == 0) {
+        $("#search_concept").html(id);
+        $(`#collapse_${id}`).addClass("in");
+        $(`.switch_btn_${id}`).addClass("active");
+        $(`#_btns_${id}`)[0].checked = true;
+        if (!sel.includes(id.toLowerCase())) {
+          sel.push(id.toLocaleLowerCase());
+        }
       } else {
-        // $(`#collapse_${id}`).removeClass("in");
-        // $(`.switch_btn_${id}`).removeClass("active");
-        // $(`#_btns_${id}`)[0].checked = false;
-        // sel = sel.filter((v) => v != id.toLocaleLowerCase());
+        $(`#collapse_${id}`).removeClass("in");
+        $(`.switch_btn_${id}`).removeClass("active");
+        $(`#_btns_${id}`)[0].checked = false;
+        sel = sel.filter((v) => v != id.toLocaleLowerCase());
       }
     });
     setTimeout(() => {
@@ -1218,7 +1383,7 @@ $(document).ready(function () {
       $(this).removeClass("x onX").val("").change();
     });
 
-  $(".searchButton").click(function () {
+  $(".searchButton").on("click", function () {
     searchClicked(input, sel);
   });
 
@@ -1269,7 +1434,6 @@ $(document).ready(function () {
 
   // upload master sheet to edit
   function uploadSheet(files) {
-    // var imgData = $(".upload_master_sheet")[0].files[0];
     var imgData = files;
 
     if (imgData != undefined) {
@@ -1292,7 +1456,6 @@ $(document).ready(function () {
 
           _csvData = csv_data.length ? csv_data : _csvData;
         });
-        console.log(_csvData);
         createDummyTable(_csvData);
       };
 
@@ -1351,6 +1514,9 @@ $(document).ready(function () {
           : "0.00";
       }
     }
+
+    uploadedCategory.push(add_category.toUpperCase());
+
     resultArray.file_data.push(addedItem);
     createTable(resultArray, mappedResult);
     createCategoryBtn(resultArray);
