@@ -22,7 +22,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.3/jquery.csv.min.js"></script>
     <link rel="stylesheet" href="footable.bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="footable.js"></script>
+    <script src="footable.min.js"></script>
     <script src="index.js"></script>
     
 </head>
@@ -129,26 +129,26 @@
                             <div class="step_1 _steps">
                                 <label for="">Destruction Period:</label>
                                 <div id="fromDate" class="input-group date" data-date-format="dd/mm/yyyy" style="margin-bottom: 15px;">
-                                    <input class="form-control" type="text" placeholder="From Date"/>
+                                    <input class="form-control" type="text" placeholder="From Date" autocomplete="off" />
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                                 <div id="toDate" class="input-group date" data-date-format="dd/mm/yyyy">
-                                    <input class="form-control" type="text" placeholder="To Date"/>
+                                    <input class="form-control" type="text" placeholder="To Date" autocomplete="off" />
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
                             <div class="step_2 _steps" style="display: none;">
                                 <label for="">WD Name:</label>
-                                <input type="text" class="form-control" name="wdname" placeholder="WD Name"/>
+                                <input type="text" class="form-control" name="wdname" placeholder="WD Name" autocomplete="off" />
                             </div>
                             <div class="step_3 _steps" style="display: none;">
                                 <label for="">Task Number:</label>
-                                <input type="text" class="form-control" name="tasknumber" placeholder="Task Number"/>
+                                <input type="text" class="form-control" name="tasknumber" placeholder="Task Number" autocomplete="off" />
                             </div>
                             <div class="step_4 _steps" style="display: none;">
                                 <label for="">Scheduled Date:</label>
                                 <div id="scheduledDate" class="input-group date" data-date-format="dd/mm/yyyy">
-                                    <input class="form-control" type="text" name="scheduleddate" placeholder="Scheduled Date"/>
+                                    <input class="form-control" type="text" name="scheduleddate" placeholder="Scheduled Date" autocomplete="off" />
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
                                 </div>
                             </div>
