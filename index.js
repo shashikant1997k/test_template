@@ -32,36 +32,7 @@ $(document).ready(function () {
   ];
 
   // New Code start
-  var fetchedValue = [
-    {
-      category: "BI",
-      bagCount: 12,
-      expectedWt: 20,
-      receivedWt: 121,
-      variance: 121,
-    },
-    {
-      category: "ND",
-      bagCount: 34,
-      expectedWt: 0,
-      receivedWt: 233,
-      variance: 233,
-    },
-    {
-      category: "CF",
-      bagCount: 20,
-      expectedWt: 300,
-      receivedWt: 459,
-      variance: 459,
-    },
-    {
-      category: "AT",
-      bagCount: 456,
-      expectedWt: 0,
-      receivedWt: 2364,
-      variance: 2364,
-    },
-  ];
+  var fetchedValue;
 
   // Function to generate random color.
   function getRandomColor() {
@@ -835,11 +806,13 @@ $(document).ready(function () {
 
     // New Code start
     uploadedCategory = [...categories];
-    fetchedValue.forEach((item) => {
-      if (!categories.includes(item.category)) {
-        categories.push(item.category.toUpperCase());
-      }
-    });
+    if (Array.isArray(fetchedValue) && fetchedValue.length > 0) {
+      fetchedValue.forEach((item) => {
+        if (!categories.includes(item.category)) {
+          categories.push(item.category.toUpperCase());
+        }
+      });
+    }
 
     var catBtn = "";
     var catBtn2 =
