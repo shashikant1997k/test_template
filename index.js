@@ -220,13 +220,13 @@ $(document).ready(function () {
     var topDataTable = `<table class="topDatatable">
                           <tr>
                             <td class="tr_1td title_">WD Name:</td>
-                            <td class="tr_1td value_">${sheetTopInfo["wd_name"]}</td>
+                            <td class="tr_1td value_">${String(sheetTopInfo["wd_name"]).toUpperCase()}</td>
                             <td class="tr_1td title_">Destruction Period:</td>
                             <td class="tr_1td value_">${sheetTopInfo["destruction_period"]}</td>
                           </tr>
                           <tr>
                             <td class="tr_1td title_">Task Number:</td>
-                            <td class="tr_1td value_">${sheetTopInfo["task_number"]}</td>
+                            <td class="tr_1td value_">${String(sheetTopInfo["task_number"]).toUpperCase()}</td>
                             <td class="tr_1td title_">Scheduled date:</td>
                             <td class="tr_1td value_">${sheetTopInfo["date"]}</td>
                           </tr>
