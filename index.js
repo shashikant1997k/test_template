@@ -67,7 +67,7 @@ $(document).ready(function () {
 
   // let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"> <div class="category_input_div"> <label for="agg_category_input">Category</label> <input type="text" id="agg_category_input" list="agg_categories" list="agg_categories"> <datalist id="agg_categories"> <option value="BI"> <option value="SX"> <option value="ND"> <option value="JU"> </datalist> </div> <div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="text" id="agg_weight_input"> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
 
-  let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="text" id="agg_weight_input"> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
+  let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number"  inputmode='numeric' pattern="[0-9]" id="agg_weight_input" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
 
   // Function to generate random color.
   function getRandomColor() {
@@ -1584,6 +1584,7 @@ $(document).ready(function () {
     $(".addAggregateItem_div").remove();
     $(this).parent().append(aggregateDiv);
     aggregateKey = $(this).attr("data-category");
+    $("#agg_weight_input").focus();
   });
   $(document).on("click", ".aggregate_close_btn", function (e) {
     e.stopImmediatePropagation();
