@@ -893,7 +893,7 @@ label[for="uploadFiles"]:hover:after {
 }
 
 .aggregate_close_btn span {
-  font-size: 1.8em;
+  font-size: 2em;
   position: absolute;
   right: 10px;
   cursor: pointer;
