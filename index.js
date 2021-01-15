@@ -40,28 +40,28 @@ $(document).ready(function () {
       bagCount: 12,
       expectedWt: 20,
       receivedWt: 121,
-      variance: 121,
+      variance: 101,
     },
     {
       category: "ND",
       bagCount: 34,
-      expectedWt: 0,
+      expectedWt: 250,
       receivedWt: 233,
-      variance: 233,
+      variance: 17,
     },
     {
       category: "CF",
       bagCount: 20,
       expectedWt: 300,
       receivedWt: 459,
-      variance: 459,
+      variance: -159,
     },
     {
       category: "AT",
       bagCount: 456,
       expectedWt: 0,
       receivedWt: 2364,
-      variance: 2364,
+      variance: -2364,
     },
   ];
 
@@ -591,8 +591,11 @@ $(document).ready(function () {
             }
             if (parseInt(item.variance)) {
               let diff = Number($(`.variance_${key}`).html());
+              let rwt1 = $(`.received_${key}`).html();
+              let ewt1 = $(`.expected_${key}`).html();
+              console.log(key, ewt1, rwt1, diff);
               $(`.variance_${key}`).html(
-                (Number(item.variance) + Number(diff)).toFixed(2)
+                (Number(ewt1) - Number(rwt1)).toFixed(2)
               );
             }
             if (parseInt(item.bagCount)) {
