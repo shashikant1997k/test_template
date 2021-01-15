@@ -1604,6 +1604,7 @@ $(document).ready(function () {
         numberWithCommas(Number(bgc) + Number(1))
       );
       $("#agg_weight_input").val("");
+      $("#agg_weight_input").focus();
     }
   });
 
