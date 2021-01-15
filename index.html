@@ -47,6 +47,27 @@
         </g>
     </svg>
     </div>
+
+
+    <!-- <div class="addAggregateItem_div"> 
+        <div class="aggregate_close_btn"><span>&times;</span></div>
+        <div class="input_item"> 
+            <div class="category_input_div"> 
+                <label for="agg_category_input">Category</label> 
+                <input type="text" id="agg_category_input" list="agg_categories" list="agg_categories"> 
+                <datalist id="agg_categories">
+                     <option value="BI"> <option value="SX"> <option value="ND"> <option value="JU"> 
+                </datalist>
+             </div>
+              <div class="weight_input_div"> 
+                <label for="agg_weight_input">Weight</label>
+                <input type="text" id="agg_weight_input"> 
+            </div> 
+            <div class="btn_div">
+                    <button class="btn btn-primary">Add</button> 
+            </div> 
+        </div> 
+    </div> -->
     
 
     <div class="main">
@@ -93,19 +114,19 @@
                 <form class="add_item_form">
                     <div class="form-group">
                         <label>Category:</label>
-                        <input type="text" data-id="category" id="add_category" class="form-control" placeholder="Category" required>
+                        <input type="text" data-id="category" id="add_category" class="form-control" placeholder="Category" autocomplete="off" required>
                     </div>
                     <div class="form-group">
                         <label>Item Code:</label>
-                        <input type="text" data-id="item_code" id="add_itemcode" class="form-control" placeholder="Item Code" required>
+                        <input type="text" data-id="item_code" id="add_itemcode" class="form-control" placeholder="Item Code" autocomplete="off" required>
                     </div>
                     <div class="form-group">
                         <label>Item Name:</label>
-                        <input type="text" data-id="item_name" id="add_itemname" class="form-control" placeholder="Item Name" required>
+                        <input type="text" data-id="item_name" id="add_itemname" class="form-control" placeholder="Item Name" autocomplete="off" required>
                     </div>
                     <div class="form-group">
                         <label>Item Qty:</label>
-                        <input type="number" data-id="item_qty" id="add_itemqty" class="form-control" placeholder="Item Qty" required>
+                        <input type="number" data-id="item_qty" id="add_itemqty" class="form-control" placeholder="Item Qty" autocomplete="off" required>
                     </div>
                     <button type="submit" class="btn btn-primary addItemSubmit">Submit</button>
                 </form>
