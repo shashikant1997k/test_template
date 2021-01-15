@@ -32,7 +32,38 @@ $(document).ready(function () {
   ];
 
   // New Code start
-  var fetchedValue;
+  var fetchedValue = [];
+
+  fetchedValue = [
+    {
+      category: "BI",
+      bagCount: 12,
+      expectedWt: 20,
+      receivedWt: 121,
+      variance: 121,
+    },
+    {
+      category: "ND",
+      bagCount: 34,
+      expectedWt: 0,
+      receivedWt: 233,
+      variance: 233,
+    },
+    {
+      category: "CF",
+      bagCount: 20,
+      expectedWt: 300,
+      receivedWt: 459,
+      variance: 459,
+    },
+    {
+      category: "AT",
+      bagCount: 456,
+      expectedWt: 0,
+      receivedWt: 2364,
+      variance: 2364,
+    },
+  ];
 
   // Function to generate random color.
   function getRandomColor() {
@@ -220,15 +251,23 @@ $(document).ready(function () {
     var topDataTable = `<table class="topDatatable">
                           <tr>
                             <td class="tr_1td title_">WD Name:</td>
-                            <td class="tr_1td value_">${String(sheetTopInfo["wd_name"]).toUpperCase()}</td>
+                            <td class="tr_1td value_">${String(
+                              sheetTopInfo["wd_name"]
+                            ).toUpperCase()}</td>
                             <td class="tr_1td title_">Destruction Period:</td>
-                            <td class="tr_1td value_">${sheetTopInfo["destruction_period"]}</td>
+                            <td class="tr_1td value_">${
+                              sheetTopInfo["destruction_period"]
+                            }</td>
                           </tr>
                           <tr>
                             <td class="tr_1td title_">Task Number:</td>
-                            <td class="tr_1td value_">${String(sheetTopInfo["task_number"]).toUpperCase()}</td>
+                            <td class="tr_1td value_">${String(
+                              sheetTopInfo["task_number"]
+                            ).toUpperCase()}</td>
                             <td class="tr_1td title_">Scheduled date:</td>
-                            <td class="tr_1td value_">${sheetTopInfo["date"]}</td>
+                            <td class="tr_1td value_">${
+                              sheetTopInfo["date"]
+                            }</td>
                           </tr>
                           <tr>
                             <td class="title_">Total Value:</td>
@@ -269,6 +308,7 @@ $(document).ready(function () {
     var salvQty;
     var salvValue;
     var itemValue;
+    var uomValue;
     var showMoreColumn = "";
 
     $(".table_main").show();
@@ -299,40 +339,41 @@ $(document).ready(function () {
           )}</th>`;
         } else if (val == "item_qty") {
           itemQty = i;
-          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;">${toTitleCase(
+          th_data += `<th class="${key}_${i} alignRight" data-type="number" style="background: #E6E7EB;">${toTitleCase(
             val
           )}</th>`;
         } else if (val == "total_value") {
           totalValue = i;
-          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+          th_data += `<th class="${key}_${i} alignRight" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
             val
           )}</th>`;
         } else if (val == "salv_qty") {
           salvQty = i;
-          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+          th_data += `<th class="${key}_${i} alignRight" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
             val
           )}</th>`;
         } else if (val == "salv_value") {
           salvValue = i;
-          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+          th_data += `<th class="${key}_${i} alignRight" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
             val
           )}</th>`;
         } else if (val == "item_value") {
           itemValue = i;
-          th_data += `<th class="${key}_${i}" data-type="number" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+          th_data += `<th class="${key}_${i} alignRight" data-type="number" style="background: #E6E7EB;">${toTitleCase(
             val
           )}</th>`;
         } else if (val == "uom") {
+          uomValue = i;
           th_data += `<th class="${key}_${i}" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
             val
           )}</th>`;
         } else {
           if (val == "no_mapping") {
-            th_data += `<th class="${key}_${i}" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+            th_data += `<th class="${key}_${i} alignRight" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
               key
             )}</th>`;
           } else {
-            th_data += `<th class="${key}_${i}" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+            th_data += `<th class="${key}_${i} alignRight" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
               val
             )}</th>`;
           }
@@ -373,7 +414,7 @@ $(document).ready(function () {
                 mobileVar == 1
                   ? "editable_cell editable_cell_style"
                   : "editable_cell"
-              } tdata_${i}" data-id="${parseInt(
+              } tdata_${i} alignRight" data-id="${parseInt(
                 val
               )}" data-index="${index}" data-category="${key}" data-itemCode="${
                 item[itmCode]
@@ -399,21 +440,24 @@ $(document).ready(function () {
                   </div>
                 </td>`;
             } else if (i == totalValue) {
-              td_data += `<td class="update_tVal_${key}_${index} tdata_${i}">
+              td_data += `<td class="update_tVal_${key}_${index} tdata_${i} alignRight">
               ${numberWithCommas(Number(val).toFixed(2))}
               </td>`;
             } else if (i == salvQty) {
-              td_data += `<td class="update_slvQty_${key}_${index} tdata_${i}">
+              td_data += `<td class="update_slvQty_${key}_${index} tdata_${i} alignRight">
               ${numberWithCommas(val)}</td>`;
             } else if (i == salvValue) {
-              td_data += `<td class="update_slvVal_${key}_${index} tdata_${i}">
+              td_data += `<td class="update_slvVal_${key}_${index} tdata_${i} alignRight">
               ${numberWithCommas(Number(val).toFixed(2))}</td>`;
             } else if (i == itemValue) {
               totalItemValue += Number(val);
-              td_data += `<td class="update_itemVal_${key}_${index} tdata_${i}">
-              ${numberWithCommas(Number(val).toFixed(2))}</td>`;
-            } else {
+              td_data += `<td class="update_itemVal_${key}_${index} tdata_${i} alignRight">
+                   ${numberWithCommas(Number(val).toFixed(2))}
+              </td>`;
+            } else if (i == uomValue) {
               td_data += `<td class="tdata_${i}">${val}</td>`;
+            } else {
+              td_data += `<td class="tdata_${i} alignRight">${val}</td>`;
             }
           });
 
@@ -436,7 +480,17 @@ $(document).ready(function () {
                                           ${
                                             catgName[
                                               tempCat.indexOf(key.toLowerCase())
-                                            ]
+                                            ].length > 7 && mobileVar == 1
+                                              ? catgName[
+                                                  tempCat.indexOf(
+                                                    key.toLowerCase()
+                                                  )
+                                                ].slice(0, 7) + ".."
+                                              : catgName[
+                                                  tempCat.indexOf(
+                                                    key.toLowerCase()
+                                                  )
+                                                ]
                                           }
                                         </span>`
                                         : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
@@ -446,40 +500,43 @@ $(document).ready(function () {
                                   </div>
                                 <div class="panel1_rows">
                                   <div class="panel1_row">
-                                    <div class="fnt_size m_b_4">
-                                      <span style="font-weight:normal">Exp. Weight</span>: <span class="expected_weight expected_${key}">0.00</span> <span> kg</span>
+                                    <div class="fnt_size d_f_c m_b_4">
+                                      <span class="_title_St">Exp. Wt(kg)</span> 
+                                      <span class="expected_weight expected_${key}">0.00</span>
                                     </div>
-                                    <div class="fnt_size m_b_4">
-                                    <span style="font-weight:normal">Rec. Weight</span>: <span class="received_${key}">0.00</span> <span> kg</span>
+                                    <div class="fnt_size d_f_c m_b_4">
+                                    <span class="_title_St">Rec. Wt(kg)</span>
+                                    <span class="received_${key}">0.00</span>
                                     </div>
-                                    <div class="fnt_size">
-                                      <span style="font-weight:normal">Variance</span>: &#8722;<span class="variance_${key}">0.00</span> <span> kg</span>
+                                    <div class="fnt_size d_f_c">
+                                      <span class="_title_St">Variance(kg)</span>
+                                      <span class="variance_${key}">0.00</span>
                                     </div>
                                   </div>
                                 </div>
                             </div>
                             <div class="more_details_main">
                               <div class="more_details">
-                                <span>More Details <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                                <span>More <i class="fa fa-angle-down" aria-hidden="true"></i></span>
                               </div>
                               <div class="panel2_rows">
                                 <div class="panel2_row">
                                   <div class="TotalSumItemValues fnt_size m_b_4">
-                                      <span style="font-weight:normal">Total Value</span>:<span class="total_value">
+                                      <span class="_title_St">Total Value: </span><span class="total_value">
                                         <span style="font-weight: normal">₹ </span>
                                         ${numberWithCommas(
                                           totalItemValue.toFixed(2)
                                         )}</span>
                                   </div>
                                   <div class="TotalSumItemQty fnt_size">
-                                      <span style="font-weight:normal">Pac</span>: <span class="total_itemQty">
+                                      <span class="_title_St">Pac: </span> <span class="total_itemQty">
                                       ${numberWithCommas(totalItemQty)}
                                       </span>
                                   </div>
                                   <div class="TotalBagCount fnt_size">
-                                      <span style="font-weight:normal">Bag Count</span>: <span class="bagCount_${key}">0</span>
+                                      <span class="_title_St">Bag Count: </span> <span class="bagCount_${key}">0</span>
                                   </div>
-                                  <div class="totalRows">Rows: <span class="total_rows">${
+                                  <div class="fnt_size"><span class="_title_St">Rows:</span> <span class="total_rows">${
                                     value.length
                                   }</span>
                                   </div>
@@ -552,7 +609,14 @@ $(document).ready(function () {
                           ${
                             tempCat.indexOf(key.toLowerCase()) != -1
                               ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
-                                ${catgName[tempCat.indexOf(key.toLowerCase())]}
+                              ${
+                                catgName[tempCat.indexOf(key.toLowerCase())]
+                                  .length > 7 && mobileVar == 1
+                                  ? catgName[
+                                      tempCat.indexOf(key.toLowerCase())
+                                    ].slice(0, 7) + ".."
+                                  : catgName[tempCat.indexOf(key.toLowerCase())]
+                              }
                               </span>`
                               : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
                               ${key}
@@ -561,20 +625,24 @@ $(document).ready(function () {
                         </div>
                       <div class="panel1_rows">
                         <div class="panel1_row">
-                          <div class="fnt_size m_b_4">
-                          <span style="font-weight:normal">Exp. Weight</span>: <span class="expected_weight">${numberWithCommas(
-                            item.expectedWt.toFixed(2)
-                          )}</span> <span> kg</span>
+                          <div class="fnt_size d_f_c m_b_4">
+                            <span class="_title_St">Exp. Wt(kg)</span> 
+                            <span class="expected_weight">${numberWithCommas(
+                              item.expectedWt.toFixed(2)
+                            )}</span> 
+                            </div>
+                          <div class="fnt_size d_f_c m_b_4">
+                            <span class="_title_St">Rec. Wt(kg)</span>
+                            <span class="">${numberWithCommas(
+                              item.receivedWt.toFixed(2)
+                            )} </span>
                           </div>
-                          <div class="fnt_size m_b_4">
-                          <span style="font-weight:normal">Rec. Weight</span>: <span class="">${numberWithCommas(
-                            item.receivedWt.toFixed(2)
-                          )} </span><span> kg</span>
+                          <div class="fnt_size d_f_c">
+                            <span class="_title_St">Variance(kg)</span> 
+                            <span class="">${numberWithCommas(
+                              item.variance.toFixed(2)
+                            )} </span>
                           </div>
-                          <div class="fnt_size">
-                          <span style="font-weight:normal">Variance</span>: &#8722;<span class="">${numberWithCommas(
-                            item.variance.toFixed(2)
-                          )} </span><span> kg</span></div>
                         </div>
     
                       </div>
@@ -582,25 +650,25 @@ $(document).ready(function () {
                   </div>
                   <div class="more_details_main">
                     <div class="more_details">
-                      <span>More Details <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                      <span>More <i class="fa fa-angle-down" aria-hidden="true"></i></span>
                     </div>
                     <div class="panel2_rows">
                       <div class="panel2_row">
                         <div class="TotalSumItemValues fnt_size m_b_4">
-                        <span style="font-weight:normal">Total Value</span>: <span class="total_value">
+                        <span class="_title_St">Total Value:</span> <span class="total_value">
                               <span style="font-weight: normal">₹ </span>
                               0.00</span></div>
                         <div class="TotalSumItemQty fnt_size ">
-                            <span style="font-weight:normal">Pac</span>: <span class="total_itemQty">
+                            <span class="_title_St">Pac:</span> <span class="total_itemQty">
                             0
                             </span>
                         </div>
                         <div class="TotalBagCount fnt_size">
-                            <span style="font-weight:normal">Bag Count</span>: <span class="bagCount_${key}">${
+                            <span class="_title_St">Bag Count:</span> <span class="bagCount_${key}">${
             item.bagCount
           }</span>
                         </div>
-                        <div class="totalRows">Rows: <span class="total_rows">0</span>
+                        <div class="fnt_size"><span class="_title_St">Rows:</span><span class="total_rows">0</span>
                         </div>
                       </div>
                     </div>
@@ -973,7 +1041,7 @@ $(document).ready(function () {
     }
   });
 
-  var setpDoneClicked = 0;
+  var setpDoneClicked = 1;
   $(".stepDone").click(function (e) {
     e.preventDefault();
     if ($(`.step_4 input`).val() == "") {
@@ -1074,34 +1142,34 @@ $(document).ready(function () {
         date: sd ? sd1 : "",
       };
 
-      for (const key in sheetTopInfo) {
-        if (sheetTopInfo[key] == "") {
-          $("._steps").hide();
-          $("._steps input").css("border", "1px solid #ccc");
-          $(".stepErrorMsg").show();
-          if (key == "destruction_period") {
-            $(".step_1").show();
-            $(".step_1 input").css("border", "1px solid red");
-            $(".currentStep").html("1");
-            return false;
-          } else if (key == "wd_name") {
-            $(".step_2").show();
-            $(".step_2 input").css("border", "1px solid red");
-            $(".currentStep").html("2");
-            return false;
-          } else if (key == "task_number") {
-            $(".step_3").show();
-            $(".step_3 input").css("border", "1px solid red");
-            $(".currentStep").html("3");
-            return false;
-          } else if (key == "date") {
-            $(".step_4").show();
-            $(".step_4 input").css("border", "1px solid red");
-            $(".currentStep").html("4");
-            return false;
-          }
-        }
-      }
+      // for (const key in sheetTopInfo) {
+      //   if (sheetTopInfo[key] == "") {
+      //     $("._steps").hide();
+      //     $("._steps input").css("border", "1px solid #ccc");
+      //     $(".stepErrorMsg").show();
+      //     if (key == "destruction_period") {
+      //       $(".step_1").show();
+      //       $(".step_1 input").css("border", "1px solid red");
+      //       $(".currentStep").html("1");
+      //       return false;
+      //     } else if (key == "wd_name") {
+      //       $(".step_2").show();
+      //       $(".step_2 input").css("border", "1px solid red");
+      //       $(".currentStep").html("2");
+      //       return false;
+      //     } else if (key == "task_number") {
+      //       $(".step_3").show();
+      //       $(".step_3 input").css("border", "1px solid red");
+      //       $(".currentStep").html("3");
+      //       return false;
+      //     } else if (key == "date") {
+      //       $(".step_4").show();
+      //       $(".step_4 input").css("border", "1px solid red");
+      //       $(".currentStep").html("4");
+      //       return false;
+      //     }
+      //   }
+      // }
     }
 
     if (_csvData.length > 0) {
