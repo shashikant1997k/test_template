@@ -34,37 +34,6 @@ $(document).ready(function () {
   // New Code start
   var fetchedValue = [];
 
-  fetchedValue = [
-    {
-      category: "BI",
-      bagCount: 12,
-      expectedWt: 20,
-      receivedWt: 121,
-      variance: 101,
-    },
-    {
-      category: "ND",
-      bagCount: 34,
-      expectedWt: 250,
-      receivedWt: 233,
-      variance: 17,
-    },
-    {
-      category: "CF",
-      bagCount: 20,
-      expectedWt: 300,
-      receivedWt: 459,
-      variance: -159,
-    },
-    {
-      category: "AT",
-      bagCount: 456,
-      expectedWt: 0,
-      receivedWt: 2364,
-      variance: -2364,
-    },
-  ];
-
   // Function to generate random color.
   function getRandomColor() {
     var letters = "0123456789ABCDEF";
