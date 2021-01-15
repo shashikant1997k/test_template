@@ -34,6 +34,41 @@ $(document).ready(function () {
   // New Code start
   var fetchedValue = [];
 
+  // fetchedValue = [
+  //   {
+  //     category: "BI",
+  //     bagCount: 12,
+  //     expectedWt: 20,
+  //     receivedWt: 121,
+  //     variance: 101,
+  //   },
+  //   {
+  //     category: "ND",
+  //     bagCount: 34,
+  //     expectedWt: 250,
+  //     receivedWt: 233,
+  //     variance: 17,
+  //   },
+  //   {
+  //     category: "CF",
+  //     bagCount: 20,
+  //     expectedWt: 300,
+  //     receivedWt: 459,
+  //     variance: -159,
+  //   },
+  //   {
+  //     category: "AT",
+  //     bagCount: 456,
+  //     expectedWt: 0,
+  //     receivedWt: 2364,
+  //     variance: -2364,
+  //   },
+  // ];
+
+  // let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"> <div class="category_input_div"> <label for="agg_category_input">Category</label> <input type="text" id="agg_category_input" list="agg_categories" list="agg_categories"> <datalist id="agg_categories"> <option value="BI"> <option value="SX"> <option value="ND"> <option value="JU"> </datalist> </div> <div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="text" id="agg_weight_input"> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
+
+  let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="text" id="agg_weight_input"> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
+
   // Function to generate random color.
   function getRandomColor() {
     var letters = "0123456789ABCDEF";
@@ -205,7 +240,6 @@ $(document).ready(function () {
 
   // Create the table from uploaded sheet after the mapping the column header
   function createTable(resultArray, mappedObj) {
-    console.log(resultArray);
     if (resultArray.file_data.length == 0) {
       $(".panel_group").html(
         "<div class='text-center noDataDiv' style='padding:10px;font-size:16px;width:100%;border:1.5px solid #DDD;font-weight:600;'>No Data</div>"
@@ -333,7 +367,7 @@ $(document).ready(function () {
           )}</th>`;
         } else if (val == "uom") {
           uomValue = i;
-          th_data += `<th class="${key}_${i}" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
+          th_data += `<th class="${key}_${i} alignRight" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
             val
           )}</th>`;
         } else {
@@ -410,11 +444,12 @@ $(document).ready(function () {
                 </td>`;
             } else if (i == totalValue) {
               td_data += `<td class="update_tVal_${key}_${index} tdata_${i} alignRight">
-              ${numberWithCommas(Number(val).toFixed(2))}
+                ${numberWithCommas(Number(val).toFixed(2))}
               </td>`;
             } else if (i == salvQty) {
               td_data += `<td class="update_slvQty_${key}_${index} tdata_${i} alignRight">
-              ${numberWithCommas(val)}</td>`;
+              ${numberWithCommas(Number(val))}
+              </td>`;
             } else if (i == salvValue) {
               td_data += `<td class="update_slvVal_${key}_${index} tdata_${i} alignRight">
               ${numberWithCommas(Number(val).toFixed(2))}</td>`;
@@ -424,7 +459,7 @@ $(document).ready(function () {
                    ${numberWithCommas(Number(val).toFixed(2))}
               </td>`;
             } else if (i == uomValue) {
-              td_data += `<td class="tdata_${i}">${val}</td>`;
+              td_data += `<td class="tdata_${i} alignRight">${val}</td>`;
             } else {
               td_data += `<td class="tdata_${i} alignRight">${val}</td>`;
             }
@@ -439,6 +474,14 @@ $(document).ready(function () {
       });
 
       tables += `<div class="panel panel-default panel_default panel_default_${key}" data-id="${key}">
+                    <div class="addAggregateItem_btn" data-category="${key}">
+                      <button class="btn btn-default addItem" type="submit">
+                        <span class="glyphicon glyphicon-plus"></span>
+                      </button>
+                    </div>
+
+                    
+
                     <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="">
                         <div class="panel-title">
                             <div class="panel1">
@@ -486,7 +529,7 @@ $(document).ready(function () {
                             </div>
                             <div class="more_details_main">
                               <div class="more_details">
-                                <span>More <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                                <span>More <i id="tog_angle_${key}" class="fa fa-angle-down" aria-hidden="true"></i></span>
                               </div>
                               <div class="panel2_rows">
                                 <div class="panel2_row">
@@ -622,7 +665,7 @@ $(document).ready(function () {
                   </div>
                   <div class="more_details_main">
                     <div class="more_details">
-                      <span>More <i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                      <span>More <i id="tog_angle_${key}" class="fa fa-angle-down" aria-hidden="true"></i></span>
                     </div>
                     <div class="panel2_rows">
                       <div class="panel2_row">
@@ -690,9 +733,7 @@ $(document).ready(function () {
           // sel = sel.filter((v) => v != id.toLocaleLowerCase());
         }
 
-        $(`.collapse_icon_${id}`).html(
-          '<i class="fa fa-angle-down" aria-hidden="true"></i>'
-        );
+        $(`#tog_angle_${id}`).attr("class", "fa fa-angle-down");
       } else {
         $(`.collapse_heading_${id}`).attr(
           "style",
@@ -702,9 +743,7 @@ $(document).ready(function () {
         $(`.switch_btn_${id}`).addClass("active");
         $(`.panel_default_${id}`).addClass("panel_default_active");
         $(`#_btns_${id}`)[0].checked = true;
-        $(`.collapse_icon_${id}`).html(
-          '<i class="fa fa-angle-up" aria-hidden="true"></i>'
-        );
+        $(`#tog_angle_${id}`).attr("class", "fa fa-angle-up");
       }
     });
 
@@ -926,7 +965,7 @@ $(document).ready(function () {
         $(".stepperMain").show();
       }
     } else {
-      $("html, body").animate({ scrollTop: 0 }, 300, "linear");
+      $("html, body").animate({ scrollTop: 0 }, 500, "linear");
     }
   });
 
@@ -1013,7 +1052,7 @@ $(document).ready(function () {
     }
   });
 
-  var setpDoneClicked = 0;
+  var setpDoneClicked = 1;
   $(".stepDone").click(function (e) {
     e.preventDefault();
     if ($(`.step_4 input`).val() == "") {
@@ -1114,34 +1153,34 @@ $(document).ready(function () {
         date: sd ? sd1 : "",
       };
 
-      for (const key in sheetTopInfo) {
-        if (sheetTopInfo[key] == "") {
-          $("._steps").hide();
-          $("._steps input").css("border", "1px solid #ccc");
-          $(".stepErrorMsg").show();
-          if (key == "destruction_period") {
-            $(".step_1").show();
-            $(".step_1 input").css("border", "1px solid red");
-            $(".currentStep").html("1");
-            return false;
-          } else if (key == "wd_name") {
-            $(".step_2").show();
-            $(".step_2 input").css("border", "1px solid red");
-            $(".currentStep").html("2");
-            return false;
-          } else if (key == "task_number") {
-            $(".step_3").show();
-            $(".step_3 input").css("border", "1px solid red");
-            $(".currentStep").html("3");
-            return false;
-          } else if (key == "date") {
-            $(".step_4").show();
-            $(".step_4 input").css("border", "1px solid red");
-            $(".currentStep").html("4");
-            return false;
-          }
-        }
-      }
+      // for (const key in sheetTopInfo) {
+      //   if (sheetTopInfo[key] == "") {
+      //     $("._steps").hide();
+      //     $("._steps input").css("border", "1px solid #ccc");
+      //     $(".stepErrorMsg").show();
+      //     if (key == "destruction_period") {
+      //       $(".step_1").show();
+      //       $(".step_1 input").css("border", "1px solid red");
+      //       $(".currentStep").html("1");
+      //       return false;
+      //     } else if (key == "wd_name") {
+      //       $(".step_2").show();
+      //       $(".step_2 input").css("border", "1px solid red");
+      //       $(".currentStep").html("2");
+      //       return false;
+      //     } else if (key == "task_number") {
+      //       $(".step_3").show();
+      //       $(".step_3 input").css("border", "1px solid red");
+      //       $(".currentStep").html("3");
+      //       return false;
+      //     } else if (key == "date") {
+      //       $(".step_4").show();
+      //       $(".step_4 input").css("border", "1px solid red");
+      //       $(".currentStep").html("4");
+      //       return false;
+      //     }
+      //   }
+      // }
     }
 
     if (_csvData.length > 0) {
@@ -1537,6 +1576,34 @@ $(document).ready(function () {
     $(".add_item_form input").each(function () {
       $(this).val("");
     });
+  });
+
+  var aggregateKey = "";
+  $(document).on("click", ".addAggregateItem_btn", function (e) {
+    e.stopImmediatePropagation();
+    $(".addAggregateItem_div").remove();
+    $(this).parent().append(aggregateDiv);
+    aggregateKey = $(this).attr("data-category");
+  });
+  $(document).on("click", ".aggregate_close_btn", function (e) {
+    e.stopImmediatePropagation();
+    $(this).parent().remove();
+  });
+
+  $(document).on("click", ".addAggrgteItem", function (e) {
+    e.stopImmediatePropagation();
+    let inptWt = $("#agg_weight_input").val();
+    if (inptWt) {
+      let rwt = $(`.received_${aggregateKey.toUpperCase()}`).html();
+      let bgc = $(`.bagCount_${aggregateKey.toUpperCase()}`).html();
+      $(`.received_${aggregateKey.toUpperCase()}`).html(
+        numberWithCommas((Number(rwt) + Number(inptWt)).toFixed(2))
+      );
+      $(`.bagCount_${aggregateKey.toUpperCase()}`).html(
+        numberWithCommas(Number(bgc) + Number(1))
+      );
+      $("#agg_weight_input").val("");
+    }
   });
 
   document
