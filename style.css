@@ -829,13 +829,13 @@ label[for="uploadFiles"]:hover:after {
 .addAggregateItem_btn {
   position: absolute;
   right: 0px;
-  top: -20px;
+  top: -22px;
 }
 
 .addAggregateItem_btn button {
   color: white;
   background-color: #1acf32;
-  padding: 3px;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -851,7 +851,7 @@ label[for="uploadFiles"]:hover:after {
 }
 
 .addAggregateItem_btn button span {
-  font-size: 0.8em;
+  font-size: 0.82em;
 }
 .addAggregateItem_div {
   background: white;
