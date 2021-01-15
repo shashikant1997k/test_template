@@ -919,14 +919,14 @@ $(document).ready(function () {
         $(this).addClass("option_row_color");
         $("html, body").animate(
           { scrollTop: $($(this).attr("href")).offset().top },
-          1000,
+          500,
           "linear"
         );
         $("#scrollToFirst").css("border", "0px");
         $(".stepperMain").show();
       }
     } else {
-      $("html, body").animate({ scrollTop: 0 }, 500, "linear");
+      $("html, body").animate({ scrollTop: 0 }, 300, "linear");
     }
   });
 
