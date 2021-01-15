@@ -1041,7 +1041,7 @@ $(document).ready(function () {
     }
   });
 
-  var setpDoneClicked = 1;
+  var setpDoneClicked = 0;
   $(".stepDone").click(function (e) {
     e.preventDefault();
     if ($(`.step_4 input`).val() == "") {
@@ -1142,34 +1142,34 @@ $(document).ready(function () {
         date: sd ? sd1 : "",
       };
 
-      // for (const key in sheetTopInfo) {
-      //   if (sheetTopInfo[key] == "") {
-      //     $("._steps").hide();
-      //     $("._steps input").css("border", "1px solid #ccc");
-      //     $(".stepErrorMsg").show();
-      //     if (key == "destruction_period") {
-      //       $(".step_1").show();
-      //       $(".step_1 input").css("border", "1px solid red");
-      //       $(".currentStep").html("1");
-      //       return false;
-      //     } else if (key == "wd_name") {
-      //       $(".step_2").show();
-      //       $(".step_2 input").css("border", "1px solid red");
-      //       $(".currentStep").html("2");
-      //       return false;
-      //     } else if (key == "task_number") {
-      //       $(".step_3").show();
-      //       $(".step_3 input").css("border", "1px solid red");
-      //       $(".currentStep").html("3");
-      //       return false;
-      //     } else if (key == "date") {
-      //       $(".step_4").show();
-      //       $(".step_4 input").css("border", "1px solid red");
-      //       $(".currentStep").html("4");
-      //       return false;
-      //     }
-      //   }
-      // }
+      for (const key in sheetTopInfo) {
+        if (sheetTopInfo[key] == "") {
+          $("._steps").hide();
+          $("._steps input").css("border", "1px solid #ccc");
+          $(".stepErrorMsg").show();
+          if (key == "destruction_period") {
+            $(".step_1").show();
+            $(".step_1 input").css("border", "1px solid red");
+            $(".currentStep").html("1");
+            return false;
+          } else if (key == "wd_name") {
+            $(".step_2").show();
+            $(".step_2 input").css("border", "1px solid red");
+            $(".currentStep").html("2");
+            return false;
+          } else if (key == "task_number") {
+            $(".step_3").show();
+            $(".step_3 input").css("border", "1px solid red");
+            $(".currentStep").html("3");
+            return false;
+          } else if (key == "date") {
+            $(".step_4").show();
+            $(".step_4 input").css("border", "1px solid red");
+            $(".currentStep").html("4");
+            return false;
+          }
+        }
+      }
     }
 
     if (_csvData.length > 0) {
