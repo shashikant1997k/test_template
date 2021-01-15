@@ -460,15 +460,22 @@ table > tbody > tr > td > span.footable-toggle {
   padding: 0 2px;
 }
 
+.d_f_c {
+  display: flex;
+  flex-direction: column;
+}
+._title_St {
+  /* font-size: 0.9em; */
+  font-weight: 600;
+  color: #999;
+}
 .fnt_size {
   width: 33%;
 }
 
-.totalRows {
-  font-size: 0.8em;
+.total_rows {
+  font-weight: 600;
   color: #666;
-  width: 33%;
-  padding: 0 2px;
 }
 
 .more_details_main {
@@ -915,10 +922,9 @@ label[for="uploadFiles"]:hover:after {
   .TotalSumItemWght,
   .TotalSumItemValues,
   .TotalSumItemQty,
-  .totalRows,
   .cat_text,
   .fnt_size {
-    font-size: 0.7em !important;
+    font-size: 0.65em !important;
   }
   .cat_text {
     margin-left: 4px !important;
@@ -938,7 +944,7 @@ label[for="uploadFiles"]:hover:after {
     font-size: 30px;
     font-weight: 600;
     padding: 0px 6px;
-    padding-top: 12px;
+    padding-top: 13px;
   }
   .topHeader {
     height: 52px;
@@ -999,9 +1005,7 @@ label[for="uploadFiles"]:hover:after {
   .fnt_size {
     width: auto !important;
   }
-  .totalRows {
-    width: auto;
-  }
+
   .m_b_4 {
     margin-bottom: 4px;
   }
@@ -1009,4 +1013,18 @@ label[for="uploadFiles"]:hover:after {
 
 .TotalSumItemValues {
   display: none !important;
+}
+
+td.footable-sortable > span.fooicon,
+th.footable-sortable > span.fooicon {
+  margin-top: -4px !important;
+  opacity: 0.4;
+  font-size: 0.8em !important;
+}
+
+.alignLeft {
+  text-align: left !important;
+}
+.alignRight {
+  text-align: right !important;
 }
