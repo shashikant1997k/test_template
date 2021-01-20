@@ -32,6 +32,7 @@ $(document).ready(function () {
   ];
 
   // New Code start
+  var _bagsData = [];
   var fetchedValue = [];
 
   // fetchedValue = [
@@ -65,9 +66,9 @@ $(document).ready(function () {
   //   },
   // ];
 
-  // let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"> <div class="category_input_div"> <label for="agg_category_input">Category</label> <input type="text" id="agg_category_input" list="agg_categories" list="agg_categories"> <datalist id="agg_categories"> <option value="BI"> <option value="SX"> <option value="ND"> <option value="JU"> </datalist> </div> <div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="text" id="agg_weight_input"> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
+  // let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
 
-  let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number"  inputmode='numeric' pattern="[0-9]" id="agg_weight_input" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
+  let aggregateDiv = `<div class="addAggregateItem_div"> <div class="aggregate_close_btn"><span>&times;</span></div> <div> <div class="btn-group bagTypeBtn" data-toggle="buttons"> <label class="btn btn-default bag-on btn-xs active"> <input type="radio" value="1" name="bagType" checked="checked" /> <img style="width:75%;" src="https://app.wastelink.co/static/images/grossweight.png" alt="Bag" srcset=""> </label> <label class="btn btn-default cfc-on btn-xs "> <input type="radio" value="0" name="bagType" /> <img style="width:75%;" src="https://app.wastelink.co/static/images/open-box.png" alt="CFC" srcset=""> </label> </div> <div class="btn-group weightTypeBtn" data-toggle="buttons"> <label class="btn btn-default grossWeight btn-xs active"> <input type="radio" value="gross" name="weightType" checked="checked" /> <span>Gross</span> </label> <label class="btn btn-default netWeight btn-xs "> <input type="radio" value="net" name="weightType" /> <span>Net</span> </label> </div> </div> <form class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number" inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" step="1" min="1" /> </div> <div class="unit_input_div"> <label for="agg_unit_input">Unit</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Unit" id="agg_unit_input" value="1" step="1" min="1" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem" type="submit">Add</button> </div></form> </div>`;
 
   // Function to generate random color.
   function getRandomColor() {
@@ -242,7 +243,7 @@ $(document).ready(function () {
   function createTable(resultArray, mappedObj) {
     if (resultArray.file_data.length == 0) {
       $(".panel_group").html(
-        "<div class='text-center noDataDiv' style='padding:10px;font-size:16px;width:100%;border:1.5px solid #DDD;font-weight:600;'>No Data</div>"
+        "<div class='text-center noDataDiv'>No Data</div>"
       );
       return false;
     }
@@ -475,7 +476,7 @@ $(document).ready(function () {
 
       tables += `<div class="panel panel-default panel_default panel_default_${key}" data-id="${key}">
                     <div class="addAggregateItem_btn" data-category="${key}">
-                      <button class="btn btn-default addItem" type="submit">
+                      <button class="btn btn-default" type="submit">
                         <span class="glyphicon glyphicon-plus"></span>
                       </button>
                     </div>
@@ -541,12 +542,16 @@ $(document).ready(function () {
                                         )}</span>
                                   </div>
                                   <div class="TotalSumItemQty fnt_size">
-                                      <span class="_title_St">Pac: </span> <span class="total_itemQty">
-                                      ${numberWithCommas(totalItemQty)}
-                                      </span>
+                                    <span class="_title_St">Pac: </span> 
+                                    <span class="total_itemQty">
+                                    ${numberWithCommas(totalItemQty)}
+                                    </span>
                                   </div>
                                   <div class="TotalBagCount fnt_size">
-                                      <span class="_title_St">Bag Count: </span> <span class="bagCount_${key}">0</span>
+                                    <div class="_totalBags _totalBags_${key}" data-val="_totalBags" data-cat="${key}">
+                                      <span class="_title_St pnt-none">Bag Count: </span> 
+                                      <span class="bagCount_${key} pnt-none">0</span>
+                                    </div>
                                   </div>
                                   <div class="fnt_size"><span class="_title_St">Rows:</span> <span class="total_rows">${
                                     value.length
@@ -674,14 +679,16 @@ $(document).ready(function () {
                               <span style="font-weight: normal">₹ </span>
                               0.00</span></div>
                         <div class="TotalSumItemQty fnt_size ">
-                            <span class="_title_St">Pac:</span> <span class="total_itemQty">
-                            0
-                            </span>
+                          <span class="_title_St">Pac:</span> 
+                          <span class="total_itemQty">0</span>
                         </div>
                         <div class="TotalBagCount fnt_size">
-                            <span class="_title_St">Bag Count:</span> <span class="bagCount_${key}">${
-            item.bagCount
-          }</span>
+                          <div class="_totalBags _totalBags_${key}" data-val="_totalBags" data-cat="${key}">
+                            <span class="_title_St pnt-none">Bag Count:</span> 
+                            <span class="bagCount_${key} pnt-none">
+                              ${item.bagCount}
+                            </span>
+                          </div>
                         </div>
                         <div class="fnt_size"><span class="_title_St">Rows:</span><span class="total_rows">0</span>
                         </div>
@@ -690,6 +697,7 @@ $(document).ready(function () {
                   </div>
               </div>
           </div>
+          
           <div id="collapse_${key}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_${key}">
               <div class="panel-body">
                   <table id="collapse-table-${key}" class="table table-bordered ${
@@ -716,34 +724,43 @@ $(document).ready(function () {
     }, 1000);
 
     // Expand the table clicking on the each category cards.
-    $(`.collapse_heading`).click(function () {
-      let id = $(this).data("id");
-      let cl = $(`#collapse_${id}`).attr("class");
-      if (cl.includes("in")) {
-        $(`.collapse_heading_${id}`).attr(
-          "style",
-          "background-color: #FFF !important;"
+    $(`.collapse_heading`).click(function (e) {
+      let clsName = e.target.dataset?.val;
+      if (clsName != "_totalBags") {
+        let id = $(this).data("id");
+        let cl = $(`#collapse_${id}`).attr("class");
+        $(`.panel_default`).css(
+          "box-shadow",
+          "0 0px 5px 0 rgba(0, 0, 0, 0.36)"
         );
-        $(`#collapse_${id}`).removeClass("in");
-        $(`.panel_default_${id}`).removeClass("panel_default_active");
-        if (!sel.includes(id.toLowerCase())) {
-          $(`.switch_btn_${id}`).removeClass("active");
+        $(".totalBagsTable").hide();
+        $("._totalBags").removeClass("_totalBagsActive");
+        if (cl.includes("in")) {
+          $(`.collapse_heading_${id}`).attr(
+            "style",
+            "background-color: #FFF !important;"
+          );
+          $(`#collapse_${id}`).removeClass("in");
+          $(`.panel_default_${id}`).removeClass("panel_default_active");
+          if (!sel.includes(id.toLowerCase())) {
+            $(`.switch_btn_${id}`).removeClass("active");
 
-          $(`#_btns_${id}`)[0].checked = false;
-          // sel = sel.filter((v) => v != id.toLocaleLowerCase());
+            $(`#_btns_${id}`)[0].checked = false;
+            // sel = sel.filter((v) => v != id.toLocaleLowerCase());
+          }
+
+          $(`#tog_angle_${id}`).attr("class", "fa fa-angle-down");
+        } else {
+          $(`.collapse_heading_${id}`).attr(
+            "style",
+            "background-color: #F5F5F5 !important;"
+          );
+          $(`#collapse_${id}`).addClass("in");
+          $(`.switch_btn_${id}`).addClass("active");
+          $(`.panel_default_${id}`).addClass("panel_default_active");
+          $(`#_btns_${id}`)[0].checked = true;
+          $(`#tog_angle_${id}`).attr("class", "fa fa-angle-up");
         }
-
-        $(`#tog_angle_${id}`).attr("class", "fa fa-angle-down");
-      } else {
-        $(`.collapse_heading_${id}`).attr(
-          "style",
-          "background-color: #F5F5F5 !important;"
-        );
-        $(`#collapse_${id}`).addClass("in");
-        $(`.switch_btn_${id}`).addClass("active");
-        $(`.panel_default_${id}`).addClass("panel_default_active");
-        $(`#_btns_${id}`)[0].checked = true;
-        $(`#tog_angle_${id}`).attr("class", "fa fa-angle-up");
       }
     });
 
@@ -1052,7 +1069,7 @@ $(document).ready(function () {
     }
   });
 
-  var setpDoneClicked = 1;
+  var setpDoneClicked = 0;
   $(".stepDone").click(function (e) {
     e.preventDefault();
     if ($(`.step_4 input`).val() == "") {
@@ -1153,34 +1170,34 @@ $(document).ready(function () {
         date: sd ? sd1 : "",
       };
 
-      // for (const key in sheetTopInfo) {
-      //   if (sheetTopInfo[key] == "") {
-      //     $("._steps").hide();
-      //     $("._steps input").css("border", "1px solid #ccc");
-      //     $(".stepErrorMsg").show();
-      //     if (key == "destruction_period") {
-      //       $(".step_1").show();
-      //       $(".step_1 input").css("border", "1px solid red");
-      //       $(".currentStep").html("1");
-      //       return false;
-      //     } else if (key == "wd_name") {
-      //       $(".step_2").show();
-      //       $(".step_2 input").css("border", "1px solid red");
-      //       $(".currentStep").html("2");
-      //       return false;
-      //     } else if (key == "task_number") {
-      //       $(".step_3").show();
-      //       $(".step_3 input").css("border", "1px solid red");
-      //       $(".currentStep").html("3");
-      //       return false;
-      //     } else if (key == "date") {
-      //       $(".step_4").show();
-      //       $(".step_4 input").css("border", "1px solid red");
-      //       $(".currentStep").html("4");
-      //       return false;
-      //     }
-      //   }
-      // }
+      for (const key in sheetTopInfo) {
+        if (sheetTopInfo[key] == "") {
+          $("._steps").hide();
+          $("._steps input").css("border", "1px solid #ccc");
+          $(".stepErrorMsg").show();
+          if (key == "destruction_period") {
+            $(".step_1").show();
+            $(".step_1 input").css("border", "1px solid red");
+            $(".currentStep").html("1");
+            return false;
+          } else if (key == "wd_name") {
+            $(".step_2").show();
+            $(".step_2 input").css("border", "1px solid red");
+            $(".currentStep").html("2");
+            return false;
+          } else if (key == "task_number") {
+            $(".step_3").show();
+            $(".step_3 input").css("border", "1px solid red");
+            $(".currentStep").html("3");
+            return false;
+          } else if (key == "date") {
+            $(".step_4").show();
+            $(".step_4 input").css("border", "1px solid red");
+            $(".currentStep").html("4");
+            return false;
+          }
+        }
+      }
     }
 
     if (_csvData.length > 0) {
@@ -1269,7 +1286,7 @@ $(document).ready(function () {
 
   var mappedResult;
   var mappedKeyIndex = {};
-  // click next button after mapping all column and got to final table
+  // click next button after mapping all column and goto final table
   $(document).on("click", ".next_btn_1", function () {
     mappedResult = {};
 
@@ -1586,26 +1603,224 @@ $(document).ready(function () {
     aggregateKey = $(this).attr("data-category");
     $("#agg_weight_input").focus();
   });
+
   $(document).on("click", ".aggregate_close_btn", function (e) {
     e.stopImmediatePropagation();
     $(this).parent().remove();
   });
 
+  var bagType = 0;
+  $(document).on("click", ".bag-on", function (e) {
+    bagType = "bag";
+    $(".unit_input_div").css("visibility", "hidden");
+    $(".netWeight").removeClass("active");
+    $(".netWeight input").prop("checked", "false");
+    $(".grossWeight").addClass("active");
+    $(".grossWeight input").prop("checked", "true");
+  });
+
+  $(document).on("click", ".cfc-on", function (e) {
+    bagType = "cfc";
+    $(".unit_input_div").css("visibility", "visible");
+    $(".grossWeight").removeClass("active");
+    $(".grossWeight input").prop("checked", "false");
+    $(".netWeight").addClass("active");
+    $(".netWeight input").prop("checked", "true");
+  });
+
   $(document).on("click", ".addAggrgteItem", function (e) {
-    e.stopImmediatePropagation();
+    e.preventDefault();
     let inptWt = $("#agg_weight_input").val();
-    if (inptWt) {
+    let unit = 1;
+    if (bagType == "cfc") {
+      unit = $("#agg_unit_input").val() ? $("#agg_unit_input").val() : 1;
+    }
+    let weightType = $(".weightTypeBtn input[name='weightType']:checked").val();
+
+    if (
+      inptWt &&
+      !isNaN(inptWt) &&
+      inptWt > 0 &&
+      !isNaN(unit) &&
+      unit > 0 &&
+      !String(unit).includes(".")
+    ) {
       let rwt = $(`.received_${aggregateKey.toUpperCase()}`).html();
       let bgc = $(`.bagCount_${aggregateKey.toUpperCase()}`).html();
       $(`.received_${aggregateKey.toUpperCase()}`).html(
-        numberWithCommas((Number(rwt) + Number(inptWt)).toFixed(2))
+        numberWithCommas((Number(rwt) + Number(inptWt) * unit).toFixed(2))
       );
       $(`.bagCount_${aggregateKey.toUpperCase()}`).html(
-        numberWithCommas(Number(bgc) + Number(1))
+        numberWithCommas(Number(bgc) + Number(unit))
       );
       $("#agg_weight_input").val("");
+      $("#agg_unit_input").val("1");
       $("#agg_weight_input").focus();
+
+      let idd;
+      if (_bagsData.length > 0) {
+        idd = String(_bagsData[_bagsData.length - 1].bagId).split("-");
+      } else {
+        idd = [100, 110];
+      }
+
+      let data = {
+        bagId: `${Number(idd[0]) + 1}-${Number(idd[1]) + 1}`,
+        grossWt: inptWt,
+        netWt: inptWt,
+        bagging: bagType,
+      };
+
+      _bagsData.push(data);
+
+      swal("Successfully Updated!", {
+        icon: "success",
+        buttons: false,
+        timer: 1500,
+      });
     }
+  });
+  _bagsData = [
+    {
+      bagId: "201-212",
+      grossWt: 15.2,
+      netWt: 15.2,
+      bagging: "bag",
+    },
+    {
+      bagId: "202-213",
+      grossWt: 45.5,
+      netWt: 43.5,
+      bagging: "cfc",
+    },
+    {
+      bagId: "203-214",
+      grossWt: 290,
+      netWt: 279,
+      bagging: "cfc",
+    },
+    {
+      bagId: "204-215",
+      grossWt: 254.8,
+      netWt: 245.2,
+      bagging: "bag",
+    },
+  ];
+
+  function createPacsAndBagsTable(data, cat) {
+    if ($(`.totalBagsTable_${cat}`).length) {
+      $("._totalBags").removeClass("_totalBagsActive");
+      $(`.totalBagsTable_${cat}`).remove();
+      $(`.panel_default`).css("box-shadow", "0 0px 5px 0 rgba(0, 0, 0, 0.36)");
+      return false;
+    }
+
+    $(`.panel_default_${cat}`).css(
+      "box-shadow",
+      "0 -3px 5px 0 rgba(0, 0, 0, 0.36)"
+    );
+    $("._totalBags").removeClass("_totalBagsActive");
+    $(`._totalBags_${cat}`).addClass("_totalBagsActive");
+
+    console.log(data);
+
+    let cl = $(`#collapse_${cat}`).attr("class");
+    if (cl.includes("in")) {
+      $(`.collapse_heading_${cat}`).attr(
+        "style",
+        "background-color: #FFF !important;"
+      );
+      $(`#collapse_${cat}`).removeClass("in");
+      $(`.panel_default_${cat}`).removeClass("panel_default_active");
+      if (!sel.includes(cat.toLowerCase())) {
+        $(`.switch_btn_${cat}`).removeClass("active");
+        $(`#_btns_${cat}`)[0].checked = false;
+      }
+      $(`#tog_angle_${cat}`).attr("class", "fa fa-angle-down");
+    }
+
+    let tbody = "";
+    if (data.length > 0) {
+      data.forEach((item) => {
+        let tr = `<tr class="id_${item.bagId}" data-id="${item.bagId}">
+            <td>
+              <div class="bagIdMain">
+                <div class="bagging">
+                  ${
+                    item.bagging == "bag"
+                      ? '<img src="https://app.wastelink.co/static/images/grossweight.png" alt="bag" />'
+                      : '<img src="https://app.wastelink.co/static/images/open-box.png" alt="bag" />'
+                  }
+                </div>
+                <div class="bag_id">${item.bagId}</div>
+              <div>
+              
+              
+            </td>
+            <td>${Number(item.grossWt).toFixed(2)}</td>
+            <td>${Number(item.netWt).toFixed(2)}</td>
+        </tr>`;
+        tbody += tr;
+      });
+
+      let thead = `<tr><th>Bag ID</th><th>Gross Wt</th><th>Net Wt</th></tr>`;
+      let _table = `<table class="table table-striped table-bordered _bagsTable">
+                    <thead>${thead}</thead>
+                    <tbody>${tbody}</tbody>
+                  </table>`;
+      $(".totalBagsTable").remove();
+      $("totalBagsTable").show();
+      $(`.panel_default_${cat}`).after(
+        `<div class="totalBagsTable totalBagsTable_${cat}">${_table}</div>`
+      );
+    } else {
+      $(`.panel_default_${cat}`).after(
+        `<div class="totalBagsTable totalBagsTable_${cat}"><div class='text-center noDataDiv'>No Data</div></div>`
+      );
+    }
+
+    $(`._bagsTable`).SetEditable({
+      columnsEd: "1",
+      onEdit: function (e) {
+        let id = $(e[0]).data("id");
+        let val = $(`.id_${id} td:nth-child(2)`).text();
+        console.log(id, val);
+        console.log("edited");
+      },
+      onDelete: function (row) {
+        let id = $(row[0]).data("id");
+        swal({
+          title: "Are you sure?",
+          text: "Once deleted, you will not be able to recover!",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then((willDelete) => {
+          if (willDelete) {
+            $(row).remove();
+            _bagsData = _bagsData.filter((v) => v.bagId != id);
+            swal("Successfully Deleted!", {
+              icon: "success",
+              buttons: false,
+              timer: 1500,
+            });
+          } else {
+            swal("Canceled!", {
+              icon: "error",
+              buttons: false,
+              timer: 1500,
+            });
+          }
+        });
+      },
+      // onBeforeDelete: function (e) {},
+      // onAdd: function () {},
+    });
+  }
+
+  $(document).on("click", "._totalBags", function () {
+    let cat = $(this).data("cat");
+    createPacsAndBagsTable(_bagsData, cat);
   });
 
   document
