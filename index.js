@@ -1789,6 +1789,11 @@ $(document).ready(function () {
         let val = $(`.id_${id} td:nth-child(2)`).text();
         console.log(id, val);
         console.log("edited");
+        swal("Successfully Updated!", {
+          icon: "success",
+          buttons: false,
+          timer: 1500,
+        });
       },
       onDelete: function (row) {
         let id = $(row[0]).data("id");
