@@ -1606,10 +1606,11 @@ $(document).ready(function () {
 
   $(document).on("click", ".aggregate_close_btn", function (e) {
     e.stopImmediatePropagation();
+    bagType = "bag";
     $(this).parent().remove();
   });
 
-  var bagType = 0;
+  var bagType = "bag";
   $(document).on("click", ".bag-on", function (e) {
     bagType = "bag";
     $(".unit_input_div").css("visibility", "hidden");
@@ -1663,6 +1664,8 @@ $(document).ready(function () {
       } else {
         idd = [100, 110];
       }
+
+      console.log(bagType);
 
       let data = {
         bagId: `${Number(idd[0]) + 1}-${Number(idd[1]) + 1}`,
