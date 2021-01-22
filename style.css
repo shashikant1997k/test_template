@@ -168,6 +168,45 @@ body {
   font-size: 0.8em;
 }
 
+.totalSalvDiff {
+  position: absolute;
+  right: 1em;
+  bottom: 0.4em;
+
+  font-weight: 600;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 0.85em;
+}
+.col {
+  color: #d93025;
+}
+.green_col {
+  color: green;
+}
+
+._diffArrow {
+  width: 8px;
+  margin-left: 2px;
+  display: block;
+}
+
+._diff-down {
+  transform: rotate(180deg);
+}
+
+.diffRupSign {
+  font-size: 0.9em;
+  margin-right: 1px;
+}
+
+.totalSalvDiff span:first-child {
+  font-weight: normal;
+  margin-right: 2px;
+  font-size: 1.2em;
+}
+
 .searchMain {
   display: none;
   flex-direction: row;
@@ -416,6 +455,10 @@ table > tbody > tr > td > span.footable-toggle {
   padding: 2px 15px 2px 10px;
 }
 
+.collapse_active {
+  background-color: #f5f5f5 !important;
+}
+
 .panel-title {
   display: flex;
   flex-direction: column;
@@ -480,25 +523,39 @@ table > tbody > tr > td > span.footable-toggle {
 }
 
 ._totalBagsActive {
-  position: absolute;
-  height: 28px;
   border: 2px solid;
-  bottom: -11px;
   border-color: #dee2e6 #dee2e6 #fff;
   background: #fff;
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
 }
 
-._totalBags {
+._totalBags,
+._totalPacs {
   width: fit-content;
   padding: 0px 10px;
   cursor: pointer;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 32px;
+  bottom: 8px;
 }
 
-._totalBags:hover {
+._totalPacs span:nth-child(2),
+._totalBags span:nth-child(2) {
+  margin: 0px 4px;
+}
+
+._totalBags:hover,
+._totalPacs:hover {
   background-color: #ddd;
+}
+
+.expand_icon {
+  font-size: 0.8em;
+  color: #3f36ca;
 }
 
 .bagIdMain {
@@ -531,8 +588,6 @@ table > tbody > tr > td > span.footable-toggle {
 .TotalBagCount {
   position: relative;
 }
-.TotalSumItemWght,
-.TotalSumItemValues,
 .TotalSumItemQty,
 .fnt_size {
   font-weight: 600;
@@ -567,17 +622,30 @@ table > tbody > tr > td > span.footable-toggle {
   border-top: 1px solid #e2e2e2;
   margin-top: 12px;
   padding-top: 7px;
-  margin-bottom: 7px;
+  margin-bottom: -11px;
 }
+
+/* .more_details {
+  font-weight: 600;
+  font-size: 0.8em;
+  color: #666;
+  padding: 0 2px;
+  flex: 0.15;
+  white-space: nowrap;
+}
+
+.more_details span {
+  font-size: 0.9em;
+  color: #999;
+} */
 
 .more_details {
   font-size: 0.8em;
   color: #3691ca;
   display: flex;
-  cursor: pointer;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  /* justify-content: space-between; */
+  /* align-items: center; */
   font-weight: 600;
   flex: 0.15;
   white-space: nowrap;
@@ -587,15 +655,14 @@ table > tbody > tr > td > span.footable-toggle {
   font-weight: 500 !important;
   font-size: 1.2em;
 }
+.more_details:hover {
+  opacity: 0.8;
+}
 
 .collapse_caret {
   display: flex;
   align-items: center;
   margin-left: 5px;
-}
-
-.more_details:hover {
-  opacity: 0.8;
 }
 
 .second_page,
@@ -740,7 +807,7 @@ label[for="uploadFiles"]:hover:after {
 
 /* top data choose Stepper start */
 .stepTopmain {
-  width: 350px;
+  width: 380px;
   display: flex;
   flex-direction: column;
 }
@@ -761,14 +828,50 @@ label[for="uploadFiles"]:hover:after {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 1.5em;
 }
 .stepsC {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.stepTxt {
+  font-size: 0.8em;
+  position: absolute;
+  top: 2.1em;
+  line-height: 1;
+  font-weight: 600;
+  display: none;
+  white-space: nowrap;
+  padding: 5px;
+  border: 1px solid #35a630;
+  border-radius: 2px;
+  background: #35a630;
+  color: white;
+}
+
+.toolTipTringle {
+  content: "";
+  display: none;
+  position: absolute;
+  bottom: -0.4em;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-bottom-color: #35a630;
+}
+
+.stepsC .crcle {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 20px;
-  background: floralwhite;
+  height: 20px;
+  background: #f0cd4e;
   cursor: default;
+  border-radius: 20px;
 }
 
 .stepActive {
@@ -780,7 +883,7 @@ label[for="uploadFiles"]:hover:after {
   height: 2px;
   height: 2px;
   width: 5em;
-  background: floralwhite;
+  background: #f0cd4e;
 }
 
 .stepperInner {
@@ -813,6 +916,7 @@ label[for="uploadFiles"]:hover:after {
   align-items: center;
   justify-content: space-between;
   width: 2em;
+  visibility: hidden;
 }
 
 #scheduledDate,
@@ -938,6 +1042,17 @@ label[for="uploadFiles"]:hover:after {
   padding-right: 10px;
 }
 
+.successMsg {
+  position: absolute;
+  font-weight: 600;
+  color: red;
+  top: -1em;
+  right: 1em;
+  background: white;
+  padding: 0px 10px;
+  display: none;
+}
+
 .input_item {
   display: flex;
   flex-direction: row;
@@ -991,6 +1106,19 @@ label[for="uploadFiles"]:hover:after {
 
 .weightTypeBtn {
   margin-left: 3em;
+}
+
+.totalBagCount,
+.totalPacCount {
+  font-weight: 600;
+  font-size: 0.8em;
+  margin-left: 0.2em;
+  margin-top: 0.4em;
+}
+
+.bagTypeImg {
+  width: 18px;
+  margin-left: -0.4em;
 }
 
 .bag-on,
@@ -1139,20 +1267,21 @@ label[for="uploadFiles"]:hover:after {
     margin-right: 8px;
     padding: 4px;
   }
-  ._totalBagsActive {
+  /* ._totalBagsActive {
     left: -4em !important;
-  }
+  } */
+  /* ._totalPacs._totalBagsActive {
+    left: -1em !important;
+  } */
   ._totalBags:hover {
     background-color: white;
   }
   .bagging img {
     width: 14px;
   }
-
-  .category_icon {
-    font-size: 0.65em;
-    width: 20px !important;
-    height: 20px !important;
+  ._totalBags,
+  ._totalPacs {
+    padding: 0px 4px !important;
   }
 
   .panel_default .panel-body .category_icon {
@@ -1162,12 +1291,19 @@ label[for="uploadFiles"]:hover:after {
     margin-top: 8px;
   }
 
-  .TotalSumItemWght,
-  .TotalSumItemValues,
+  .more_details {
+    font-size: 0.6em;
+  }
+
   .TotalSumItemQty,
   .cat_text,
   .fnt_size {
     font-size: 0.65em !important;
+  }
+  .category_icon {
+    font-size: 0.65em;
+    width: 20px !important;
+    height: 20px !important;
   }
   .cat_text {
     margin-left: 4px !important;
@@ -1179,6 +1315,17 @@ label[for="uploadFiles"]:hover:after {
 
   .name_code_style {
     margin-left: 6px;
+  }
+
+  .totalSalvDiff {
+    right: 0.6em;
+  }
+
+  ._diffArrow {
+    width: 6px;
+  }
+  .diffRupSign {
+    font-size: 0.8em;
   }
 
   label[for="uploadFiles"]:after {
@@ -1204,6 +1351,11 @@ label[for="uploadFiles"]:hover:after {
   }
   .stepTopmain {
     width: 100%;
+  }
+
+  .stepTxt {
+    font-size: 0.7em;
+    top: 2.5em;
   }
 
   .sheets_upload {
@@ -1232,9 +1384,7 @@ label[for="uploadFiles"]:hover:after {
     top: 2px;
     transform: translateX(-50%);
   }
-  .more_details {
-    font-size: 0.65em;
-  }
+
   .panel1_rows,
   .panel2_rows {
     margin-left: 0.6em !important;
@@ -1252,10 +1402,6 @@ label[for="uploadFiles"]:hover:after {
   .m_b_4 {
     margin-bottom: 4px;
   }
-}
-
-.TotalSumItemValues {
-  display: none !important;
 }
 
 td.footable-sortable > span.fooicon,
