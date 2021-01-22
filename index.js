@@ -10,6 +10,8 @@ $(document).ready(function () {
     headers: [],
     file_data: [],
   };
+  var flag = false;
+  var t1 = [10, 100];
   var topData = {};
   var sheetTopInfo = {};
   var tempCat = ["bi", "cf", "nd", "sx", "at", "ju", "sn"];
@@ -68,7 +70,7 @@ $(document).ready(function () {
 
   // let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
 
-  let aggregateDiv = `<div class="addAggregateItem_div"> <div class="aggregate_close_btn"><span>&times;</span></div> <div> <div class="btn-group bagTypeBtn" data-toggle="buttons"> <label class="btn btn-default bag-on btn-xs active"> <input type="radio" value="1" name="bagType" checked="checked" /> <img style="width:75%;" src="https://app.wastelink.co/static/images/grossweight.png" alt="Bag" srcset=""> </label> <label class="btn btn-default cfc-on btn-xs "> <input type="radio" value="0" name="bagType" /> <img style="width:75%;" src="https://app.wastelink.co/static/images/open-box.png" alt="CFC" srcset=""> </label> </div> <div class="btn-group weightTypeBtn" data-toggle="buttons"> <label class="btn btn-default grossWeight btn-xs active"> <input type="radio" value="gross" name="weightType" checked="checked" /> <span>Gross</span> </label> <label class="btn btn-default netWeight btn-xs "> <input type="radio" value="net" name="weightType" /> <span>Net</span> </label> </div> </div> <form class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number" inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" step="1" min="1" /> </div> <div class="unit_input_div"> <label for="agg_unit_input">Unit</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Unit" id="agg_unit_input" value="1" step="1" min="1" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem" type="submit">Add</button> </div></form> </div>`;
+  let aggregateDiv = `<div class="addAggregateItem_div"> <div class="aggregate_close_btn"><span>&times;</span></div> <div> <div class="btn-group bagTypeBtn" data-toggle="buttons"> <label class="btn btn-default bag-on btn-xs active"> <input type="radio" value="1" name="bagType" checked="checked" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/grossweight.png" alt="Bag" srcset=""><span class="totalBagCount">0</span> </label> <label class="btn btn-default cfc-on btn-xs "> <input type="radio" value="0" name="bagType" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/open-box.png" alt="CFC" srcset=""><span class="totalPacCount">0</span> </label> </div> <div class="btn-group weightTypeBtn" data-toggle="buttons"> <label class="btn btn-default grossWeight btn-xs active"> <input type="radio" value="gross" name="weightType" checked="checked" /> <span>Gross</span> </label> <label class="btn btn-default netWeight btn-xs "> <input type="radio" value="net" name="weightType" /> <span>Net</span> </label> </div> </div> <form class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number" inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" step="1" min="1" /> </div> <div class="unit_input_div"> <label for="agg_unit_input">Unit</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Unit" id="agg_unit_input" value="1" step="1" min="1" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem" type="submit">Add</button> </div></form><div class="successMsg">Value Added!</div> </div>`;
 
   // Function to generate random color.
   function getRandomColor() {
@@ -239,6 +241,8 @@ $(document).ready(function () {
     }
   }
 
+  let totalExpWt = 0;
+  let totalItemSumval = 0;
   // Create the table from uploaded sheet after the mapping the column header
   function createTable(resultArray, mappedObj) {
     if (resultArray.file_data.length == 0) {
@@ -411,6 +415,7 @@ $(document).ready(function () {
         if (item.length == headLen || item.length == dataLen) {
           var td_data = ``;
           item.forEach((val, i) => {
+            let valDiff = Number(item[totalValue]) - Number(item[salvValue]);
             if (i == categoryVar || i == itmCode) {
               td_data += ``;
             } else if (i == itemQty) {
@@ -428,12 +433,11 @@ $(document).ready(function () {
               td_data += `<td class="first_visible_td tdata_${i}">
                   <div class="category_style">
                     <div>
-                    ${
-                      tempCat.indexOf(key.toLowerCase()) != -1
-                        ? `<div class="category_icon" style="background-color:${randCol};border-color:${randCol};">${item[categoryVar]}</div>`
-                        : `<div class="category_icon" style="background-color:${randCol};border-color:${randCol};">${item[categoryVar]}</div>`
-                    }
-                      
+                      ${
+                        tempCat.indexOf(key.toLowerCase()) != -1
+                          ? `<div class="category_icon" style="background-color:${randCol};border-color:${randCol};">${item[categoryVar]}</div>`
+                          : `<div class="category_icon" style="background-color:${randCol};border-color:${randCol};">${item[categoryVar]}</div>`
+                      }
                     </div>
                     <div class="name_code_style">
                       <div>${val}</div>
@@ -441,6 +445,18 @@ $(document).ready(function () {
                         item[itmCode] != undefined ? item[itmCode] : ""
                       }</div>
                     </div>
+                  </div>
+                  <div class="totalSalvDiff ${
+                    valDiff < 0 ? "col" : "green_col"
+                  }">
+                    <span>${valDiff < 0 ? "−" : "+"}</span>
+                    <span class="diffRupSign">₹</span>
+                    <span>${Math.abs(valDiff.toFixed(2))}</span>
+                    <span class="_diffArrow ${valDiff < 0 ? "_diff-down" : ""}">
+                      <svg version="1.1" viewBox="0 0 12 12" fill="${
+                        valDiff < 0 ? "#d93025" : "green"
+                      }" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M6,0.002L0 6.002 4.8 6.002 4.8 11.9996 7.2 11.9996 7.2 6.002 12 6.002z"></path></svg>
+                    </span>
                   </div>
                 </td>`;
             } else if (i == totalValue) {
@@ -474,16 +490,18 @@ $(document).ready(function () {
         }
       });
 
-      tables += `<div class="panel panel-default panel_default panel_default_${key}" data-id="${key}">
+      tables += `<div class="panel panel-default panel_default panel_default_${key} ${
+        ct == 1 ? "panel_default_active" : ""
+      }" data-id="${key}" >
                     <div class="addAggregateItem_btn" data-category="${key}">
                       <button class="btn btn-default" type="submit">
                         <span class="glyphicon glyphicon-plus"></span>
                       </button>
                     </div>
 
-                    
-
-                    <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="">
+                    <div class="panel-heading collapse_heading collapse_heading_${key} ${
+        ct == 1 ? "collapse_active" : ""
+      }" role="tab" data-id="${key}" id="heading_${key}" style="">
                         <div class="panel-title">
                             <div class="panel1">
                                   <div class="panel_category">
@@ -514,57 +532,76 @@ $(document).ready(function () {
                                 <div class="panel1_rows">
                                   <div class="panel1_row">
                                     <div class="fnt_size d_f_c m_b_4">
-                                      <span class="_title_St">Exp. Wt(kg)</span> 
-                                      <span class="expected_weight expected_${key}">0.00</span>
+                                      <span class="_title_St">Exp. Value</span> 
+                                      <span>
+                                        <span style="font-weight: normal">₹ </span>
+                                        <span class="expected_value expected_${key}">0.00</span>
+                                      </span>
                                     </div>
                                     <div class="fnt_size d_f_c m_b_4">
-                                    <span class="_title_St">Rec. Wt(kg)</span>
-                                    <span class="received_${key}">0.00</span>
+                                      <span class="_title_St">Audited Value</span>
+                                      <span>
+                                        <span style="font-weight: normal">₹ </span>
+                                        <span class="received_${key}">0.00</span>
+                                      </span>
                                     </div>
                                     <div class="fnt_size d_f_c">
-                                      <span class="_title_St">Variance(kg)</span>
-                                      <span class="variance_${key}">0.00</span>
+                                      <span class="_title_St">Variance</span>
+                                      <span>
+                                        <span style="font-weight: normal">₹ </span>
+                                        <span class="variance_${key}">0.00</span>
+                                      </span>
                                     </div>
                                   </div>
                                 </div>
                             </div>
                             <div class="more_details_main">
-                              <div class="more_details">
-                                <span>More <i id="tog_angle_${key}" class="fa fa-angle-down" aria-hidden="true"></i></span>
+                              
+                              <div class="more_details" data-id=${key}>
+                                <span>${
+                                  value.length
+                                } SKU More <i id="tog_angle_${key}"  class="${
+        ct == 1 ? "fa fa-angle-up" : "fa fa-angle-down"
+      }" aria-hidden="true"></i></span>
                               </div>
                               <div class="panel2_rows">
                                 <div class="panel2_row">
-                                  <div class="TotalSumItemValues fnt_size m_b_4">
-                                      <span class="_title_St">Total Value: </span><span class="total_value">
-                                        <span style="font-weight: normal">₹ </span>
-                                        ${numberWithCommas(
-                                          totalItemValue.toFixed(2)
-                                        )}</span>
-                                  </div>
+                                  
                                   <div class="TotalSumItemQty fnt_size">
-                                    <span class="_title_St">Pac: </span> 
-                                    <span class="total_itemQty">
-                                    ${numberWithCommas(totalItemQty)}
-                                    </span>
+                                    <div class="_totalPacs _totalPacs_${key} ${
+        ct == 1 ? "_totalBagsActive" : ""
+      }" data-val="_totalPacs" data-cat="${key}">
+                                      <span class="_title_St pnt-none">Pac: </span> 
+                                      <span class="pacCount pacCount_${key} pnt-none">
+                                      ${numberWithCommas(totalItemQty)}
+                                      </span>
+                                      <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                    </div>
                                   </div>
                                   <div class="TotalBagCount fnt_size">
                                     <div class="_totalBags _totalBags_${key}" data-val="_totalBags" data-cat="${key}">
-                                      <span class="_title_St pnt-none">Bag Count: </span> 
-                                      <span class="bagCount_${key} pnt-none">0</span>
+                                      <span class="_title_St pnt-none">Bag: </span> 
+                                      <span class="bagCount_${key} pnt-none">4</span>
+                                      <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
                                     </div>
                                   </div>
-                                  <div class="fnt_size"><span class="_title_St">Rows:</span> <span class="total_rows">${
-                                    value.length
-                                  }</span>
+                                  <div class="fnt_size m_b_4">
+                                    <span class="_title_St">Recv Wt: </span>
+                                    <span class="total_wt">
+                                      0.00
+                                      <span style="font-weight: normal"> kg</span>
+                                    </span>
                                   </div>
                                 </div>
                               </div>
                             </div>
                         </div>
                     </div>
-                    <div id="collapse_${key}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_${key}">
+                    <div id="collapse_${key}" class="panel-collapse collapse ${
+        ct == 1 ? "in" : ""
+      }" role="tabpanel" aria-labelledby="heading_${key}">
                         <div class="panel-body">
-                            <table id="collapse-table-${key}" class="table table-bordered masterSheetTable" data-sorting="true">
+                            <table id="collapse-table-${key}" class="table table-bordered table-hover table-striped masterSheetTable" data-sorting="true">
                               <thead>${th_data}</thead>
                               <tbody>${tr_data}</tbody>
                             </table>
@@ -575,13 +612,6 @@ $(document).ready(function () {
       _totalItemValSum += Number(totalItemValue);
       _totalItemQtySum += Number(totalItemQty);
     }
-
-    $("._totSumItem").html(
-      `<span style="font-weight: normal">₹ </span>${numberWithCommas(
-        _totalItemValSum.toFixed(2)
-      )}`
-    );
-    $("._totSumWght").html(`0.00`);
 
     // New Code start
     // Create the new card for pre-input data which are inputed before upload sheet.
@@ -621,8 +651,12 @@ $(document).ready(function () {
             }
           }, 500);
         } else {
-          fetchedValueTable += `<div class="panel panel-default panel_default panel_default_${key}" data-id="${key}">
-          <div class="panel-heading collapse_heading collapse_heading_${key}" role="tab" data-id="${key}" id="heading_${key}" style="">
+          fetchedValueTable += `<div class="panel panel-default panel_default panel_default_${key} ${
+            ct == 1 ? "panel_default_active" : ""
+          }" data-id="${key}">
+          <div class="panel-heading collapse_heading collapse_heading_${key} ${
+            ct == 1 ? "collapse_active" : ""
+          }" role="tab" data-id="${key}" id="heading_${key}" style="">
               <div class="panel-title">
                   <div class="panel1">
                         <div class="panel_category">
@@ -646,22 +680,31 @@ $(document).ready(function () {
                       <div class="panel1_rows">
                         <div class="panel1_row">
                           <div class="fnt_size d_f_c m_b_4">
-                            <span class="_title_St">Exp. Wt(kg)</span> 
-                            <span class="expected_weight">${numberWithCommas(
-                              item.expectedWt.toFixed(2)
-                            )}</span> 
-                            </div>
+                            <span class="_title_St">Exp. Value</span> 
+                            <span>
+                              <span style="font-weight: normal">₹ </span>
+                              <span class="expected_value">
+                                ${numberWithCommas(item.expectedWt.toFixed(2))}
+                              </span>
+                            </span> 
+                          </div>
                           <div class="fnt_size d_f_c m_b_4">
-                            <span class="_title_St">Rec. Wt(kg)</span>
-                            <span class="">${numberWithCommas(
-                              item.receivedWt.toFixed(2)
-                            )} </span>
+                            <span class="_title_St">Audited Value</span>
+                            <span>
+                              <span style="font-weight: normal">₹ </span>
+                              <span class="received_${key}">
+                              ${numberWithCommas(item.receivedWt.toFixed(2))} 
+                              </span>
+                            </span> 
                           </div>
                           <div class="fnt_size d_f_c">
-                            <span class="_title_St">Variance(kg)</span> 
-                            <span class="">${numberWithCommas(
-                              item.variance.toFixed(2)
-                            )} </span>
+                            <span class="_title_St">Variance</span> 
+                            <span>
+                              <span style="font-weight: normal">₹ </span>
+                              <span class="variance_${key}">
+                              ${numberWithCommas(item.variance.toFixed(2))} 
+                              </span>
+                            </span>
                           </div>
                         </div>
     
@@ -670,27 +713,35 @@ $(document).ready(function () {
                   </div>
                   <div class="more_details_main">
                     <div class="more_details">
-                      <span>More <i id="tog_angle_${key}" class="fa fa-angle-down" aria-hidden="true"></i></span>
+                      <span>0 SKU More <i id="tog_angle_${key}" class="fa fa-angle-down" aria-hidden="true"></i></span>
                     </div>
                     <div class="panel2_rows">
                       <div class="panel2_row">
-                        <div class="TotalSumItemValues fnt_size m_b_4">
-                        <span class="_title_St">Total Value:</span> <span class="total_value">
-                              <span style="font-weight: normal">₹ </span>
-                              0.00</span></div>
+                        
                         <div class="TotalSumItemQty fnt_size ">
-                          <span class="_title_St">Pac:</span> 
-                          <span class="total_itemQty">0</span>
+                          <div class="_totalPacs _totalPacs_${key} ${
+            ct == 1 ? "_totalBagsActive" : ""
+          }" data-val="_totalPacs" data-cat="${key}">
+                            <span class="_title_St pnt-none">Pac:</span> 
+                            <span class="pacCount pacCount_${key} pnt-none">0</span>
+                            <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                          </div>
                         </div>
                         <div class="TotalBagCount fnt_size">
                           <div class="_totalBags _totalBags_${key}" data-val="_totalBags" data-cat="${key}">
-                            <span class="_title_St pnt-none">Bag Count:</span> 
+                            <span class="_title_St pnt-none">Bag:</span> 
                             <span class="bagCount_${key} pnt-none">
-                              ${item.bagCount}
+                              ${item.bagCount ? item.bagCount : 4}
                             </span>
+                            <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
                           </div>
                         </div>
-                        <div class="fnt_size"><span class="_title_St">Rows:</span><span class="total_rows">0</span>
+                        <div class="fnt_size m_b_4">
+                          <span class="_title_St">Recv Wt:</span> 
+                          <span class="total_Wt">
+                            0.00
+                            <span style="font-weight: normal"> kg</span>
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -698,7 +749,9 @@ $(document).ready(function () {
               </div>
           </div>
           
-          <div id="collapse_${key}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading_${key}">
+          <div id="collapse_${key}" class="panel-collapse collapse ${
+            ct == 1 ? "in" : ""
+          }" role="tabpanel" aria-labelledby="heading_${key}">
               <div class="panel-body">
                   <table id="collapse-table-${key}" class="table table-bordered ${
             th_data1 != "" ? "masterSheetTable" : ""
@@ -726,42 +779,6 @@ $(document).ready(function () {
     // Expand the table clicking on the each category cards.
     $(`.collapse_heading`).click(function (e) {
       let clsName = e.target.dataset?.val;
-      if (clsName != "_totalBags") {
-        let id = $(this).data("id");
-        let cl = $(`#collapse_${id}`).attr("class");
-        $(`.panel_default`).css(
-          "box-shadow",
-          "0 0px 5px 0 rgba(0, 0, 0, 0.36)"
-        );
-        $(".totalBagsTable").hide();
-        $("._totalBags").removeClass("_totalBagsActive");
-        if (cl.includes("in")) {
-          $(`.collapse_heading_${id}`).attr(
-            "style",
-            "background-color: #FFF !important;"
-          );
-          $(`#collapse_${id}`).removeClass("in");
-          $(`.panel_default_${id}`).removeClass("panel_default_active");
-          if (!sel.includes(id.toLowerCase())) {
-            $(`.switch_btn_${id}`).removeClass("active");
-
-            $(`#_btns_${id}`)[0].checked = false;
-            // sel = sel.filter((v) => v != id.toLocaleLowerCase());
-          }
-
-          $(`#tog_angle_${id}`).attr("class", "fa fa-angle-down");
-        } else {
-          $(`.collapse_heading_${id}`).attr(
-            "style",
-            "background-color: #F5F5F5 !important;"
-          );
-          $(`#collapse_${id}`).addClass("in");
-          $(`.switch_btn_${id}`).addClass("active");
-          $(`.panel_default_${id}`).addClass("panel_default_active");
-          $(`#_btns_${id}`)[0].checked = true;
-          $(`#tog_angle_${id}`).attr("class", "fa fa-angle-up");
-        }
-      }
     });
 
     // Creating the Item Qty editable
@@ -877,15 +894,30 @@ $(document).ready(function () {
       }
     })();
 
-    setTimeout(() => {
-      let totalExpWt = 0;
-      $(".expected_weight").each(function () {
+    function getTotalValue() {
+      if (flag) {
+        return false;
+      }
+      flag = true;
+      t1 = [0, 0];
+      $(".expected_value").each(function () {
         totalExpWt += Number($(this).html());
       });
-      if (totalExpWt) {
-        $("._totSumWght").html(totalExpWt.toFixed(2));
-      }
-    }, 1000);
+      totalItemSumval = _totalItemValSum;
+    }
+
+    setTimeout(() => {
+      getTotalValue();
+    }, t1[0]);
+
+    setTimeout(() => {
+      $("._totSumWght").html(totalExpWt.toFixed(2));
+      $("._totSumItem").html(
+        `<span style="font-weight: normal">₹ </span>${numberWithCommas(
+          totalItemSumval.toFixed(2)
+        )}`
+      );
+    }, t1[1]);
   } // createTable() end////////
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -951,8 +983,9 @@ $(document).ready(function () {
     $(".first_page,.next_btn,.step_1,.stepNext").show();
     $(".first_page table tbody").html(`${tData}`);
 
-    $(".stepsC,.stepLine").removeClass("stepActive");
-    $(".stepsC_1").addClass("stepActive");
+    $(".stepsC .crcle,.stepLine").removeClass("stepActive");
+    $(".stepsC_1 .crcle").addClass("stepActive");
+    $(".stepTxt_1,.triangle_1").show();
     $("input").val("");
     $(".currentStep").html("1");
     $("html, body").animate({ scrollTop: 0 }, 500, "linear");
@@ -1013,9 +1046,14 @@ $(document).ready(function () {
     }
     if (Number($(".currentStep").html()) < 4) {
       $(".currentStep").html(Number($(".currentStep").html()) + 1);
-      $("._steps").hide();
-      $(`.stepsC_${$(".currentStep").html()}`).addClass("stepActive");
+      $("._steps,.stepTxt,.toolTipTringle").hide();
+      $(`.stepsC_${$(".currentStep").html()} .crcle`).addClass("stepActive");
       $(`.stepLine_${$(".currentStep").html()}`).addClass("stepActive");
+      $(
+        `.stepTxt_${$(".currentStep").html()}, .triangle_${$(
+          ".currentStep"
+        ).html()}`
+      ).show();
       $(`.step_${$(".currentStep").html()}`).show(
         "slide",
         { direction: "right" },
@@ -1037,7 +1075,7 @@ $(document).ready(function () {
   $(".stepBack").click(function () {
     $(".stepErrorMsg").hide();
     $(".stepDone").hide();
-    $("._steps").hide();
+    $("._steps,.stepTxt,.toolTipTringle").hide();
     $(this).css("pointer-events", "none");
     setTimeout(() => {
       $(this).css("pointer-events", "auto");
@@ -1050,9 +1088,14 @@ $(document).ready(function () {
     $("#scrollToFirst").css("border", "0px");
     if (Number($(".currentStep").html()) > 1) {
       $(".currentStep").html(Number($(".currentStep").html()) - 1);
-      $(`.stepsC_${Number($(".currentStep").html()) + 1}`).removeClass(
+      $(`.stepsC_${Number($(".currentStep").html()) + 1} .crcle`).removeClass(
         "stepActive"
       );
+      $(
+        `.stepTxt_${$(".currentStep").html()},.triangle_${$(
+          ".currentStep"
+        ).html()}`
+      ).show();
       $(`.stepLine_${Number($(".currentStep").html()) + 1}`).removeClass(
         "stepActive"
       );
@@ -1602,6 +1645,11 @@ $(document).ready(function () {
     $(this).parent().append(aggregateDiv);
     aggregateKey = $(this).attr("data-category");
     $("#agg_weight_input").focus();
+
+    let cat = $(this).attr("data-category");
+
+    $(`.totalPacCount`).html(0);
+    $(`.totalBagCount`).html(0);
   });
 
   $(document).on("click", ".aggregate_close_btn", function (e) {
@@ -1629,6 +1677,8 @@ $(document).ready(function () {
     $(".netWeight input").prop("checked", "true");
   });
 
+  let pacInp = 0;
+  let bagInp = 0;
   $(document).on("click", ".addAggrgteItem", function (e) {
     e.preventDefault();
     let inptWt = $("#agg_weight_input").val();
@@ -1654,6 +1704,13 @@ $(document).ready(function () {
       $(`.bagCount_${aggregateKey.toUpperCase()}`).html(
         numberWithCommas(Number(bgc) + Number(unit))
       );
+
+      if (bagType === "cfc") {
+        $(`.totalPacCount`).html(Number(pacInp) + Number(unit));
+      } else {
+        $(`.totalBagCount`).html(Number(pacInp) + Number(unit));
+      }
+
       $("#agg_weight_input").val("");
       $("#agg_unit_input").val("1");
       $("#agg_weight_input").focus();
@@ -1676,11 +1733,10 @@ $(document).ready(function () {
 
       _bagsData.push(data);
 
-      swal("Successfully Updated!", {
-        icon: "success",
-        buttons: false,
-        timer: 1500,
-      });
+      $(".successMsg").show();
+      setTimeout(() => {
+        $(".successMsg").hide();
+      }, 1000);
     }
   });
   _bagsData = [
@@ -1711,10 +1767,21 @@ $(document).ready(function () {
   ];
 
   function createPacsAndBagsTable(data, cat) {
-    if ($(`.totalBagsTable_${cat}`).length) {
+    $(`._totalBags .expand_icon`).html(
+      `<i class="fa fa-plus" aria-hidden="true"></i>`
+    );
+    if (
+      $(`.totalBagsTable_${cat}`).length &&
+      $(`.totalBagsTable_${cat}`).css("display") != "none"
+    ) {
+      console.log("hih");
       $("._totalBags").removeClass("_totalBagsActive");
       $(`.totalBagsTable_${cat}`).remove();
       $(`.panel_default`).css("box-shadow", "0 0px 5px 0 rgba(0, 0, 0, 0.36)");
+      $(`._totalBags .expand_icon_${cat}`).html(
+        `<i class="fa fa-plus" aria-hidden="true"></i>`
+      );
+      $(`.collapse_heading_${cat}`).removeClass("collapse_active");
       return false;
     }
 
@@ -1723,24 +1790,30 @@ $(document).ready(function () {
       "0 -3px 5px 0 rgba(0, 0, 0, 0.36)"
     );
     $("._totalBags").removeClass("_totalBagsActive");
+    $(`._totalPacs_${cat}`).removeClass("_totalBagsActive");
     $(`._totalBags_${cat}`).addClass("_totalBagsActive");
+    $(`._totalBags .expand_icon_${cat}`).html(
+      `<i class="fa fa-minus" aria-hidden="true"></i>`
+    );
 
     console.log(data);
 
     let cl = $(`#collapse_${cat}`).attr("class");
     if (cl.includes("in")) {
-      $(`.collapse_heading_${cat}`).attr(
-        "style",
-        "background-color: #FFF !important;"
-      );
+      $(`.collapse_heading_${cat}`).removeClass("collapse_active");
       $(`#collapse_${cat}`).removeClass("in");
       $(`.panel_default_${cat}`).removeClass("panel_default_active");
       if (!sel.includes(cat.toLowerCase())) {
         $(`.switch_btn_${cat}`).removeClass("active");
         $(`#_btns_${cat}`)[0].checked = false;
       }
+      $(`._totalPacs .expand_icon_${cat}`).html(
+        `<i class="fa fa-plus" aria-hidden="true"></i>`
+      );
       $(`#tog_angle_${cat}`).attr("class", "fa fa-angle-down");
     }
+
+    $(`.collapse_heading_${cat}`).addClass("collapse_active");
 
     let tbody = "";
     if (data.length > 0) {
@@ -1830,6 +1903,58 @@ $(document).ready(function () {
     let cat = $(this).data("cat");
     createPacsAndBagsTable(_bagsData, cat);
   });
+
+  $(document).on("click", ".more_details", function () {
+    let cat = $(this).data("id");
+    showPacsTable(cat);
+  });
+
+  $(document).on("click", "._totalPacs", function () {
+    let cat = $(this).data("cat");
+    showPacsTable(cat);
+  });
+
+  function showPacsTable(id) {
+    let cl = $(`#collapse_${id}`).attr("class");
+    $(".totalBagsTable").hide();
+    $(`._totalBags`).removeClass("_totalBagsActive");
+    $(`._totalPacs_${id}`).addClass("_totalBagsActive");
+    $(`._totalBags .expand_icon`).html(
+      `<i class="fa fa-plus" aria-hidden="true"></i>`
+    );
+
+    if (cl.includes("in")) {
+      $(`.collapse_heading_${id}`).removeClass("collapse_active");
+      $(`._totalPacs_${id}`).removeClass("_totalBagsActive");
+      $(`#collapse_${id}`).removeClass("in");
+      $(`.panel_default_${id}`).removeClass("panel_default_active");
+      if (!sel.includes(id.toLowerCase())) {
+        $(`.switch_btn_${id}`).removeClass("active");
+
+        $(`#_btns_${id}`)[0].checked = false;
+        // sel = sel.filter((v) => v != id.toLocaleLowerCase());
+      }
+
+      $(`._totalPacs .expand_icon_${id}`).html(
+        `<i class="fa fa-plus" aria-hidden="true"></i>`
+      );
+      $(`#tog_angle_${id}`).attr("class", "fa fa-angle-down");
+    } else {
+      $(`.collapse_heading_${id}`).addClass("collapse_active");
+      $(`#collapse_${id}`).addClass("in");
+      $(`.switch_btn_${id}`).addClass("active");
+      $(`.panel_default_${id}`).addClass("panel_default_active");
+      $(`#_btns_${id}`)[0].checked = true;
+      $(`._totalPacs .expand_icon_${id}`).html(
+        `<i class="fa fa-minus" aria-hidden="true"></i>`
+      );
+      $(`#tog_angle_${id}`).attr("class", "fa fa-angle-up");
+    }
+  }
+
+  // $(document).on("click", "._totalPacs", function () {
+  //   let id = $(this).data("cat");
+  // });
 
   document
     .querySelector(".rightSideScroll")
