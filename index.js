@@ -35,6 +35,51 @@ $(document).ready(function () {
 
   // New Code start
   var _bagsData = [];
+  _bagsData = [
+    {
+      bagId: "201-212",
+      grossWt: 15.2,
+      netWt: 15.2,
+      bagging: "bag",
+      category: "AT",
+    },
+    {
+      bagId: "202-213",
+      grossWt: 45.5,
+      netWt: 43.5,
+      bagging: "cfc",
+      category: "BI",
+    },
+    {
+      bagId: "203-214",
+      grossWt: 290,
+      netWt: 279,
+      bagging: "cfc",
+      category: "AT",
+    },
+    {
+      bagId: "204-215",
+      grossWt: 254.8,
+      netWt: 245.2,
+      bagging: "bag",
+      category: "BI",
+    },
+    {
+      bagId: "205-216",
+      grossWt: 164.8,
+      netWt: 187.2,
+      bagging: "bag",
+      category: "BI",
+    },
+    {
+      bagId: "206-217",
+      grossWt: 134.8,
+      netWt: 143.2,
+      bagging: "bag",
+      category: "JU",
+    },
+  ];
+
   var fetchedValue = [];
 
   // fetchedValue = [
@@ -581,7 +626,19 @@ $(document).ready(function () {
                                   <div class="TotalBagCount fnt_size">
                                     <div class="_totalBags _totalBags_${key}" data-val="_totalBags" data-cat="${key}">
                                       <span class="_title_St pnt-none">Bag: </span> 
-                                      <span class="bagCount_${key} pnt-none">4</span>
+                                      <span class="bagCount_${key} pnt-none">
+                                        ${
+                                          _bagsData.length > 0
+                                            ? _bagsData.filter(
+                                                (v) =>
+                                                  String(
+                                                    v.category
+                                                  ).toUpperCase() ===
+                                                  key.toUpperCase()
+                                              ).length
+                                            : 0
+                                        }
+                                      </span>
                                       <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
                                     </div>
                                   </div>
@@ -731,7 +788,7 @@ $(document).ready(function () {
                           <div class="_totalBags _totalBags_${key}" data-val="_totalBags" data-cat="${key}">
                             <span class="_title_St pnt-none">Bag:</span> 
                             <span class="bagCount_${key} pnt-none">
-                              ${item.bagCount ? item.bagCount : 4}
+                              ${item.bagCount}
                             </span>
                             <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
                           </div>
@@ -1647,9 +1704,25 @@ $(document).ready(function () {
     $("#agg_weight_input").focus();
 
     let cat = $(this).attr("data-category");
+    let bagLen =
+      _bagsData.length > 0
+        ? _bagsData.filter(
+            (v) =>
+              v.bagging === "bag" &&
+              String(v.category).toUpperCase() === aggregateKey.toUpperCase()
+          ).length
+        : 0;
 
-    $(`.totalPacCount`).html(0);
-    $(`.totalBagCount`).html(0);
+    let pacLen =
+      _bagsData.length > 0
+        ? _bagsData.filter(
+            (v) =>
+              v.bagging === "cfc" &&
+              String(v.category).toUpperCase() === aggregateKey.toUpperCase()
+          ).length
+        : 0;
+    $(`.totalPacCount`).html(pacLen);
+    $(`.totalBagCount`).html(bagLen);
   });
 
   $(document).on("click", ".aggregate_close_btn", function (e) {
@@ -1705,76 +1778,71 @@ $(document).ready(function () {
         numberWithCommas(Number(bgc) + Number(unit))
       );
 
-      if (bagType === "cfc") {
-        $(`.totalPacCount`).html(Number(pacInp) + Number(unit));
-      } else {
-        $(`.totalBagCount`).html(Number(pacInp) + Number(unit));
-      }
-
       $("#agg_weight_input").val("");
       $("#agg_unit_input").val("1");
       $("#agg_weight_input").focus();
 
       let idd;
-      if (_bagsData.length > 0) {
-        idd = String(_bagsData[_bagsData.length - 1].bagId).split("-");
-      } else {
-        idd = [100, 110];
+
+      for (let i = 0; i < unit; i++) {
+        if (_bagsData.length > 0) {
+          idd = String(_bagsData[0].bagId).split("-");
+        } else {
+          idd = [100, 110];
+        }
+        console.log(idd);
+        let data = {
+          bagId: `${Number(idd[0]) + 1}-${Number(idd[1]) + 1}`,
+          grossWt: inptWt,
+          netWt: inptWt,
+          bagging: bagType,
+          category: aggregateKey,
+        };
+
+        _bagsData.unshift(data);
       }
 
-      console.log(bagType);
+      if (bagType === "cfc") {
+        let pacLen =
+          _bagsData.length > 0
+            ? _bagsData.filter(
+                (v) =>
+                  v.bagging === "cfc" &&
+                  String(v.category).toUpperCase() ===
+                    aggregateKey.toUpperCase()
+              ).length
+            : 0;
+        $(`.totalPacCount`).html(pacLen);
+      } else {
+        let bagLen =
+          _bagsData.length > 0
+            ? _bagsData.filter(
+                (v) =>
+                  v.bagging === "bag" &&
+                  String(v.category).toUpperCase() ===
+                    aggregateKey.toUpperCase()
+              ).length
+            : 0;
+        $(`.totalBagCount`).html(bagLen);
+      }
 
-      let data = {
-        bagId: `${Number(idd[0]) + 1}-${Number(idd[1]) + 1}`,
-        grossWt: inptWt,
-        netWt: inptWt,
-        bagging: bagType,
-      };
-
-      _bagsData.push(data);
-
+      createPacsAndBagsTable(_bagsData, aggregateKey, 1);
       $(".successMsg").show();
       setTimeout(() => {
         $(".successMsg").hide();
       }, 1000);
     }
   });
-  _bagsData = [
-    {
-      bagId: "201-212",
-      grossWt: 15.2,
-      netWt: 15.2,
-      bagging: "bag",
-    },
-    {
-      bagId: "202-213",
-      grossWt: 45.5,
-      netWt: 43.5,
-      bagging: "cfc",
-    },
-    {
-      bagId: "203-214",
-      grossWt: 290,
-      netWt: 279,
-      bagging: "cfc",
-    },
-    {
-      bagId: "204-215",
-      grossWt: 254.8,
-      netWt: 245.2,
-      bagging: "bag",
-    },
-  ];
 
-  function createPacsAndBagsTable(data, cat) {
+  function createPacsAndBagsTable(data, cat, a = 0) {
     $(`._totalBags .expand_icon`).html(
       `<i class="fa fa-plus" aria-hidden="true"></i>`
     );
     if (
       $(`.totalBagsTable_${cat}`).length &&
-      $(`.totalBagsTable_${cat}`).css("display") != "none"
+      $(`.totalBagsTable_${cat}`).css("display") != "none" &&
+      a == 0
     ) {
-      console.log("hih");
       $("._totalBags").removeClass("_totalBagsActive");
       $(`.totalBagsTable_${cat}`).remove();
       $(`.panel_default`).css("box-shadow", "0 0px 5px 0 rgba(0, 0, 0, 0.36)");
@@ -1784,6 +1852,12 @@ $(document).ready(function () {
       $(`.collapse_heading_${cat}`).removeClass("collapse_active");
       return false;
     }
+
+    let _bagsArr = data.filter(
+      (v) => String(v.category).toUpperCase() === cat.toUpperCase()
+    );
+
+    $(`.bagCount_${cat}`).html(_bagsArr.length);
 
     $(`.panel_default_${cat}`).css(
       "box-shadow",
@@ -1816,8 +1890,8 @@ $(document).ready(function () {
     $(`.collapse_heading_${cat}`).addClass("collapse_active");
 
     let tbody = "";
-    if (data.length > 0) {
-      data.forEach((item) => {
+    if (_bagsArr.length > 0) {
+      _bagsArr.forEach((item) => {
         let tr = `<tr class="id_${item.bagId}" data-id="${item.bagId}">
             <td>
               <div class="bagIdMain">
@@ -1880,6 +1954,7 @@ $(document).ready(function () {
           if (willDelete) {
             $(row).remove();
             _bagsData = _bagsData.filter((v) => v.bagId != id);
+            createPacsAndBagsTable(_bagsData, cat, 1);
             swal("Successfully Deleted!", {
               icon: "success",
               buttons: false,
@@ -1901,6 +1976,7 @@ $(document).ready(function () {
 
   $(document).on("click", "._totalBags", function () {
     let cat = $(this).data("cat");
+
     createPacsAndBagsTable(_bagsData, cat);
   });
 
