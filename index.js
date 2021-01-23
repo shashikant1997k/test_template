@@ -417,9 +417,7 @@ $(document).ready(function () {
           )}</th>`;
         } else if (val == "uom") {
           uomValue = i;
-          th_data += `<th class="${key}_${i} alignRight" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
-            val
-          )}</th>`;
+          th_data += `<th class="${key}_${i} alignRight" style="background: #E6E7EB;" data-breakpoints="xs">${val.toUpperCase()}</th>`;
         } else {
           if (val == "no_mapping") {
             th_data += `<th class="${key}_${i} alignRight" style="background: #E6E7EB;" data-breakpoints="xs">${toTitleCase(
@@ -552,7 +550,7 @@ $(document).ready(function () {
                                   <div class="panel_category">
                                     ${
                                       tempCat.indexOf(key.toLowerCase()) != -1
-                                        ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
+                                        ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text">
                                           ${
                                             catgName[
                                               tempCat.indexOf(key.toLowerCase())
@@ -569,7 +567,7 @@ $(document).ready(function () {
                                                 ]
                                           }
                                         </span>`
-                                        : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
+                                        : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text">
                                         ${key}
                                       </span>`
                                     }
@@ -605,7 +603,7 @@ $(document).ready(function () {
                               <div class="more_details" data-id=${key}>
                                 <span>${
                                   value.length
-                                } SKU More <i id="tog_angle_${key}"  class="${
+                                } SKU <i id="tog_angle_${key}"  class="${
         ct == 1 ? "fa fa-angle-up" : "fa fa-angle-down"
       }" aria-hidden="true"></i></span>
                               </div>
@@ -620,7 +618,9 @@ $(document).ready(function () {
                                       <span class="pacCount pacCount_${key} pnt-none">
                                       ${numberWithCommas(totalItemQty)}
                                       </span>
-                                      <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                      <span class="expand_icon expand_icon_${key}"><i class="${
+        ct == 1 ? "fa fa-minus" : "fa fa-plus"
+      }" aria-hidden="true"></i></span>
                                     </div>
                                   </div>
                                   <div class="TotalBagCount fnt_size">
@@ -719,7 +719,7 @@ $(document).ready(function () {
                         <div class="panel_category">
                           ${
                             tempCat.indexOf(key.toLowerCase()) != -1
-                              ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
+                              ? `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text">
                               ${
                                 catgName[tempCat.indexOf(key.toLowerCase())]
                                   .length > 7 && mobileVar == 1
@@ -729,7 +729,7 @@ $(document).ready(function () {
                                   : catgName[tempCat.indexOf(key.toLowerCase())]
                               }
                               </span>`
-                              : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text" style="margin-left:10px;font-size:0.8em;">
+                              : `<span class="category_icon" style="background-color:${randCol};border-color:${randCol};">${key}</span><span class="cat_text">
                               ${key}
                             </span>`
                           }
@@ -770,7 +770,7 @@ $(document).ready(function () {
                   </div>
                   <div class="more_details_main">
                     <div class="more_details">
-                      <span>0 SKU More <i id="tog_angle_${key}" class="fa fa-angle-down" aria-hidden="true"></i></span>
+                      <span>0 SKU <i id="tog_angle_${key}" class="fa fa-angle-down" aria-hidden="true"></i></span>
                     </div>
                     <div class="panel2_rows">
                       <div class="panel2_row">
@@ -882,7 +882,7 @@ $(document).ready(function () {
               text: "Successfully Updated",
               icon: "success",
               buttons: false,
-              timer: 1500,
+              timer: 1000,
             });
           }, 1000);
         }
@@ -1406,16 +1406,15 @@ $(document).ready(function () {
       }
     }
     for (let i = 0; i < input1.length; i++) {
+      // let mpgVal = $(input1[i]).data("value");
+      // mpgVal = mpgVal.split(" ").join("_");
+      // mappedVal.push(mpgVal.toLowerCase());
       let mpgVal = $(input1[i]).data("value");
-      mpgVal = mpgVal.split(" ").join("_");
-      mappedVal.push(mpgVal.toLowerCase());
+      mappedVal.push(mpgVal);
     }
 
     mappedVal.forEach((key, i) => {
       if (mappingVal[i] != 1) {
-        if (!mappedKeyIndex.hasOwnProperty(key)) {
-          mappedKeyIndex[key] = i;
-        }
         mappedResult[key] = mappingVal[i];
       }
     });
@@ -1437,6 +1436,9 @@ $(document).ready(function () {
         $("html, body").animate({ scrollTop: 0 }, 300, "linear");
         return false;
       }
+      if (!mappedKeyIndex.hasOwnProperty(mappingVal[i])) {
+        mappedKeyIndex[mappingVal[i]] = i;
+      }
       temprArr.push(mappingVal[i]);
       if (mappingVal[i] == "") {
         error_val = 1;
@@ -1451,6 +1453,83 @@ $(document).ready(function () {
     createTable(resultArray, mappedResult);
   });
 
+  // Autocomplete dropdown while searching
+  function autoCompleteSearch(result) {
+    let { headers, file_data } = result;
+
+    let allItemName = [];
+    let arr1 = Object.values(mappedResult);
+    let k1 = "";
+    let k2 = "";
+    let k3 = "";
+    for (const key in mappedResult) {
+      if (mappedResult[key] === "category") {
+        k1 = key;
+      }
+      if (mappedResult[key] === "item_name") {
+        k2 = key;
+      }
+      if (mappedResult[key] === "total_value") {
+        k3 = key;
+      }
+    }
+    let ind = headers.indexOf(k1);
+    let ind2 = headers.indexOf(k2);
+    let ind3 = headers.indexOf(k3);
+    file_data.forEach((v) => {
+      let data = {
+        category: v[ind],
+        name: v[ind2],
+        value: `₹${v[ind3]}`,
+      };
+      allItemName.push(data);
+    });
+
+    $("#searchInput")
+      .autocomplete({
+        minLength: 1,
+        source: function (request, response) {
+          //data :: JSON list defined
+          response(
+            $.map(allItemName, function (value, key) {
+              let name = value.name.toUpperCase();
+              if (name.indexOf(request.term.toUpperCase()) != -1) {
+                return {
+                  name: value.name,
+                  value: value.value,
+                  category: value.category,
+                };
+              } else {
+                return null;
+              }
+            })
+          );
+        },
+
+        select: function (event, ui) {
+          $("#searchInput").val(ui.item.name);
+          return false;
+        },
+      })
+      .autocomplete("instance")._renderItem = function (ul, item) {
+      let col = $(`.collapse_heading_${item.category} .category_icon`).css(
+        "background-color"
+      );
+
+      let li_item = `<div class="autoCompleteMain">
+                        <div class="category_icon" style="background-color:${col};border-color:${col};">${item.category}</div>
+                        <div class="autocompleteInner">
+                          <div class="autocompleteName">${item.name}</div>
+                          <div class="autocompleteValue">${item.value}</div>
+                        </div>
+                      </div>`;
+      return $("<li class='ui-autocomplete-row'></li>")
+        .data("item.autocomplete", item)
+        .append(li_item)
+        .appendTo(ul);
+    };
+  }
+
   // Global search function based on the category, item code and item name
   const searchResult = (input, sel) => {
     let { headers, file_data } = resultArray;
@@ -1458,7 +1537,6 @@ $(document).ready(function () {
       headers,
       file_data,
     };
-
     if (sel.length > 0) {
       result.file_data = sel.length
         ? result?.file_data.filter((v) => {
@@ -1468,14 +1546,9 @@ $(document).ready(function () {
     }
     if (input.length > 0) {
       let val = input.toLowerCase();
-      let allItemName = [];
-      result.file_data.forEach((v) => {
-        allItemName.push(v[2]);
-      });
 
-      $("#searchInput").autocomplete({
-        source: allItemName,
-      });
+      // Call function for autocomplete dropdown
+      autoCompleteSearch(result);
 
       result.file_data = val
         ? result?.file_data.filter((v) => {
@@ -1502,9 +1575,6 @@ $(document).ready(function () {
   function searchClicked(input, sel) {
     $(`.collapse_heading`).each(function (index) {
       let id = $(this).data("id");
-      // let cl = $(`#collapse_${id}`).attr("class");
-      // if (cl.includes("in"))
-
       if (index == 0) {
         $("#search_concept").html(id);
         $(`#collapse_${id}`).addClass("in");
@@ -1656,6 +1726,8 @@ $(document).ready(function () {
   // Submit the form after filling the form for adding a new row.
   $(".add_item_form").on("submit", function (e) {
     e.preventDefault();
+    // var str = $(".add_item_form").serialize();
+    // console.log(str);
     let add_category = $("#add_category").val();
     let add_itemcode = $("#add_itemcode").val();
     let add_itemname = $("#add_itemname").val();
@@ -1686,7 +1758,7 @@ $(document).ready(function () {
 
     uploadedCategory.push(add_category.toUpperCase());
 
-    resultArray.file_data.push(addedItem);
+    resultArray.file_data.unshift(addedItem);
     createTable(resultArray, mappedResult);
     createCategoryBtn(resultArray);
 
