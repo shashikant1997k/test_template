@@ -168,6 +168,11 @@ body {
   font-size: 0.8em;
 }
 
+.cat_text {
+  margin-left: 10px;
+  font-size: 0.8em;
+}
+
 .totalSalvDiff {
   position: absolute;
   right: 1em;
@@ -330,6 +335,32 @@ body {
 
 .ui-autocomplete::-webkit-scrollbar-thumb {
   background-color: #bcbcc2;
+}
+
+.autoCompleteMain {
+  display: flex;
+  flex-direction: row;
+  padding: 6px 0.8em 3px 0.5em !important;
+}
+
+.autocompleteInner {
+  display: flex;
+  flex-direction: column;
+  margin-left: 7px;
+}
+
+.autocompleteName {
+  font-size: 0.85em;
+}
+
+.autocompleteValue {
+  font-weight: 600;
+  font-size: 0.8em;
+}
+
+.autoCompleteMain .category_icon {
+  margin-top: 3px;
+  font-size: 0.8em;
 }
 
 .first_visible_td {
