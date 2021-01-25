@@ -88,7 +88,6 @@
             </div> 
         </div> 
     </div> -->
-    
 
     <div class="main">
         <div class="topHeader">
@@ -154,7 +153,12 @@
         </div>
   
         <div class="table_main">
+            <div class="allSheets">
+                
+            </div>
             <div class="first_page">
+                <div id="overlayDiv"></div>
+                
                 <div class="stepTopmain">
                     <div class="stepHead">
                         <div class="stepsC stepsC_1 ">
@@ -181,51 +185,52 @@
                             <div class="stepTxt stepTxt_4">Audit Date</div>
                         </div>
                     </div>
-                    <div class="stepperMain">
-                        <div class="stepperInner">
-                            <div class="step_1 _steps">
-                                <label for="">Destruction Period:</label>
-                                <div id="fromDate" class="input-group date" data-date-format="dd/mm/yyyy" style="margin-bottom: 15px;">
-                                    <input class="form-control" type="text" placeholder="From Date" autocomplete="off" />
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    <div href="#" data-toggle="popover" id="stepsPopover" data-trigger="focus" ></div>
+                        <div class="stepperMain">
+                            <div class="stepperInner">
+                                <div class="step_1 _steps">
+                                    <label for="">Destruction Period:</label>
+                                    <div id="fromDate" class="input-group date" data-date-format="dd/mm/yyyy" style="margin-bottom: 15px;">
+                                        <input class="form-control" type="text" placeholder="From Date" autocomplete="off" />
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    </div>
+                                    <div id="toDate" class="input-group date" data-date-format="dd/mm/yyyy">
+                                        <input class="form-control" type="text" placeholder="To Date" autocomplete="off" />
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    </div>
                                 </div>
-                                <div id="toDate" class="input-group date" data-date-format="dd/mm/yyyy">
-                                    <input class="form-control" type="text" placeholder="To Date" autocomplete="off" />
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                <div class="step_2 _steps" style="display: none;">
+                                    <label for="">WD Name:</label>
+                                    <input type="text" class="form-control" name="wdname" placeholder="WD Name" autocomplete="off" />
+                                </div>
+                                <div class="step_3 _steps" style="display: none;">
+                                    <label for="">PO Number:</label>
+                                    <input type="text" class="form-control" name="tasknumber" placeholder="PO Number" autocomplete="off" />
+                                </div>
+                                <div class="step_4 _steps" style="display: none;">
+                                    <label for="">Audit Date:</label>
+                                    <div id="scheduledDate" class="input-group date" data-date-format="dd/mm/yyyy">
+                                        <input class="form-control" type="text" name="scheduleddate" placeholder="Audit Date" autocomplete="off" />
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    </div>
+                                </div>
+                                <p class="stepErrorMsg">Field is required!</p>
+                            </div>
+                            <div class="stepperFooter">
+                                <div class="steps-inner">
+                                    <div class="steps">
+                                        <span style="font-weight: 600;" class="currentStep">1</span>
+                                        <span style="font-size: 1.3em;">/</span>
+                                        <span>4</span>
+                                    </div>
+                                </div>
+                                <div class="stepBtn">
+                                    <button type="button" class="btn btn-info btn-sm stepBack" style="display: none;">Back</button>
+                                    <button type="button" class="btn btn-primary btn-sm stepNext">Next</button>
+                                    <button type="button" href="#scrollToFirst" class="btn btn-primary btn-sm stepDone" style="display: none;">Done</button>
                                 </div>
                             </div>
-                            <div class="step_2 _steps" style="display: none;">
-                                <label for="">WD Name:</label>
-                                <input type="text" class="form-control" name="wdname" placeholder="WD Name" autocomplete="off" />
-                            </div>
-                            <div class="step_3 _steps" style="display: none;">
-                                <label for="">PO Number:</label>
-                                <input type="text" class="form-control" name="tasknumber" placeholder="PO Number" autocomplete="off" />
-                            </div>
-                            <div class="step_4 _steps" style="display: none;">
-                                <label for="">Audit Date:</label>
-                                <div id="scheduledDate" class="input-group date" data-date-format="dd/mm/yyyy">
-                                    <input class="form-control" type="text" name="scheduleddate" placeholder="Audit Date" autocomplete="off" />
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                </div>
-                            </div>
-                            <p class="stepErrorMsg">Field is required!</p>
                         </div>
-                        <div class="stepperFooter">
-                            <div class="steps-inner">
-                                <div class="steps">
-                                    <span style="font-weight: 600;" class="currentStep">1</span>
-                                    <span style="font-size: 1.3em;">/</span>
-                                    <span>4</span>
-                                </div>
-                            </div>
-                            <div class="stepBtn">
-                                <button type="button" class="btn btn-info btn-sm stepBack" style="display: none;">Back</button>
-                                <button type="button" class="btn btn-primary btn-sm stepNext">Next</button>
-                                <button type="button" href="#scrollToFirst" class="btn btn-primary btn-sm stepDone" style="display: none;">Done</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
         
                 <div class="first_page_table_div" id="scrollToFirst">
