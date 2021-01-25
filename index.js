@@ -113,18 +113,22 @@ $(document).ready(function () {
   //   },
   // ];
 
-  // let aggregateDiv = `<div class="addAggregateItem_div"><div class="aggregate_close_btn"><span>&times;</span></div> <div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem">Add</button> </div> </div> </div>`;
-
   let aggregateDiv = `<div class="addAggregateItem_div"> <div class="aggregate_close_btn"><span>&times;</span></div> <div> <div class="btn-group bagTypeBtn" data-toggle="buttons"> <label class="btn btn-default bag-on btn-xs active"> <input type="radio" value="1" name="bagType" checked="checked" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/grossweight.png" alt="Bag" srcset=""><span class="totalBagCount">0</span> </label> <label class="btn btn-default cfc-on btn-xs "> <input type="radio" value="0" name="bagType" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/open-box.png" alt="CFC" srcset=""><span class="totalPacCount">0</span> </label> </div> <div class="btn-group weightTypeBtn" data-toggle="buttons"> <label class="btn btn-default grossWeight btn-xs active"> <input type="radio" value="gross" name="weightType" checked="checked" /> <span>Gross</span> </label> <label class="btn btn-default netWeight btn-xs "> <input type="radio" value="net" name="weightType" /> <span>Net</span> </label> </div> </div> <form class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number" inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="unit_input_div"> <label for="agg_unit_input">Unit</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Unit" id="agg_unit_input" value="1" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem" type="submit">Add</button> </div></form><div class="successMsg">Value Added!</div> </div>`;
 
+  let cA = {};
   // Function to generate random color.
-  function getRandomColor() {
-    var letters = "0123456789ABCDEF";
-    var color = "#";
-    for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+  function getRandomColor(key) {
+    if (Object.keys(cA).indexOf(key.toUpperCase()) == -1) {
+      var letters = "0123456789ABCDEF";
+      var color = "#";
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      cA[key.toUpperCase()] = color;
+      return color;
+    } else {
+      return cA[key.toUpperCase()];
     }
-    return color;
   }
 
   // Function to seprate number by placing comma on appropriate places.
@@ -452,7 +456,7 @@ $(document).ready(function () {
       var tr_data = "";
       var totalItemQty = 0;
       var totalItemValue = 0;
-      let randCol = getRandomColor();
+      let randCol = getRandomColor(key);
       ct++;
       value.forEach((item, index) => {
         if (item.length == headLen || item.length == dataLen) {
@@ -678,7 +682,7 @@ $(document).ready(function () {
         let th_data1 = "";
         let td_data1 = "";
         let key = item.category.toUpperCase();
-        let randCol = getRandomColor();
+        let randCol = getRandomColor(key);
         if (uploadedCategory.includes(key.toUpperCase())) {
           setTimeout(() => {
             if (parseInt(item.receivedWt)) {
@@ -1011,14 +1015,58 @@ $(document).ready(function () {
     $(".scrollable-dropdown").html(catBtn2);
   }
 
+  let multipleSheet = 0;
+  function createAllSheetTable(res) {
+    let trData = "";
+    let table = "";
+    multipleSheet = 1;
+    for (const key in res) {
+      if (Array.isArray(res[key]) && res[key].length) {
+        console.log(key);
+        for (let i = 0; i < (res[key].length >= 8 ? 8 : res[key].length); i++) {
+          let tData = "";
+          for (let j = 0; j <= res[key][i].length; j++) {
+            tData += `<td data-id="${res[key][i][j]}" class="_data_td${j}">${
+              res[key][i][j] != undefined
+                ? res[key][i][j].length < 20
+                  ? res[key][i][j]
+                  : res[key][i][j].slice(0, 20) + "..."
+                : ""
+            }</td>`;
+          }
+          trData += `<tr><td class="">${i}</td>${tData}</tr>`;
+        }
+
+        table += `<div class="sheetInr"><h4>${key}</h4><div class="allSheetsInner"><table class="table table-bordered allSheetsTable">${trData}</table><div class="overlayInner" data-id="${key}"></div><div data-id="${key}" class="overlayText">Select</div></div></div>`;
+        trData = "";
+      }
+    }
+
+    $(".back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain").hide();
+    $(
+      ".second_page,.category_btn,.first_page_1,._steps,.stepDone,.stepBack"
+    ).hide();
+    $(".main").css("max-width", "100%");
+
+    $(".table_main,.allSheets").show();
+    $(".allSheets").html(table);
+
+    $(".overlayInner,.overlayText").on("click", function () {
+      let id = $(this).data("id");
+      $(".main").css("max-width", "1100px");
+      _csvData = res[id];
+      createDummyTable(_csvData);
+    });
+  }
+
   // create as it is table like uploaded sheet
   function createDummyTable(res) {
-    var tData = "";
-    var optionRow = "";
+    let tData = "";
+    // let optionRow = "";
     if (Array.isArray(res) && res.length) {
-      for (var i = 0; i < (res.length >= 8 ? 8 : res.length); i++) {
+      for (let i = 0; i < (res.length >= 8 ? 8 : res.length); i++) {
         tData += `<tr class="option_row option_row_${i}" href="#scrollToBtns" data-id="${i}"><td class="">${i}</td>`;
-        for (var j = 0; j <= res[i].length; j++) {
+        for (let j = 0; j <= res[i].length; j++) {
           tData += `<td data-id="${res[i][j]}" class="_data_td${j}">${
             res[i][j] != undefined
               ? res[i][j].length < 20
@@ -1032,14 +1080,18 @@ $(document).ready(function () {
     }
     $(".table_main").show();
     $(
-      ".csv_files,.csv_dummy_files,.back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain"
+      ".back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain,.allSheets"
     ).hide();
     $(
       ".second_page,.category_btn,.first_page_1,._steps,.stepDone,.stepBack"
     ).hide();
     $(".first_page,.next_btn,.step_1,.stepNext").show();
+    if (multipleSheet === 1) {
+      $(".back_btn").show();
+    }
     $(".first_page table tbody").html(`${tData}`);
-
+    $(".stepTopmain").css("z-index", "9999");
+    $("#overlayDiv").css("display", "block");
     $(".stepsC .crcle,.stepLine").removeClass("stepActive");
     $(".stepsC_1 .crcle").addClass("stepActive");
     $(".stepTxt_1,.triangle_1").show();
@@ -1076,6 +1128,25 @@ $(document).ready(function () {
     }
   });
 
+  (function () {
+    $("#stepsPopover")
+      .popover({
+        offset: 10,
+        trigger: "manual",
+        placement: mobileVar === 1 ? "bottom" : "right",
+        title: "Destruction Period",
+        content: "time between two and helo",
+      })
+      .popover("show");
+  })();
+
+  let inpTitle = ["Destruction Period", "WD Name", "PO Number", "Audit Date"];
+  let inpContent = [
+    "Destruction Period content",
+    "WD Name content",
+    "PO Number content",
+    "Audit Date content",
+  ];
   // click on next button to go on the next page to input to select topbar info data
   $(".stepNext").click(function (e) {
     $(".stepErrorMsg").hide();
@@ -1116,6 +1187,32 @@ $(document).ready(function () {
         { direction: "right" },
         200
       );
+
+      console.log("heiiihihihi..........");
+
+      if (mobileVar === 1) {
+        $(".stepTopmain .popover").css(
+          "cssText",
+          `left:${
+            (Number($(".currentStep").html()) - 1) * 13
+          }% !important;display:block;transition: 400ms;`
+        );
+      } else {
+        $(".stepTopmain .popover").css(
+          "cssText",
+          `top:${
+            Number($(".currentStep").html()) * 3
+          }em !important;display:block;transition: 400ms;`
+        );
+      }
+
+      $(".stepTopmain .popover-title").html(
+        inpTitle[Number($(".currentStep").html()) - 1]
+      );
+      $(".stepTopmain .popover-content").html(
+        inpContent[Number($(".currentStep").html()) - 1]
+      );
+
       if (Number($(".currentStep").html()) == 4) {
         $(".stepNext").hide();
         $(".stepDone").show();
@@ -1138,6 +1235,9 @@ $(document).ready(function () {
       $(this).css("pointer-events", "auto");
     }, 200);
     setpDoneClicked = 0;
+    $(".stepTopmain .popover").css("display", "block");
+    $(".stepTopmain").css("z-index", "9999");
+    $("#overlayDiv").css("display", "block");
     rowNum = null;
     $(".option_row").removeClass("option_row_hover");
     $(".option_row").removeClass("option_row_color");
@@ -1161,6 +1261,30 @@ $(document).ready(function () {
         { direction: "left" },
         200
       );
+
+      if (mobileVar === 1) {
+        $(".stepTopmain .popover").css(
+          "cssText",
+          `left:${
+            (Number($(".currentStep").html()) - 1) * 13
+          }% !important;display:block;transition: 400ms;`
+        );
+      } else {
+        $(".stepTopmain .popover").css(
+          "cssText",
+          `top:${
+            Number($(".currentStep").html()) * 3
+          }em !important;display:block;transition: 400ms;`
+        );
+      }
+
+      $(".stepTopmain .popover-title").html(
+        inpTitle[Number($(".currentStep").html()) - 1]
+      );
+      $(".stepTopmain .popover-content").html(
+        inpContent[Number($(".currentStep").html()) - 1]
+      );
+
       $(".stepBack").show();
       $(".stepNext").show();
       if (Number($(".currentStep").html()) == 1) {
@@ -1177,6 +1301,9 @@ $(document).ready(function () {
       return false;
     }
     setpDoneClicked = 1;
+    $(".stepTopmain .popover").css("display", "none");
+    $(".stepTopmain").css("z-index", "10");
+    $("#overlayDiv").css("display", "none");
     $(".option_row").addClass("option_row_hover");
     $(".stepErrorMsg").hide();
     let mT = mobileVar == 1 ? 60 : 0;
@@ -1208,16 +1335,27 @@ $(document).ready(function () {
   $(document).on("click", ".back_btn", function () {
     let d1 = $(".first_page_1").css("display");
     let d2 = $(".second_page").css("display");
+    let d3 = $(".first_page").css("display");
     $(".table_main").show();
     $(
-      ".csv_files,.csv_dummy_files,.back_btn, .submit_btn,.next_btn,.next_btn_1,.next_btn,.searchMain"
+      ".back_btn, .submit_btn,.next_btn,.next_btn_1,.next_btn,.searchMain,.allSheets"
     ).hide();
     if (d1 != "none") {
       $(".second_page,.first_page_1,.category_btn").hide();
       $(".first_page,.next_btn").show();
+      if (multipleSheet === 1) {
+        console.log("hello");
+        $(".back_btn").show();
+      }
     } else if (d2 != "none") {
       $(".second_page,.first_page_1").hide();
       $(".first_page_1,.next_btn_1,.category_btn,.back_btn").show();
+    } else if (d3 != "none") {
+      if (multipleSheet === 1) {
+        $(".main").css("max-width", "100%");
+        $(".second_page,.first_page_1,.first_page").hide();
+        $(".allSheets").show();
+      }
     }
   });
 
@@ -1453,37 +1591,60 @@ $(document).ready(function () {
     createTable(resultArray, mappedResult);
   });
 
+  function __highlightWord(s, t) {
+    var matcher = new RegExp(
+      "(" + $.ui.autocomplete.escapeRegex(t) + ")",
+      "ig"
+    );
+    return s.replace(matcher, "<span class='highlightWord'>$1</span>");
+  }
+
+  $(document)
+    .on("mouseover", ".autoCompleteMain", function () {
+      $(this).find(".highlightWord").css("color", "black");
+      $(this).find(".totalSalvDiff").addClass("whiteCol");
+    })
+    .mouseout(function () {
+      $(this).find(".totalSalvDiff").removeClass("whiteCol");
+    });
+
   // Autocomplete dropdown while searching
-  function autoCompleteSearch(result) {
+  function autoCompleteSearch(result, val) {
     let { headers, file_data } = result;
 
     let allItemName = [];
     let arr1 = Object.values(mappedResult);
-    let k1 = "";
-    let k2 = "";
-    let k3 = "";
+    let k1 = [];
     for (const key in mappedResult) {
       if (mappedResult[key] === "category") {
-        k1 = key;
+        k1[0] = key;
       }
       if (mappedResult[key] === "item_name") {
-        k2 = key;
+        k1[1] = key;
       }
       if (mappedResult[key] === "total_value") {
-        k3 = key;
+        k1[2] = key;
+      }
+      if (mappedResult[key] === "salv_value") {
+        k1[3] = key;
       }
     }
-    let ind = headers.indexOf(k1);
-    let ind2 = headers.indexOf(k2);
-    let ind3 = headers.indexOf(k3);
+    let ind = headers.indexOf(k1[0]);
+    let ind2 = headers.indexOf(k1[1]);
+    let ind3 = headers.indexOf(k1[2]);
+    let ind4 = headers.indexOf(k1[3]);
+
     file_data.forEach((v) => {
       let data = {
         category: v[ind],
         name: v[ind2],
-        value: `₹${v[ind3]}`,
+        totalValue: v[ind3],
+        salvValue: v[ind4],
       };
       allItemName.push(data);
     });
+
+    console.log(allItemName);
 
     $("#searchInput")
       .autocomplete({
@@ -1495,9 +1656,14 @@ $(document).ready(function () {
               let name = value.name.toUpperCase();
               if (name.indexOf(request.term.toUpperCase()) != -1) {
                 return {
+                  label: __highlightWord(
+                    value.name.toUpperCase(),
+                    request.term.toUpperCase()
+                  ),
                   name: value.name,
-                  value: value.value,
+                  totalValue: value.totalValue,
                   category: value.category,
+                  salvValue: value.salvValue,
                 };
               } else {
                 return null;
@@ -1516,11 +1682,32 @@ $(document).ready(function () {
         "background-color"
       );
 
+      let valDiff = Number(item.totalValue) - Number(item.salvValue);
       let li_item = `<div class="autoCompleteMain">
-                        <div class="category_icon" style="background-color:${col};border-color:${col};">${item.category}</div>
+                        <div class="category_icon" style="background-color:${col};border-color:${col};">${
+        item.category
+      }</div>
                         <div class="autocompleteInner">
-                          <div class="autocompleteName">${item.name}</div>
-                          <div class="autocompleteValue">${item.value}</div>
+                          <div class="autocompleteName">${item.label}</div>
+                          <div class="autocompleteValue">
+                            <div class="au_totalValue">₹${item.totalValue}</div>
+                            <div class="au_valuDiff">
+                              <div class="totalSalvDiff ${
+                                valDiff < 0 ? "col" : "green_col"
+                              }">
+                                  <span>${valDiff < 0 ? "−" : "+"}</span>
+                                  <span class="diffRupSign">₹</span>
+                                  <span>${Math.abs(valDiff.toFixed(2))}</span>
+                                  <span class="_diffArrow ${
+                                    valDiff < 0 ? "_diff-down" : ""
+                                  }">
+                                    <svg version="1.1" viewBox="0 0 12 12" fill="${
+                                      valDiff < 0 ? "#d93025" : "green"
+                                    }" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M6,0.002L0 6.002 4.8 6.002 4.8 11.9996 7.2 11.9996 7.2 6.002 12 6.002z"></path></svg>
+                                  </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>`;
       return $("<li class='ui-autocomplete-row'></li>")
@@ -1548,7 +1735,7 @@ $(document).ready(function () {
       let val = input.toLowerCase();
 
       // Call function for autocomplete dropdown
-      autoCompleteSearch(result);
+      autoCompleteSearch(result, val);
 
       result.file_data = val
         ? result?.file_data.filter((v) => {
@@ -1684,18 +1871,27 @@ $(document).ready(function () {
         return false;
       }
 
+      let allSheet = {};
       var reader = new FileReader();
       reader.onload = function () {
         var fileData = reader.result;
         var wb = XLSX.read(fileData, { type: "binary" });
         wb.SheetNames.forEach(function (sheetName) {
+          console.log(sheetName);
           let csv_data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
             header: 1,
           });
 
-          _csvData = csv_data.length ? csv_data : _csvData;
+          allSheet[sheetName] = csv_data.length ? csv_data : {};
         });
-        createDummyTable(_csvData);
+
+        if (Object.keys(allSheet).length === 1) {
+          _csvData = Object.values(allSheet)[0];
+          console.log(_csvData);
+          createDummyTable(_csvData);
+        } else {
+          createAllSheetTable(allSheet);
+        }
       };
 
       reader.readAsBinaryString(imgData);
