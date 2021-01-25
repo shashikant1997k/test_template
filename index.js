@@ -1159,7 +1159,7 @@ $(document).ready(function () {
         trigger: "manual",
         placement: mobileVar === 1 ? "bottom" : "right",
         title: "Destruction Period",
-        content: "time between two and helo",
+        content: "Destruction Period Content",
       })
       .popover("show");
   })();
