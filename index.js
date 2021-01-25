@@ -179,12 +179,15 @@ $(document).ready(function () {
             let mobileSelect = "";
             for (var key in map_array) {
               let con1 = headers[j].split(" ").join("_");
+
               mobileSelect += `<option ${
-                con1.toLowerCase() == map_array[key] ? "selected" : ""
+                con1.toLowerCase() == map_array[key]
+                  ? "selected='selected' data-sel"
+                  : ""
               } value="${map_array[key]}" align='center'>${key}</option>`;
             }
             mobileOptionRow = `<div class="_mobile_select_td">
-                <div class="_select">
+                <div class="_select _select${j}">
                   <select class="form-control mappingVal" onchange="selectMapping(this)" id="_select_${j}">
                     <option value="">Select</option>
                     ${mobileSelect}
@@ -220,14 +223,17 @@ $(document).ready(function () {
                  </td> `;
           } else {
             optionRow += `<td class="_data_td${j}"><div class="_select_td">
-                <div class="_select">
+                <div class="_select _select${j}">
                   <select class="form-control mappingVal" onchange="selectMapping(this)" id="_select_${j}">
                     <option value="">Select</option>`;
 
             for (var key in map_array) {
               let con1 = headers[j].split(" ").join("_");
+
               optionRow += `<option ${
-                con1.toLowerCase() == map_array[key] ? "selected" : ""
+                con1.toLowerCase() == map_array[key]
+                  ? "selected='selected' data-sel"
+                  : ""
               } value="${map_array[key]}" align='center'>${key}</option>`;
             }
 
@@ -266,6 +272,24 @@ $(document).ready(function () {
     $(".first_page_1 .first_table_1 tbody").html(
       `<tr>${optionRow}</tr>${tData}`
     );
+
+    let ar1 = [];
+    let ar2 = [];
+    $(".mappingVal").each(function (i) {
+      ar1.push(i);
+      $(this)
+        .find("option")
+        .each(function () {
+          if ($(this)[0].dataset.sel != undefined) {
+            ar2.push(i);
+          }
+        });
+    });
+
+    let noMatchTd = ar1.filter((v) => !ar2.includes(v));
+    noMatchTd.forEach((v) => {
+      $(`._select${v}`).css({ background: "red", padding: "2px" });
+    });
   }
 
   // Hide the extra column which are mapped with 'no_mapping' key.
@@ -1363,6 +1387,10 @@ $(document).ready(function () {
     var id1 = $(el).attr("id").split("_select_")[1];
     $(`#ErrorMessage${id1}`).hide();
     $(".selectErrorMsg,.sameValueErrorMsg").hide();
+    $(`._select${id1}`).css({ background: "white", padding: "0px" });
+    if ($(`#_select_${id1} option:selected`).val() == "") {
+      $(`._select${id1}`).css({ background: "red", padding: "2px" });
+    }
   };
 
   var _csvData;
