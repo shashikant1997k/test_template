@@ -1909,8 +1909,10 @@ $(document).ready(function () {
           let csv_data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
             header: 1,
           });
-
-          allSheet[sheetName] = csv_data.length ? csv_data : {};
+            if (csv_data.length) {
+              allSheet[sheetName] = csv_data;
+            }
+          // allSheet[sheetName] = csv_data.length ? csv_data : {};
         });
 
         if (Object.keys(allSheet).length === 1) {
