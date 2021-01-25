@@ -1915,9 +1915,11 @@ $(document).ready(function () {
           // allSheet[sheetName] = csv_data.length ? csv_data : {};
         });
 
-        if (Object.keys(allSheet).length === 1) {
+        if (Object.keys(allSheet).length === 0) {
+          alert("Your Sheet is empty.");
+          return false;
+        } else if (Object.keys(allSheet).length === 1) {
           _csvData = Object.values(allSheet)[0];
-          console.log(_csvData);
           createDummyTable(_csvData);
         } else {
           createAllSheetTable(allSheet);
