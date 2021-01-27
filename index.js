@@ -1,9 +1,14 @@
 $(document).ready(function () {
   var mobileVar = 0;
+  var mobileVar600 = 0;
   var categories = [];
   var screenWidth = window.matchMedia("(max-width: 768px)");
   if (screenWidth.matches) {
     mobileVar = 1;
+  }
+
+  if (window.matchMedia("(max-width: 600px)").matches) {
+    mobileVar600 = 1;
   }
 
   var resultArray = {
@@ -113,7 +118,7 @@ $(document).ready(function () {
   //   },
   // ];
 
-  let aggregateDiv = `<div class="addAggregateItem_div"> <div class="aggregate_close_btn"><span>&times;</span></div> <div> <div class="btn-group bagTypeBtn" data-toggle="buttons"> <label class="btn btn-default bag-on btn-xs active"> <input type="radio" value="1" name="bagType" checked="checked" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/grossweight.png" alt="Bag" srcset=""><span class="totalBagCount">0</span> </label> <label class="btn btn-default cfc-on btn-xs "> <input type="radio" value="0" name="bagType" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/open-box.png" alt="CFC" srcset=""><span class="totalPacCount">0</span> </label> </div> <div class="btn-group weightTypeBtn" data-toggle="buttons"> <label class="btn btn-default grossWeight btn-xs active"> <input type="radio" value="gross" name="weightType" checked="checked" /> <span>Gross</span> </label> <label class="btn btn-default netWeight btn-xs "> <input type="radio" value="net" name="weightType" /> <span>Net</span> </label> </div> </div> <form class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number" inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="unit_input_div"> <label for="agg_unit_input">Unit</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Unit" id="agg_unit_input" value="1" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem" type="submit">Add</button> </div></form><div class="successMsg">Value Added!</div> </div>`;
+  let aggregateDiv = `<div class="addAggregateItem_div"> <div class="aggregate_close_btn"><span>&times;</span></div> <div><div class="btn-group skuEnable" data-toggle="buttons"> <label class="btn btn-default noneSKU btn-xs active"> <input type="radio" value="0" name="isSKU" checked="checked" /> <span>None</span> </label> <label class="btn btn-default withSKU btn-xs "> <input type="radio" value="1" name="isSKU" /> <span>SKU</span> </label> </div> <div class="btn-group bagTypeBtn" data-toggle="buttons"> <label class="btn btn-default bag-on btn-xs active"> <input type="radio" value="1" name="bagType" checked="checked" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/grossweight.png" alt="Bag" srcset=""><span class="totalBagCount">0</span> </label> <label class="btn btn-default cfc-on btn-xs "> <input type="radio" value="0" name="bagType" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/open-box.png" alt="CFC" srcset=""><span class="totalPacCount">0</span> </label> </div> <div class="btn-group weightTypeBtn" data-toggle="buttons"> <label class="btn btn-default grossWeight btn-xs active"> <input type="radio" value="gross" name="weightType" checked="checked" /> <span>Gross</span> </label> <label class="btn btn-default netWeight btn-xs "> <input type="radio" value="net" name="weightType" /> <span>Net</span> </label> </div> </div> <form class=""><input type="text" placeholder="SKU Number" id="skuNumberInp" /><div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number" inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="unit_input_div"> <label for="agg_unit_input">Unit</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Unit" id="agg_unit_input" value="1" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem" type="submit">Add</button> </div></div></form><div class="successMsg">Value Added!</div> </div>`;
 
   let cA = {};
   // Function to generate random color.
@@ -492,8 +497,8 @@ $(document).ready(function () {
             } else if (i == itemQty) {
               td_data += `<td class="${
                 mobileVar == 1
-                  ? "editable_cell editable_cell_style"
-                  : "editable_cell"
+                  ? "editable_cell editable_cell_style remove_editClass"
+                  : "editable_cell remove_editClass"
               } tdata_${i} alignRight" data-id="${parseInt(
                 val
               )}" data-index="${index}" data-category="${key}" data-itemCode="${
@@ -511,10 +516,10 @@ $(document).ready(function () {
                       }
                     </div>
                     <div class="name_code_style">
-                      <div>${val}</div>
-                      <div class="item_code">${
+                      <div class="itemNametxt">${val}</div>
+                      <div class="item_code"><span>${
                         item[itmCode] != undefined ? item[itmCode] : ""
-                      }</div>
+                      }</span></div>
                     </div>
                   </div>
                   <div class="totalSalvDiff ${
@@ -564,7 +569,7 @@ $(document).ready(function () {
       tables += `<div class="panel panel-default panel_default panel_default_${key} ${
         ct == 1 ? "panel_default_active" : ""
       }" data-id="${key}" >
-                    <div class="addAggregateItem_btn" data-category="${key}">
+                    <div class="addAggregateItem_btn removeAfterSubmit" data-category="${key}">
                       <button class="btn btn-default" type="submit">
                         <span class="glyphicon glyphicon-plus"></span>
                       </button>
@@ -608,6 +613,7 @@ $(document).ready(function () {
                                         <span style="font-weight: normal">₹ </span>
                                         <span class="expected_value expected_${key}">0.00</span>
                                       </span>
+                                      <span class="expected_wt expected_wt_${key}">0.00 kg</span>
                                     </div>
                                     <div class="fnt_size d_f_c m_b_4">
                                       <span class="_title_St">Audited Value</span>
@@ -615,6 +621,7 @@ $(document).ready(function () {
                                         <span style="font-weight: normal">₹ </span>
                                         <span class="received_${key}">0.00</span>
                                       </span>
+                                      <span class="received_wt received_wt_${key}">0.00 kg</span>
                                     </div>
                                     <div class="fnt_size d_f_c">
                                       <span class="_title_St">Variance</span>
@@ -622,6 +629,7 @@ $(document).ready(function () {
                                         <span style="font-weight: normal">₹ </span>
                                         <span class="variance_${key}">0.00</span>
                                       </span>
+                                      <span class="variance_wt variance_wt_${key}">0.00 kg</span>
                                     </div>
                                   </div>
                                 </div>
@@ -670,7 +678,7 @@ $(document).ready(function () {
                                       <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
                                     </div>
                                   </div>
-                                  <div class="fnt_size m_b_4">
+                                  <div class="fnt_size m_b_4 recvdnone">
                                     <span class="_title_St">Recv Wt: </span>
                                     <span class="total_wt">
                                       0.00
@@ -772,6 +780,7 @@ $(document).ready(function () {
                                 ${numberWithCommas(item.expectedWt.toFixed(2))}
                               </span>
                             </span> 
+                            <span class="expected_wt expected_wt_${key}">0.00 kg</span>
                           </div>
                           <div class="fnt_size d_f_c m_b_4">
                             <span class="_title_St">Audited Value</span>
@@ -781,6 +790,7 @@ $(document).ready(function () {
                               ${numberWithCommas(item.receivedWt.toFixed(2))} 
                               </span>
                             </span> 
+                            <span class="received_wt received_wt_${key}">0.00 kg</span>
                           </div>
                           <div class="fnt_size d_f_c">
                             <span class="_title_St">Variance</span> 
@@ -790,6 +800,7 @@ $(document).ready(function () {
                               ${numberWithCommas(item.variance.toFixed(2))} 
                               </span>
                             </span>
+                            <span class="variance_wt variance_wt_${key}">0.00 kg</span>
                           </div>
                         </div>
     
@@ -821,7 +832,7 @@ $(document).ready(function () {
                             <span class="expand_icon expand_icon_${key}"><i class="fa fa-plus" aria-hidden="true"></i></span>
                           </div>
                         </div>
-                        <div class="fnt_size m_b_4">
+                        <div class="fnt_size m_b_4 recvdnone">
                           <span class="_title_St">Recv Wt:</span> 
                           <span class="total_Wt">
                             0.00
@@ -867,7 +878,7 @@ $(document).ready(function () {
     });
 
     // Creating the Item Qty editable
-    $(".editable_cell").click(function () {
+    $(".editable_cell").on("click", function () {
       let v1 = $(this).data("id");
       let v2 = $(this).html();
       let v3 = $(this).attr("data-index");
@@ -1157,9 +1168,9 @@ $(document).ready(function () {
       .popover({
         offset: 10,
         trigger: "manual",
-        placement: mobileVar === 1 ? "bottom" : "right",
+        placement: mobileVar600 === 1 ? "bottom" : "right",
         title: "Destruction Period",
-        content: "Destruction Period Content",
+        content: "time between two and helo",
       })
       .popover("show");
   })();
@@ -1212,20 +1223,28 @@ $(document).ready(function () {
         200
       );
 
-      console.log("heiiihihihi..........");
+      console.log($(".currentStep").html());
 
       if (mobileVar === 1) {
         $(".stepTopmain .popover").css(
           "cssText",
           `left:${
-            (Number($(".currentStep").html()) - 1) * 13
+            Number($(".currentStep").html()) == 2
+              ? 30
+              : Number($(".currentStep").html()) == 3
+              ? 10
+              : 30
           }% !important;display:block;transition: 400ms;`
         );
       } else {
         $(".stepTopmain .popover").css(
           "cssText",
           `top:${
-            Number($(".currentStep").html()) * 3
+            Number($(".currentStep").html()) == 2
+              ? 8
+              : Number($(".currentStep").html()) == 3
+              ? 6
+              : 8
           }em !important;display:block;transition: 400ms;`
         );
       }
@@ -1286,18 +1305,31 @@ $(document).ready(function () {
         200
       );
 
+      console.log($(".currentStep").html());
       if (mobileVar === 1) {
         $(".stepTopmain .popover").css(
           "cssText",
           `left:${
-            (Number($(".currentStep").html()) - 1) * 13
+            Number($(".currentStep").html()) == 1
+              ? 10
+              : Number($(".currentStep").html()) == 2
+              ? 30
+              : Number($(".currentStep").html()) == 3
+              ? 10
+              : 30
           }% !important;display:block;transition: 400ms;`
         );
       } else {
         $(".stepTopmain .popover").css(
           "cssText",
           `top:${
-            Number($(".currentStep").html()) * 3
+            Number($(".currentStep").html()) == 1
+              ? 6
+              : Number($(".currentStep").html()) == 2
+              ? 8
+              : Number($(".currentStep").html()) == 3
+              ? 6
+              : 8
           }em !important;display:block;transition: 400ms;`
         );
       }
@@ -1909,9 +1941,10 @@ $(document).ready(function () {
           let csv_data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
             header: 1,
           });
-            if (csv_data.length) {
-              allSheet[sheetName] = csv_data;
-            }
+
+          if (csv_data.length) {
+            allSheet[sheetName] = csv_data;
+          }
           // allSheet[sheetName] = csv_data.length ? csv_data : {};
         });
 
@@ -1954,8 +1987,6 @@ $(document).ready(function () {
   // Submit the form after filling the form for adding a new row.
   $(".add_item_form").on("submit", function (e) {
     e.preventDefault();
-    // var str = $(".add_item_form").serialize();
-    // console.log(str);
     let add_category = $("#add_category").val();
     let add_itemcode = $("#add_itemcode").val();
     let add_itemname = $("#add_itemname").val();
@@ -1998,10 +2029,19 @@ $(document).ready(function () {
   var aggregateKey = "";
   $(document).on("click", ".addAggregateItem_btn", function (e) {
     e.stopImmediatePropagation();
+    let k1 = $(this).attr("data-category");
+    if ($(`.addAggregateItem_div_${k1}`).length) {
+      return false;
+    }
+    aggregateKey = $(this).attr("data-category");
     $(".addAggregateItem_div").remove();
     $(this).parent().append(aggregateDiv);
-    aggregateKey = $(this).attr("data-category");
+    $(".addAggregateItem_div").addClass(`addAggregateItem_div_${aggregateKey}`);
     $("#agg_weight_input").focus();
+
+    $(`.addAggregateItem_div`).draggable({
+      containment: ".second_page",
+    });
 
     let cat = $(this).attr("data-category");
     let bagLen =
@@ -2029,6 +2069,33 @@ $(document).ready(function () {
     e.stopImmediatePropagation();
     bagType = "bag";
     $(this).parent().remove();
+
+    $("#skuNumberInp").val("");
+    $(".item_code span").removeClass("activeSKUs");
+    $(".item_code").css("z-index", "unset");
+  });
+
+  let isSku = 0;
+  $(document).on("click", ".withSKU", function () {
+    isSku = $(this).find("input[name='isSKU']").val();
+    console.log(isSku);
+    $("#skuNumberInp").show();
+    $(".item_code span").addClass("activeSKUs");
+    $(".item_code").css("z-index", "9998");
+    $("#skuNumberInp").focus();
+  });
+
+  $(document).on("click", ".noneSKU", function () {
+    isSku = $(this).find("input[name='isSKU']").val();
+    $("#skuNumberInp").val("");
+    $("#skuNumberInp").hide();
+    $(".item_code span").removeClass("activeSKUs");
+    $(".item_code").css("z-index", "unset");
+  });
+  $(document).on("click", ".item_code span", function () {
+    if (isSku) {
+      $("#skuNumberInp").val($(this).html());
+    }
   });
 
   var bagType = "bag";
@@ -2048,6 +2115,10 @@ $(document).ready(function () {
     $(".grossWeight input").prop("checked", "false");
     $(".netWeight").addClass("active");
     $(".netWeight input").prop("checked", "true");
+  });
+
+  $(document).on("click", "input", function () {
+    $(this).focus();
   });
 
   let pacInp = 0;
@@ -2097,6 +2168,7 @@ $(document).ready(function () {
           netWt: inptWt,
           bagging: bagType,
           category: aggregateKey,
+          skuCode: isSku ? $("#skuNumberInp").val() : "",
         };
 
         _bagsData.unshift(data);
@@ -2134,6 +2206,7 @@ $(document).ready(function () {
     }
   });
 
+  let setEditTable = 1;
   function createPacsAndBagsTable(data, cat, a = 0) {
     $(`._totalBags .expand_icon`).html(
       `<i class="fa fa-plus" aria-hidden="true"></i>`
@@ -2221,57 +2294,61 @@ $(document).ready(function () {
       $(".totalBagsTable").remove();
       $("totalBagsTable").show();
       $(`.panel_default_${cat}`).after(
-        `<div class="totalBagsTable totalBagsTable_${cat}">${_table}</div>`
+        `<div class="totalBagsTable ${
+          setEditTable ? "" : "border_col_after_submit"
+        } totalBagsTable_${cat}">${_table}</div>`
       );
     } else {
       $(`.panel_default_${cat}`).after(
-        `<div class="totalBagsTable totalBagsTable_${cat}"><div class='text-center noDataDiv'>No Data</div></div>`
+        `<div class="totalBagsTable ${
+          setEditTable ? "" : "border_col_after_submit"
+        } totalBagsTable_${cat}"><div class='text-center noDataDiv'>No Data</div></div>`
       );
     }
 
-    $(`._bagsTable`).SetEditable({
-      columnsEd: "1",
-      onEdit: function (e) {
-        let id = $(e[0]).data("id");
-        let val = $(`.id_${id} td:nth-child(2)`).text();
-        console.log(id, val);
-        console.log("edited");
-        swal("Successfully Updated!", {
-          icon: "success",
-          buttons: false,
-          timer: 1500,
-        });
-      },
-      onDelete: function (row) {
-        let id = $(row[0]).data("id");
-        swal({
-          title: "Are you sure?",
-          text: "Once deleted, you will not be able to recover!",
-          icon: "warning",
-          buttons: true,
-          dangerMode: true,
-        }).then((willDelete) => {
-          if (willDelete) {
-            $(row).remove();
-            _bagsData = _bagsData.filter((v) => v.bagId != id);
-            createPacsAndBagsTable(_bagsData, cat, 1);
-            swal("Successfully Deleted!", {
-              icon: "success",
-              buttons: false,
-              timer: 1500,
-            });
-          } else {
-            swal("Canceled!", {
-              icon: "error",
-              buttons: false,
-              timer: 1500,
-            });
-          }
-        });
-      },
-      // onBeforeDelete: function (e) {},
-      // onAdd: function () {},
-    });
+    if (setEditTable) {
+      $(`._bagsTable`).SetEditable({
+        columnsEd: "1",
+        onEdit: function (e) {
+          let id = $(e[0]).data("id");
+          let val = $(`.id_${id} td:nth-child(2)`).text();
+          console.log(id, val);
+          console.log("edited");
+          swal("Successfully Updated!", {
+            icon: "success",
+            buttons: false,
+            timer: 1500,
+          });
+        },
+        onDelete: function (row) {
+          let id = $(row[0]).data("id");
+          swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          }).then((willDelete) => {
+            if (willDelete) {
+              $(row).remove();
+              _bagsData = _bagsData.filter((v) => v.bagId != id);
+              createPacsAndBagsTable(_bagsData, cat, 1);
+              swal("Successfully Deleted!", {
+                icon: "success",
+                buttons: false,
+                timer: 1500,
+              });
+            } else {
+              swal("Canceled!", {
+                icon: "error",
+                buttons: false,
+                timer: 1500,
+              });
+            }
+          });
+        },
+      });
+    }
   }
 
   $(document).on("click", "._totalBags", function () {
@@ -2298,6 +2375,7 @@ $(document).ready(function () {
     $(`._totalBags .expand_icon`).html(
       `<i class="fa fa-plus" aria-hidden="true"></i>`
     );
+    $(`.panel_default`).css("box-shadow", "0 0px 5px 0 rgba(0, 0, 0, 0.36)");
 
     if (cl.includes("in")) {
       $(`.collapse_heading_${id}`).removeClass("collapse_active");
@@ -2328,9 +2406,39 @@ $(document).ready(function () {
     }
   }
 
-  // $(document).on("click", "._totalPacs", function () {
-  //   let id = $(this).data("cat");
-  // });
+  $(document).on("click", ".submit_btn", function () {
+    $(".loading").show();
+    swal({
+      title: "Are you sure?",
+      text: "Once Submitted, you will not be able to update sheet.",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((isSubmit) => {
+      if (isSubmit) {
+        $(".loading").hide();
+        setEditTable = 0;
+        $(".removeAfterSubmit").remove();
+        $(".editable_cell").off("click");
+        $(".editable_cell").css({ color: "black", "font-weight": "normal" });
+        $(".panel_default").addClass("border_col_after_submit");
+        $("._bagsTable td[name='buttons']").remove();
+        $("._bagsTable th[name='buttons']").remove();
+
+        swal("Successfully Submitted!", {
+          icon: "success",
+          buttons: false,
+          timer: 1500,
+        });
+      } else {
+        swal("Canceled!", {
+          icon: "error",
+          buttons: false,
+          timer: 1500,
+        });
+      }
+    });
+  });
 
   document
     .querySelector(".rightSideScroll")
