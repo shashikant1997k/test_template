@@ -380,7 +380,7 @@ body {
 
 .highlightWord {
   /* padding: 1px; */
-  background-color: #f9f92d;
+  background-color: #f0cd4e;
 }
 
 .first_visible_td {
@@ -560,20 +560,20 @@ table > tbody > tr > td > span.footable-toggle {
   background: white;
   border-radius: 0px !important;
   margin-bottom: 24px !important;
-  border-left: 10px solid #35a630;
+  border-left: 10px solid #f0cd4e;
   position: relative;
 }
 
 .panel_default_active {
   border: 1px solid #5e7eca;
   box-shadow: 0 0 6px 0 #5e7eca;
-  border-left: 10px solid #35a630;
+  border-left: 10px solid #f0cd4e;
 }
 
 .panel_default:hover {
   border: 1px solid #5e7eca;
   box-shadow: 0 0 5px 0 #5e7eca;
-  border-left: 10px solid #35a630;
+  border-left: 10px solid #f0cd4e;
 }
 
 .collapse_heading {
@@ -640,7 +640,7 @@ table > tbody > tr > td > span.footable-toggle {
   padding: 20px;
   padding-bottom: 1px;
   box-shadow: 0 0px 5px 0 rgba(0, 0, 0, 0.36);
-  border-left: 10px solid #35a630;
+  border-left: 10px solid #f0cd4e;
 }
 
 .totalBagsTable .table thead tr th,
@@ -983,7 +983,7 @@ label[for="uploadFiles"]:hover:after {
 }
 
 .stepTopmain .popover {
-  top: 3em !important;
+  top: 6em !important;
   left: 100% !important;
   width: 100% !important;
 }
@@ -1139,18 +1139,18 @@ label[for="uploadFiles"]:hover:after {
 /* Add Aggregate level item Start */
 .addAggregateItem_btn {
   position: absolute;
-  right: -3px;
+  right: 0px;
   top: -12px;
 }
 
 .main .addAggregateItem_btn button {
   color: white;
   background-color: #1acf32;
-  padding: 5px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 15px !important;
+  border-radius: 17px !important;
 }
 
 .addAggregateItem_btn button:focus,
@@ -1176,6 +1176,8 @@ label[for="uploadFiles"]:hover:after {
   max-width: 400px;
   padding-left: 20px;
   padding-right: 10px;
+  cursor: move;
+  z-index: 9999;
 }
 
 .successMsg {
@@ -1241,7 +1243,10 @@ label[for="uploadFiles"]:hover:after {
 /* Switch button start */
 
 .weightTypeBtn {
-  margin-left: 3em;
+  margin-left: 0.5em;
+}
+.skuEnable {
+  margin-right: 0.5em;
 }
 
 .totalBagCount,
@@ -1250,6 +1255,10 @@ label[for="uploadFiles"]:hover:after {
   font-size: 0.8em;
   margin-left: 0.2em;
   margin-top: 0.4em;
+}
+#skuNumberInp {
+  margin-top: 5px;
+  display: none;
 }
 
 .bagTypeImg {
@@ -1267,26 +1276,40 @@ label[for="uploadFiles"]:hover:after {
   padding: 1px 14px !important;
 }
 
+.btn-default.noneSKU.active,
 .btn-default.bag-on.active,
 .btn-default.grossWeight.active {
   background-color: #ccc46f;
   color: white;
 }
+.btn-default.withSKU.active,
 .btn-default.cfc-on.active,
 .btn-default.netWeight.active {
   background-color: #ccc46f;
   color: white;
 }
 
+.btn-default.withSKU.active,
+.btn-default.noneSKU.active,
 .btn-default.cfc-on.active.focus,
 .btn-default.bag-on.active.focus,
 .btn-default.grossWeight.active,
 .btn-default.netWeight.active {
   outline: none;
 }
+
+.activeSKUs {
+  z-index: 9999;
+  cursor: pointer;
+  border: 1px solid;
+}
 /* Switch button end */
 
 /* Add Aggregate level item End */
+
+#moreColumnModal {
+  top: 65px !important;
+}
 
 @media only screen and (max-width: 1100px) {
   .topHeader {
@@ -1363,13 +1386,13 @@ label[for="uploadFiles"]:hover:after {
     padding: 2px 10px 2px 6px;
   }
   .panel_default {
-    border-left: 6px solid #35a630;
+    border-left: 6px solid #f0cd4e;
   }
   .panel_default:hover {
-    border-left: 6px solid #35a630;
+    border-left: 6px solid #f0cd4e;
   }
   .totalBagsTable {
-    border-left: 6px solid #35a630;
+    border-left: 6px solid #f0cd4e;
   }
   .topDatatable {
     font-size: 0.7em !important;
@@ -1494,7 +1517,7 @@ label[for="uploadFiles"]:hover:after {
 
   .stepTopmain .popover {
     top: 95% !important;
-    left: 0% !important;
+    left: 10% !important;
     width: 100% !important;
   }
 
@@ -1560,4 +1583,16 @@ th.footable-sortable > span.fooicon {
 
 .pnt-none {
   pointer-events: none;
+}
+
+.border_col_after_submit {
+  border-left-color: #35a630;
+}
+
+.border_col_after_submit:hover {
+  border-left-color: #35a630;
+}
+
+.recvdnone {
+  display: none;
 }
