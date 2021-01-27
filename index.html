@@ -18,6 +18,7 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js" integrity="sha512-0bEtK0USNd96MnO4XhH8jhv3nyRF0eK87pJke6pkYf3cM0uDIhNJy9ltuzqgypoIFXw3JSuiy04tVk4AjpZdZw==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.10.8/xlsx.full.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.3/jquery.csv.min.js"></script>
@@ -52,6 +53,16 @@
     <!-- <div class="addAggregateItem_div"> 
         <div class="aggregate_close_btn"><span>&times;</span></div>
         <div>
+            <div class="btn-group skuEnable" data-toggle="buttons">
+                <label class="btn btn-default noneSKU btn-xs active">
+                    <input type="radio" value="" name="isSKU" checked="checked" />
+                    <span>None</span>
+                </label>
+                <label class="btn btn-default withSKU btn-xs ">
+                    <input type="radio" value="sku" name="isSKU" />
+                    <span>SKU</span>
+                </label>
+            </div>
             <div class="btn-group bagTypeBtn" data-toggle="buttons">
                 <label class="btn btn-default bag-on btn-xs active">
                     <input type="radio" value="1" name="bagType" checked="checked" />
@@ -89,6 +100,9 @@
         </div> 
     </div> -->
 
+
+    
+
     <div class="main">
         <div class="topHeader">
             <div class="searchMain">
@@ -111,18 +125,18 @@
                     
                 </div>
                 <div class="addMoreBtn">
-                    <button class="btn btn-default moreColumn" type="button" data-toggle="modal" data-target="#moreColumnModal" style="margin-right: 15px;margin-left: 15px;">
+                    <button class="btn btn-default moreColumn removeAfterSubmit" type="button" data-toggle="modal" data-target="#moreColumnModal" style="margin-right: 15px;margin-left: 15px;">
                         <span class="glyphicon glyphicon-cog"></span>
                         <span class="dnone_mob">More</span>
                     </button>
-                    <button class="btn btn-default addItem" type="submit">
+                    <button class="btn btn-default addItem removeAfterSubmit" type="submit">
                         <span class="glyphicon glyphicon-plus"></span>
                         <span class="dnone_mob">Add Item</span>
                     </button>
 
                 </div>
             </div>
-            <div class="sheets_upload" style="margin-left: 15px;">
+            <div class="sheets_upload removeAfterSubmit" style="margin-left: 15px;">
                 <label for="uploadFiles" class="uploadFiles_label"></label>
                 <input type="file" id="uploadFiles" class="file-upload upload_master_sheet">
             </div>
@@ -147,16 +161,20 @@
                         <label>Item Qty:</label>
                         <input type="number" data-id="item_qty" id="add_itemqty" class="form-control" placeholder="Item Qty" autocomplete="off" required>
                     </div>
+                    <div class="form-group">
+                        <label>Rate:</label>
+                        <input type="number" data-id="item_rate" id="add_itemRate" class="form-control" placeholder="Rate" autocomplete="off" required>
+                    </div>
                     <button type="submit" class="btn btn-primary addItemSubmit">Submit</button>
                 </form>
             </div>
         </div>
   
         <div class="table_main">
-            <div class="allSheets">
+            <div class="allSheets removeAfterSubmit">
                 
             </div>
-            <div class="first_page">
+            <div class="first_page removeAfterSubmit">
                 <div id="overlayDiv"></div>
                 
                 <div class="stepTopmain">
@@ -243,7 +261,7 @@
                 
             </div>
     
-            <div class="first_page_1">
+            <div class="first_page_1 removeAfterSubmit">
                 <p class="selectErrorMsg">Please Select <b>Category</b>, <b>Item Name</b>, <b>UOM</b> and <b>Item Qty.</b> </p>
                 <p class="sameValueErrorMsg">Two or more value should not be same.</b> </p>
                 <table class="table table-bordered first_table_1">
@@ -274,9 +292,9 @@
                     
                 </div>
             </div>
-            <div class="_btn" id="scrollToBtns">
+            <div class="_btn removeAfterSubmit" id="scrollToBtns">
                 <div class="error_msg">Please Choose Header Row</div>
-                <button class="btn btn-primary back_btn" style="display: none;margin-right: 15px;">Back</button>
+                <button class="btn btn-primary back_btn" style="display: none;margin-right: 15px;z-index: 9999;">Back</button>
                 <button class="btn btn-primary next_btn">Next</button>
                 <button class="btn btn-primary next_btn_1" style="display: none;">Next</button>
                 <button class="btn btn-primary submit_btn" type="submit" style="display: none;">Submit</button>
