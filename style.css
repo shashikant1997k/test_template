@@ -397,7 +397,6 @@ table > tbody > tr > td > span.footable-toggle {
   margin-right: 5px !important;
 }
 
-.editable_cell_style,
 .editable_cell {
   color: #5d78ff;
   font-weight: 600;
@@ -806,8 +805,13 @@ table > tbody > tr > td > span.footable-toggle {
 }
 
 .back_btn,
-.submit_btn {
+.submit_btn,
+.save_btn {
   display: none;
+}
+
+.save_btn {
+  margin-right: 15px;
 }
 
 .error_msg {
@@ -1092,11 +1096,13 @@ label[for="uploadFiles"]:hover:after {
   display: none;
 }
 
-.addMoreBtn button {
+.addMoreBtn button,
+.exportDropdown button {
   color: white;
   background-color: #1acf32;
 }
 
+.exportDropdown button:hover,
 .addMoreBtn button:hover {
   color: white !important;
   background-color: #1acd32 !important;
@@ -1104,6 +1110,7 @@ label[for="uploadFiles"]:hover:after {
   border-color: #1acd32;
 }
 
+.exportDropdown button:focus,
 .addMoreBtn button:focus {
   color: white !important;
   background-color: #1acd32 !important;
@@ -1256,7 +1263,7 @@ label[for="uploadFiles"]:hover:after {
   margin-left: 0.2em;
   margin-top: 0.4em;
 }
-#skuNumberInp {
+.skuNumberInp {
   margin-top: 5px;
   display: none;
 }
@@ -1302,6 +1309,7 @@ label[for="uploadFiles"]:hover:after {
   z-index: 9999;
   cursor: pointer;
   border: 1px solid;
+  padding: 2px;
 }
 /* Switch button end */
 
@@ -1309,6 +1317,11 @@ label[for="uploadFiles"]:hover:after {
 
 #moreColumnModal {
   top: 65px !important;
+}
+
+.exportDropdown {
+  display: none;
+  margin-left: 12px;
 }
 
 @media only screen and (max-width: 1100px) {
@@ -1529,6 +1542,10 @@ label[for="uploadFiles"]:hover:after {
     height: 40px !important;
   }
 
+  .exportDropdown {
+    margin-left: 6px;
+  }
+
   .searchMain .btn {
     padding: 3px 6px;
     height: 26px;
@@ -1552,7 +1569,9 @@ label[for="uploadFiles"]:hover:after {
   .panel2_rows {
     margin-left: 0.6em !important;
   }
-
+  .hide600 {
+    display: none;
+  }
   .panel1_row,
   .panel2_row {
     justify-content: space-between !important;
