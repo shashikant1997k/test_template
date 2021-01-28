@@ -19,6 +19,8 @@ $(document).ready(function () {
   var t1 = [10, 100];
   var topData = {};
   var sheetTopInfo = {};
+  var saveData = 0;
+  var finalSubmitData = 0;
   var tempCat = ["bi", "cf", "nd", "sx", "at", "ju", "sn"];
   var catgName = [
     "Biscuits",
@@ -118,7 +120,7 @@ $(document).ready(function () {
   //   },
   // ];
 
-  let aggregateDiv = `<div class="addAggregateItem_div"> <div class="aggregate_close_btn"><span>&times;</span></div> <div><div class="btn-group skuEnable" data-toggle="buttons"> <label class="btn btn-default noneSKU btn-xs active"> <input type="radio" value="0" name="isSKU" checked="checked" /> <span>None</span> </label> <label class="btn btn-default withSKU btn-xs "> <input type="radio" value="1" name="isSKU" /> <span>SKU</span> </label> </div> <div class="btn-group bagTypeBtn" data-toggle="buttons"> <label class="btn btn-default bag-on btn-xs active"> <input type="radio" value="1" name="bagType" checked="checked" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/grossweight.png" alt="Bag" srcset=""><span class="totalBagCount">0</span> </label> <label class="btn btn-default cfc-on btn-xs "> <input type="radio" value="0" name="bagType" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/open-box.png" alt="CFC" srcset=""><span class="totalPacCount">0</span> </label> </div> <div class="btn-group weightTypeBtn" data-toggle="buttons"> <label class="btn btn-default grossWeight btn-xs active"> <input type="radio" value="gross" name="weightType" checked="checked" /> <span>Gross</span> </label> <label class="btn btn-default netWeight btn-xs "> <input type="radio" value="net" name="weightType" /> <span>Net</span> </label> </div> </div> <form class=""><input type="text" placeholder="SKU Number" id="skuNumberInp" /><div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number" inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="unit_input_div"> <label for="agg_unit_input">Unit</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Unit" id="agg_unit_input" value="1" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem" type="submit">Add</button> </div></div></form><div class="successMsg">Value Added!</div> </div>`;
+  let aggregateDiv = `<div class="addAggregateItem_div"> <div class="aggregate_close_btn"><span>&times;</span></div> <div><div class="btn-group skuEnable" data-toggle="buttons"> <label class="btn btn-default noneSKU btn-xs active"> <input type="radio" value="0" name="isSKU" checked="checked" /> <span>None</span> </label> <label class="btn btn-default withSKU btn-xs "> <input type="radio" value="1" name="isSKU" /> <span>SKU</span> </label> </div> <div class="btn-group bagTypeBtn" data-toggle="buttons"> <label class="btn btn-default bag-on btn-xs active"> <input type="radio" value="1" name="bagType" checked="checked" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/grossweight.png" alt="Bag" srcset=""><span class="totalBagCount">0</span> </label> <label class="btn btn-default cfc-on btn-xs "> <input type="radio" value="0" name="bagType" /> <img class="bagTypeImg" src="https://app.wastelink.co/static/images/open-box.png" alt="CFC" srcset=""><span class="totalPacCount">0</span> </label> </div> <div class="btn-group weightTypeBtn" data-toggle="buttons"> <label class="btn btn-default grossWeight btn-xs active"> <input type="radio" value="gross" name="weightType" checked="checked" /> <span>Gross</span> </label> <label class="btn btn-default netWeight btn-xs "> <input type="radio" value="net" name="weightType" /> <span>Net</span> </label> </div> </div> <form class=""><input type="text" placeholder="SKU Number" class="skuNumberInp" /><div class="input_item"><div class="weight_input_div"> <label for="agg_weight_input">Weight</label> <input type="number" inputmode='numeric' pattern="[0-9]" placeholder="Weight" id="agg_weight_input" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="unit_input_div"> <label for="agg_unit_input">Unit</label> <input type="number"  inputmode='numeric' pattern="[0-9]" placeholder="Unit" id="agg_unit_input" value="1" step="1" min="1" oninput="validity.valid||(value='');" onKeyPress="if(this.value.length==4) return false;" /> </div> <div class="btn_div"> <button class="btn btn-primary addAggrgteItem" type="submit">Add</button> </div></div></form><div class="successMsg">Value Added!</div> </div>`;
 
   let cA = {};
   // Function to generate random color.
@@ -154,7 +156,9 @@ $(document).ready(function () {
   function tableColumnMapping(output) {
     $(".table_main").show();
     $(".first_page_1,.back_btn,.category_btn,.next_btn_1").show();
-    $(".first_page,.second_page,.next_btn,.submit_btn,.searchMain").hide();
+    $(
+      ".first_page,.second_page,.next_btn,.submit_btn,.searchMain,.save_btn"
+    ).hide();
     var headers = output.headers || [];
     var file_data = output.file_data || [];
     var tData = "";
@@ -398,9 +402,14 @@ $(document).ready(function () {
     var showMoreColumn = "";
 
     $(".table_main").show();
-    $(".second_page,.back_btn,.submit_btn,.category_btn").show();
+    $(".second_page,.back_btn,.save_btn,.category_btn,.submit_btn").show();
     $(".searchMain").css("display", "flex");
-    $(".first_page,.first_page_1,.next_btn,.next_btn_1").hide();
+    $(".first_page,.first_page_1,.next_btn,.next_btn_1,.exportDropdown").hide();
+
+    if (finalSubmitData) {
+      $(".save_btn").hide();
+      $(".exportDropdown").show();
+    }
     let mappedObjArr = Object.values(mappedObj);
     // creating the table data
     if (
@@ -408,7 +417,6 @@ $(document).ready(function () {
       Object.values(mappedObj).length != 0
     ) {
       for (const [key, val] of Object.entries(mappedObj)) {
-        // Object.values(mappedObj).forEach((val, i) => {
         let i = mappedObjArr.indexOf(val);
         mappedObjArr[i] = `${val}_${i}`;
 
@@ -472,8 +480,6 @@ $(document).ready(function () {
             val == "no_mapping" ? toTitleCase(key) : toTitleCase(val)
           }</label><br></div>`;
         }
-
-        // });
       }
       $("#moreColumnModal .modal-body .row").html(showMoreColumn);
       $(".table_head_row").html(`<tr>${th_data}</tr>`);
@@ -496,9 +502,7 @@ $(document).ready(function () {
               td_data += ``;
             } else if (i == itemQty) {
               td_data += `<td class="${
-                mobileVar == 1
-                  ? "editable_cell editable_cell_style remove_editClass"
-                  : "editable_cell remove_editClass"
+                finalSubmitData ? "" : "editable_cell"
               } tdata_${i} alignRight" data-id="${parseInt(
                 val
               )}" data-index="${index}" data-category="${key}" data-itemCode="${
@@ -517,9 +521,9 @@ $(document).ready(function () {
                     </div>
                     <div class="name_code_style">
                       <div class="itemNametxt">${val}</div>
-                      <div class="item_code"><span>${
-                        item[itmCode] != undefined ? item[itmCode] : ""
-                      }</span></div>
+                      <div class="item_code"><span data-id="${key}">${
+                item[itmCode] != undefined ? item[itmCode] : ""
+              }</span></div>
                     </div>
                   </div>
                   <div class="totalSalvDiff ${
@@ -568,12 +572,19 @@ $(document).ready(function () {
 
       tables += `<div class="panel panel-default panel_default panel_default_${key} ${
         ct == 1 ? "panel_default_active" : ""
-      }" data-id="${key}" >
-                    <div class="addAggregateItem_btn removeAfterSubmit" data-category="${key}">
-                      <button class="btn btn-default" type="submit">
-                        <span class="glyphicon glyphicon-plus"></span>
-                      </button>
-                    </div>
+      } ${finalSubmitData ? "border_col_after_submit" : ""}" data-id="${key}" >
+                    ${
+                      finalSubmitData
+                        ? ""
+                        : `<div
+                          class="addAggregateItem_btn"
+                          data-category="${key}"
+                        >
+                          <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-plus"></span>
+                          </button>
+                        </div>`
+                    }
 
                     <div class="panel-heading collapse_heading collapse_heading_${key} ${
         ct == 1 ? "collapse_active" : ""
@@ -709,7 +720,11 @@ $(document).ready(function () {
     // New Code start
     // Create the new card for pre-input data which are inputed before upload sheet.
     let fetchedValueTable = "";
-    if (Array.isArray(fetchedValue) && fetchedValue.length > 0) {
+    if (
+      Array.isArray(fetchedValue) &&
+      fetchedValue.length > 0 &&
+      !finalSubmitData
+    ) {
       fetchedValue.forEach((item, i2) => {
         let th_data1 = "";
         let td_data1 = "";
@@ -862,7 +877,11 @@ $(document).ready(function () {
       });
     }
 
-    $(".panel-group").html(tables + "" + fetchedValueTable);
+    if (finalSubmitData) {
+      $(".panel-group").html(tables);
+    } else {
+      $(".panel-group").html(tables + "" + fetchedValueTable);
+    }
 
     $(function ($) {
       $(".masterSheetTable").footable();
@@ -877,103 +896,105 @@ $(document).ready(function () {
       let clsName = e.target.dataset?.val;
     });
 
-    // Creating the Item Qty editable
-    $(".editable_cell").on("click", function () {
-      let v1 = $(this).data("id");
-      let v2 = $(this).html();
-      let v3 = $(this).attr("data-index");
-      if (!v2.includes(`<input type="text"`)) {
-        $(this).html(
-          `<input type='text' inputmode='numeric' pattern="[0-9]" class="_input _input_${v3}" style='width:100%;' data-id="${v3}" value='${v1}' maxLength='5' />`
-        );
-        if (mobileVar == 1) {
-          $(this).css({ color: "#000", "font-weight": "normal" });
-        }
-
-        $(this).children().focus();
-        let num = $(this).children().val();
-        $(this).children().focus().val("").val(num);
-      }
-    });
-
-    // Remove input from td after editing and sumbit the Item Qty.
-    function removeInput() {
-      $(".editable_cell").each(function () {
-        let c1 = $(this).html();
-        if (c1.includes(`<input type="text"`)) {
+    if (!finalSubmitData) {
+      // Creating the Item Qty editable
+      $(".editable_cell").on("click", function () {
+        let v1 = $(this).data("id");
+        let v2 = $(this).html();
+        let v3 = $(this).attr("data-index");
+        if (!v2.includes(`<input type="text"`)) {
+          $(this).html(
+            `<input type='text' inputmode='numeric' pattern="[0-9]" class="_input _input_${v3}" style='width:100%;' data-id="${v3}" value='${v1}' maxLength='5' />`
+          );
           if (mobileVar == 1) {
-            $(this).css({ color: "#5d78ff", "font-weight": "600" });
+            $(this).css({ color: "#000", "font-weight": "normal" });
           }
 
-          let updateItemQty = $(this).children().val();
-          $(this).html(parseInt(updateItemQty));
-          $(this).data("id", parseInt(updateItemQty));
-          let updatedItemCode = $(this).attr("data-itemCode");
-          let indexNo = $(this).attr("data-index");
-          let categoryName = $(this).attr("data-category");
+          $(this).children().focus();
+          let num = $(this).children().val();
+          $(this).children().focus().val("").val(num);
+        }
+      });
 
-          $(".loading").show();
-          setTimeout(() => {
-            $(".loading").hide();
+      // Remove input from td after editing and sumbit the Item Qty.
+      function removeInput() {
+        $(".editable_cell").each(function () {
+          let c1 = $(this).html();
+          if (c1.includes(`<input type="text"`)) {
+            if (mobileVar == 1) {
+              $(this).css({ color: "#5d78ff", "font-weight": "600" });
+            }
 
-            swal({
-              title: "Successfully Updated!",
-              text: "Successfully Updated",
-              icon: "success",
-              buttons: false,
-              timer: 1000,
-            });
-          }, 1000);
+            let updateItemQty = $(this).children().val();
+            $(this).html(parseInt(updateItemQty));
+            $(this).data("id", parseInt(updateItemQty));
+            let updatedItemCode = $(this).attr("data-itemCode");
+            let indexNo = $(this).attr("data-index");
+            let categoryName = $(this).attr("data-category");
+
+            $(".loading").show();
+            setTimeout(() => {
+              $(".loading").hide();
+
+              swal({
+                title: "Successfully Updated!",
+                text: "Successfully Updated",
+                icon: "success",
+                buttons: false,
+                timer: 1000,
+              });
+            }, 1000);
+          }
+        });
+      }
+
+      // Disabling the character other than number.
+      $(document).on("keypress", "._input", function (event) {
+        var key = event.keyCode || event.charCode;
+        if (
+          event.code == "ArrowLeft" ||
+          event.code == "ArrowRight" ||
+          event.code == "ArrowUp" ||
+          event.code == "ArrowDown" ||
+          event.code == "Delete" ||
+          event.code == "Backspace"
+        ) {
+          return;
+        } else if (key == 13) {
+          event.preventDefault();
+          removeInput();
+        } else if (event.key.search(/\d/) == -1) {
+          event.preventDefault();
+        }
+      });
+
+      $(document).click(function () {
+        if (!$("._input").is(":focus")) {
+          removeInput();
+        }
+      });
+
+      // Expand the details (or hiddenn column) clicking on the row.
+      $(".inputShowColumn").click(function () {
+        let ch1 = $(this).data("id");
+        let ch2 = $(this).val();
+        if ($(this).prop("checked")) {
+          if (mobileVar == 1) {
+            $(`.footable-details .tdata_${ch1}`).parent().show();
+          } else {
+            $(`.${ch2}`).show();
+            $(`.tdata_${ch1}`).show();
+          }
+        } else {
+          if (mobileVar == 1) {
+            $(`.footable-details .tdata_${ch1}`).parent().hide();
+          } else {
+            $(`.${ch2}`).hide();
+            $(`.tdata_${ch1}`).hide();
+          }
         }
       });
     }
-
-    // Disabling the character other than number.
-    $(document).on("keypress", "._input", function (event) {
-      var key = event.keyCode || event.charCode;
-      if (
-        event.code == "ArrowLeft" ||
-        event.code == "ArrowRight" ||
-        event.code == "ArrowUp" ||
-        event.code == "ArrowDown" ||
-        event.code == "Delete" ||
-        event.code == "Backspace"
-      ) {
-        return;
-      } else if (key == 13) {
-        event.preventDefault();
-        removeInput();
-      } else if (event.key.search(/\d/) == -1) {
-        event.preventDefault();
-      }
-    });
-
-    $(document).click(function () {
-      if (!$("._input").is(":focus")) {
-        removeInput();
-      }
-    });
-
-    // Expand the details (or hiddenn column) clicking on the row.
-    $(".inputShowColumn").click(function () {
-      let ch1 = $(this).data("id");
-      let ch2 = $(this).val();
-      if ($(this).prop("checked")) {
-        if (mobileVar == 1) {
-          $(`.footable-details .tdata_${ch1}`).parent().show();
-        } else {
-          $(`.${ch2}`).show();
-          $(`.tdata_${ch1}`).show();
-        }
-      } else {
-        if (mobileVar == 1) {
-          $(`.footable-details .tdata_${ch1}`).parent().hide();
-        } else {
-          $(`.${ch2}`).hide();
-          $(`.tdata_${ch1}`).hide();
-        }
-      }
-    });
 
     $(document).on("click", ".footable-toggle", function () {
       setTimeout(() => {
@@ -1077,7 +1098,9 @@ $(document).ready(function () {
       }
     }
 
-    $(".back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain").hide();
+    $(
+      ".back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain,.save_btn"
+    ).hide();
     $(
       ".second_page,.category_btn,.first_page_1,._steps,.stepDone,.stepBack"
     ).hide();
@@ -1115,7 +1138,7 @@ $(document).ready(function () {
     }
     $(".table_main").show();
     $(
-      ".back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain,.allSheets"
+      ".back_btn, .submit_btn,.next_btn,.next_btn_1,.searchMain,.allSheets,.save_btn"
     ).hide();
     $(
       ".second_page,.category_btn,.first_page_1,._steps,.stepDone,.stepBack"
@@ -1394,17 +1417,32 @@ $(document).ready(function () {
     let d3 = $(".first_page").css("display");
     $(".table_main").show();
     $(
-      ".back_btn, .submit_btn,.next_btn,.next_btn_1,.next_btn,.searchMain,.allSheets"
+      ".back_btn, .submit_btn,.next_btn,.next_btn_1,.next_btn,.searchMain,.allSheets,.save_btn"
     ).hide();
+
+    if (saveData) {
+      saveData = 0;
+      finalSubmitData = 0;
+      $(".loading").show();
+      setTimeout(() => {
+        $(".back_btn,.save_btn,.removeAfterSubmit").show();
+        $(".back_btn").html("Back");
+        $(".first_page,.first_page_1,.allSheets").hide();
+        $(".loading").hide();
+      }, 1000);
+      createTable(resultArray, mappedResult);
+      return;
+    }
+
     if (d1 != "none") {
-      $(".second_page,.first_page_1,.category_btn").hide();
+      $(".second_page,.first_page_1,.category_btn,.allSheets").hide();
       $(".first_page,.next_btn").show();
       if (multipleSheet === 1) {
         console.log("hello");
         $(".back_btn").show();
       }
     } else if (d2 != "none") {
-      $(".second_page,.first_page_1").hide();
+      $(".second_page,.first_page_1,.allSheets").hide();
       $(".first_page_1,.next_btn_1,.category_btn,.back_btn").show();
     } else if (d3 != "none") {
       if (multipleSheet === 1) {
@@ -2026,19 +2064,32 @@ $(document).ready(function () {
     });
   });
 
-  var aggregateKey = "";
+  var catg = "";
+  let isSku = 0;
   $(document).on("click", ".addAggregateItem_btn", function (e) {
     e.stopImmediatePropagation();
-    let k1 = $(this).attr("data-category");
-    if ($(`.addAggregateItem_div_${k1}`).length) {
+    catg = $(this).attr("data-category");
+    isSku = 0;
+    $(".addAggregateItem_div").hide();
+    $(`.item_code span`).removeClass("activeSKUs");
+    $(`.item_code`).css("z-index", "unset");
+    if ($(`.addAggregateItem_div_${catg}`).length) {
+      if ($(`.skuNumberInp_${catg}`).css("display") != "none") {
+        $(`.panel_default_${catg} .item_code span`).addClass("activeSKUs");
+        $(`.panel_default_${catg} .item_code`).css("z-index", "9998");
+        $(`.skuNumberInp_${catg}`).focus();
+      }
+      $(`.addAggregateItem_div_${catg}`).show();
       return false;
     }
-    aggregateKey = $(this).attr("data-category");
-    $(".addAggregateItem_div").remove();
     $(this).parent().append(aggregateDiv);
-    $(".addAggregateItem_div").addClass(`addAggregateItem_div_${aggregateKey}`);
+    $(`.panel_default_${catg} .addAggregateItem_div`).addClass(
+      `addAggregateItem_div_${catg}`
+    );
     $("#agg_weight_input").focus();
-
+    $(`.addAggregateItem_div_${catg} .skuNumberInp`).addClass(
+      `skuNumberInp_${catg}`
+    );
     $(`.addAggregateItem_div`).draggable({
       containment: ".second_page",
     });
@@ -2049,7 +2100,7 @@ $(document).ready(function () {
         ? _bagsData.filter(
             (v) =>
               v.bagging === "bag" &&
-              String(v.category).toUpperCase() === aggregateKey.toUpperCase()
+              String(v.category).toUpperCase() === catg.toUpperCase()
           ).length
         : 0;
 
@@ -2058,7 +2109,7 @@ $(document).ready(function () {
         ? _bagsData.filter(
             (v) =>
               v.bagging === "cfc" &&
-              String(v.category).toUpperCase() === aggregateKey.toUpperCase()
+              String(v.category).toUpperCase() === catg.toUpperCase()
           ).length
         : 0;
     $(`.totalPacCount`).html(pacLen);
@@ -2068,33 +2119,35 @@ $(document).ready(function () {
   $(document).on("click", ".aggregate_close_btn", function (e) {
     e.stopImmediatePropagation();
     bagType = "bag";
-    $(this).parent().remove();
+    // $(this).parent().remove();
+    // $(`.addAggregateItem_div_${catg}`).hide();
+    $(`.addAggregateItem_div`).hide();
 
-    $("#skuNumberInp").val("");
-    $(".item_code span").removeClass("activeSKUs");
-    $(".item_code").css("z-index", "unset");
+    // $(".skuNumberInp").val("");
+    $(`.panel_default_${catg} .item_code span`).removeClass("activeSKUs");
+    $(`.panel_default_${catg} .item_code`).css("z-index", "unset");
   });
 
-  let isSku = 0;
-  $(document).on("click", ".withSKU", function () {
+  $(document).on("click", `.withSKU`, function () {
     isSku = $(this).find("input[name='isSKU']").val();
-    console.log(isSku);
-    $("#skuNumberInp").show();
-    $(".item_code span").addClass("activeSKUs");
-    $(".item_code").css("z-index", "9998");
-    $("#skuNumberInp").focus();
+    $(`.skuNumberInp_${catg}`).show();
+    $(`.panel_default_${catg} .item_code span`).addClass("activeSKUs");
+    $(`.panel_default_${catg} .item_code`).css("z-index", "9998");
+    $(`.skuNumberInp_${catg}`).focus();
   });
 
-  $(document).on("click", ".noneSKU", function () {
+  $(document).on("click", `.noneSKU`, function () {
     isSku = $(this).find("input[name='isSKU']").val();
-    $("#skuNumberInp").val("");
-    $("#skuNumberInp").hide();
-    $(".item_code span").removeClass("activeSKUs");
-    $(".item_code").css("z-index", "unset");
+    $(`.skuNumberInp_${catg}`).val("");
+    $(`.skuNumberInp_${catg}`).hide();
+    $(`.panel_default_${catg} .item_code span`).removeClass("activeSKUs");
+    $(`.panel_default_${catg} .item_code`).css("z-index", "unset");
   });
-  $(document).on("click", ".item_code span", function () {
+
+  $(document).on("click", `.item_code span`, function () {
     if (isSku) {
-      $("#skuNumberInp").val($(this).html());
+      let id = $(this).data("id");
+      $(`.skuNumberInp_${id}`).val($(this).html());
     }
   });
 
@@ -2140,12 +2193,12 @@ $(document).ready(function () {
       unit > 0 &&
       !String(unit).includes(".")
     ) {
-      let rwt = $(`.received_${aggregateKey.toUpperCase()}`).html();
-      let bgc = $(`.bagCount_${aggregateKey.toUpperCase()}`).html();
-      $(`.received_${aggregateKey.toUpperCase()}`).html(
+      let rwt = $(`.received_${catg.toUpperCase()}`).html();
+      let bgc = $(`.bagCount_${catg.toUpperCase()}`).html();
+      $(`.received_${catg.toUpperCase()}`).html(
         numberWithCommas((Number(rwt) + Number(inptWt) * unit).toFixed(2))
       );
-      $(`.bagCount_${aggregateKey.toUpperCase()}`).html(
+      $(`.bagCount_${catg.toUpperCase()}`).html(
         numberWithCommas(Number(bgc) + Number(unit))
       );
 
@@ -2167,8 +2220,8 @@ $(document).ready(function () {
           grossWt: inptWt,
           netWt: inptWt,
           bagging: bagType,
-          category: aggregateKey,
-          skuCode: isSku ? $("#skuNumberInp").val() : "",
+          category: catg,
+          skuCode: isSku ? $(".skuNumberInp").val() : "",
         };
 
         _bagsData.unshift(data);
@@ -2180,8 +2233,7 @@ $(document).ready(function () {
             ? _bagsData.filter(
                 (v) =>
                   v.bagging === "cfc" &&
-                  String(v.category).toUpperCase() ===
-                    aggregateKey.toUpperCase()
+                  String(v.category).toUpperCase() === catg.toUpperCase()
               ).length
             : 0;
         $(`.totalPacCount`).html(pacLen);
@@ -2191,14 +2243,13 @@ $(document).ready(function () {
             ? _bagsData.filter(
                 (v) =>
                   v.bagging === "bag" &&
-                  String(v.category).toUpperCase() ===
-                    aggregateKey.toUpperCase()
+                  String(v.category).toUpperCase() === catg.toUpperCase()
               ).length
             : 0;
         $(`.totalBagCount`).html(bagLen);
       }
 
-      createPacsAndBagsTable(_bagsData, aggregateKey, 1);
+      createPacsAndBagsTable(_bagsData, catg, 1);
       $(".successMsg").show();
       setTimeout(() => {
         $(".successMsg").hide();
@@ -2206,7 +2257,6 @@ $(document).ready(function () {
     }
   });
 
-  let setEditTable = 1;
   function createPacsAndBagsTable(data, cat, a = 0) {
     $(`._totalBags .expand_icon`).html(
       `<i class="fa fa-plus" aria-hidden="true"></i>`
@@ -2242,8 +2292,6 @@ $(document).ready(function () {
     $(`._totalBags .expand_icon_${cat}`).html(
       `<i class="fa fa-minus" aria-hidden="true"></i>`
     );
-
-    console.log(data);
 
     let cl = $(`#collapse_${cat}`).attr("class");
     if (cl.includes("in")) {
@@ -2295,18 +2343,18 @@ $(document).ready(function () {
       $("totalBagsTable").show();
       $(`.panel_default_${cat}`).after(
         `<div class="totalBagsTable ${
-          setEditTable ? "" : "border_col_after_submit"
+          finalSubmitData ? "border_col_after_submit" : ""
         } totalBagsTable_${cat}">${_table}</div>`
       );
     } else {
       $(`.panel_default_${cat}`).after(
         `<div class="totalBagsTable ${
-          setEditTable ? "" : "border_col_after_submit"
+          finalSubmitData ? "border_col_after_submit" : ""
         } totalBagsTable_${cat}"><div class='text-center noDataDiv'>No Data</div></div>`
       );
     }
 
-    if (setEditTable) {
+    if (!finalSubmitData) {
       $(`._bagsTable`).SetEditable({
         columnsEd: "1",
         onEdit: function (e) {
@@ -2406,38 +2454,68 @@ $(document).ready(function () {
     }
   }
 
+  $(document).on("click", ".save_btn", function () {
+    $(".loading").show();
+
+    finalSubmitData = 1;
+    saveData = 1;
+    $(".d_none,.removeAfterSubmit").hide();
+    $("._bagsTable td[name='buttons']").remove();
+    $("._bagsTable th[name='buttons']").remove();
+    createTable(resultArray, mappedResult);
+
+    setTimeout(() => {
+      $("._btn,.back_btn,.submit_btn").show();
+      $(".back_btn").html("Edit");
+
+      swal("Successfully Saved!", {
+        icon: "success",
+        buttons: false,
+        timer: 1500,
+      });
+
+      $(".loading").hide();
+    }, 1000);
+  });
+
   $(document).on("click", ".submit_btn", function () {
     $(".loading").show();
     swal({
       title: "Are you sure?",
-      text: "Once Submitted, you will not be able to update sheet.",
+      text: "Once Submitted, you will not be able to edit sheet.",
       icon: "warning",
       buttons: true,
       dangerMode: true,
     }).then((isSubmit) => {
       if (isSubmit) {
-        $(".loading").hide();
-        setEditTable = 0;
+        finalSubmitData = 1;
+        saveData = 1;
         $(".removeAfterSubmit").remove();
-        $(".editable_cell").off("click");
-        $(".editable_cell").css({ color: "black", "font-weight": "normal" });
-        $(".panel_default").addClass("border_col_after_submit");
         $("._bagsTable td[name='buttons']").remove();
         $("._bagsTable th[name='buttons']").remove();
+        createTable(resultArray, mappedResult);
 
-        swal("Successfully Submitted!", {
-          icon: "success",
-          buttons: false,
-          timer: 1500,
-        });
+        setTimeout(() => {
+          swal("Successfully Submitted!", {
+            icon: "success",
+            buttons: false,
+            timer: 1500,
+          });
+          $(".loading").hide();
+        }, 1000);
       } else {
         swal("Canceled!", {
           icon: "error",
           buttons: false,
           timer: 1500,
         });
+        $(".loading").hide();
       }
     });
+  });
+
+  $(document).on("click", ".exportPDF", function () {
+    console.log("exportPDF click");
   });
 
   document
