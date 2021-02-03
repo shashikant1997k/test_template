@@ -1126,16 +1126,20 @@ $(document).ready(function () {
     let tData = "";
     // let optionRow = "";
     if (Array.isArray(res) && res.length) {
+      let cnt1 = 0;
       for (let i = 0; i < (res.length >= 8 ? 8 : res.length); i++) {
-        tData += `<tr class="option_row option_row_${i}" href="#scrollToBtns" data-id="${i}"><td class="">${i}</td>`;
-        for (let j = 0; j <= res[i].length; j++) {
-          tData += `<td data-id="${res[i][j]}" class="_data_td${j}">${
-            res[i][j] != undefined
-              ? res[i][j].length < 20
-                ? res[i][j]
-                : res[i][j].slice(0, 20) + "..."
-              : ""
-          }</td>`;
+        if (res[i].length > 0) {
+          tData += `<tr class="option_row option_row_${i}" href="#scrollToBtns" data-id="${i}"><td class="">${cnt1}</td>`;
+          for (let j = 0; j <= res[i].length; j++) {
+            tData += `<td data-id="${res[i][j]}" class="_data_td${j}">${
+              res[i][j] != undefined
+                ? res[i][j].length < 20
+                  ? res[i][j]
+                  : res[i][j].slice(0, 20) + "..."
+                : ""
+            }</td>`;
+          }
+          cnt1++;
         }
         tData += `</tr>`;
       }
@@ -2618,60 +2622,55 @@ $(document).ready(function () {
       let trData = ``;
       let thData = ``;
 
-      let tb1 = `<table style="border:1px solid black;background:white;border-collapse:collapse;">
-                <tr>
-                  <td colspan="2" style="font-weight:600;border:none;">Master Sheet</td>
-                  <td colspan="1" style="font-weight:600;border:none;">From: 01/07/2020 To 30/09/2020</td>
-                  <td colspan="3" style="font-weight:600;border:none;">WD Name: <span style="font-weight:normal">AK GOEL TRADING CO</span></td>
-                  <td colspan="3" style="font-weight:600;border:none;">Date: <span style="font-weight:normal">03/11/2020</span></td>
+      let tb1 = `<tr>
+                  <td colspan="2" style="font-weight:600;border:none;background:white;">Master Sheet</td>
+                  <td colspan="1" style="font-weight:600;border:none;background:white;">From: 01/07/2020 To 30/09/2020</td>
+                  <td colspan="3" style="font-weight:600;border:none;background:white;">WD Name: <span style="font-weight:normal">AK GOEL TRADING CO</span></td>
+                  <td colspan="3" style="font-weight:600;border-right:1px solid #000;background:white;">Date: <span style="font-weight:normal">03/11/2020</span></td>
                 </tr>
                 <tr>
-                  <td colspan="2" style="font-weight:600;border:none;"></td>
+                  <td colspan="9" style="font-weight:600;border-right:1px solid #000;background:white;"></td>
                 </tr>
                 <tr>
-                  <td colspan="2" style="font-weight:600;border:none;">Task Number: <span style="font-weight:normal">C5476</span></td>
-                  <td colspan="1" style="font-weight:600;border:none;">Category: <span style="font-weight:normal">AT,BI,CF,JU,ND,RT,SA,SI,SN,SX</span></td>
-                  <td colspan="3" style="font-weight:600;border:none;">WD Address: <span style="font-weight:normal">818 street no 5 janakpuri ludhiana (Punjab)818 street no 5 janakpuri ludhiana (Punjab)</span></td>
-                  <td colspan="3" style="font-weight:600;border:none;">Last Day Close Date: <span style="font-weight:normal">03/11/2020</span></td>
+                  <td colspan="2" style="font-weight:600;border:none;background:white;">Task Number: <span style="font-weight:normal">C5476</span></td>
+                  <td colspan="1" style="font-weight:600;border:none;background:white;">Category: <span style="font-weight:normal">AT,BI,CF,JU,ND,RT,SA,SI,SN,SX</span></td>
+                  <td colspan="3" style="font-weight:600;border:none;background:white;">WD Address: <span style="font-weight:normal">818 street no 5 janakpuri ludhiana (Punjab)818 street no 5 janakpuri ludhiana (Punjab)</span></td>
+                  <td colspan="3" style="font-weight:600;border-right:1px solid #000;background:white;">Last Day Close Date: <span style="font-weight:normal">03/11/2020</span></td>
                 </tr>
                 <tr>
-                  <td colspan="2" style="font-weight:600;border:none;"></td>
-                </tr>
-              </table>`;
+                  <td colspan="9" style="font-weight:600;border-right:1px solid #000;background:white;"></td>
+                </tr>`;
 
-      var tb2 = `<table style="border:1px solid black;background:white;border-collapse:collapse;">
-        <tr><td></td></tr>
+      var tb2 = `
+        <tr><td colspan="9" style="border-right:1px solid #000;background:white;"></td></tr>
         <tr>
-          <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          <td style="font-weight:600;text-align:right;">Total</td>
-          <td>29860</td>
+          <td colspan="7" style="background:white;"></td>
+          <td style="font-weight:600;text-align:right;background:white;">Total</td>
+          <td style="border-right:1px solid #000;background:white;">29860</td>
         </tr>
-        <tr><td></td></tr>
+        <tr><td colspan="9" style="border-right:1px solid #000;background:white;"></td></tr>
         <tr>
-          <td>Verified By:</td>
-          <td></td><td></td><td></td><td></td><td></td><td></td>
-          <td>Approved By:</td>
-          <td></td>
+          <td colspan="7" style="background:white;">Verified By:</td>
+          <td colspan="2" style="border-right:1px solid #000;background:white;">Approved By:</td>
         </tr>
-        <tr><td></td></tr>
+        <tr><td colspan="9" style="border-right:1px solid #000;background:white;"></td></tr>
         <tr>
-          <td colspan="9">Date of Destruction:_____________________________________________________________</td>
+          <td colspan="9" style="border-right:1px solid #000;background:white;">Date of Destruction:_____________________________________________________________</td>
         </tr>
         <tr>
-          <td colspan="9">Place of Destruction:_____________________________________________________________</td>
+          <td colspan="9" style="border-right:1px solid #000;background:white;">Place of Destruction:_____________________________________________________________</td>
         </tr>
         <tr>
-          <td colspan="9">Name of the Managers from ITC Ltd :__________________________________________________</td>
+          <td colspan="9" style="border-right:1px solid #000;background:white;">Name of the Managers from ITC Ltd :__________________________________________________</td>
         </tr>
         <tr>
-          <td colspan="9">Name of the person from Independent Agency :_________________________________________</td>
+          <td colspan="9" style="border-right:1px solid #000;background:white;">Name of the person from Independent Agency :_________________________________________</td>
         </tr>
-        <tr><td></td></tr>
-      </table>`;
+        <tr><td colspan="9" style="border-right:1px solid #000;border-bottom:1px solid #000;background:white;"></td></tr>`;
 
-      trData += `<tr><td colspan="100">${tb1}</td></tr>`;
+      // trData += `<tr><td colspan="100">${tb1}</td></tr>`;
       head.forEach((v) => {
-        thData += `<th style="border:1px solid black;">${v}</th>`;
+        thData += `<td style="border:1px solid black;font-weight:600;">${v}</td>`;
       });
       trData += `<tr>${thData}</tr>`;
       results.forEach((val) => {
@@ -2683,12 +2682,14 @@ $(document).ready(function () {
         trData += `<tr>${tdData}</tr>`;
       });
 
-      trData += `<tr><td colspan="100">${tb2}</td></tr>`;
+      // trData += `<tr><td colspan="100">${tb2}</td></tr>`;
+
+      let finalTr = tb1 + "" + trData + "" + tb2;
 
       // let template =
       //   '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
 
-      $(".tableToExcel").html(trData);
+      $(".tableToExcel").html(finalTr);
       let tbl = $(".tableToExcel")[0];
       let uri = "data:application/vnd.ms-excel;base64,";
       let template =
