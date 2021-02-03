@@ -491,6 +491,7 @@ $(document).ready(function () {
       var tr_data = "";
       var totalItemQty = 0;
       var totalItemValue = 0;
+      var totalSumValue = 0;
       let randCol = getRandomColor(key);
       ct++;
       value.forEach((item, index) => {
@@ -540,6 +541,7 @@ $(document).ready(function () {
                   </div>
                 </td>`;
             } else if (i == totalValue) {
+              totalSumValue += Number(val);
               td_data += `<td class="update_tVal_${key}_${index} tdata_${i} alignRight">
                 ${numberWithCommas(Number(val).toFixed(2))}
               </td>`;
@@ -621,24 +623,26 @@ $(document).ready(function () {
                                     <div class="fnt_size d_f_c m_b_4">
                                       <span class="_title_St">Exp. Value</span> 
                                       <span>
-                                        <span style="font-weight: normal">₹ </span>
-                                        <span class="expected_value expected_${key}">0.00</span>
+                                        <span style="font-weight: normal">₹</span><span class="expected_value expected_${key}">${numberWithCommas(
+        totalSumValue.toFixed(2)
+      )}</span>
                                       </span>
                                       <span class="expected_wt expected_wt_${key}">0.00 kg</span>
                                     </div>
                                     <div class="fnt_size d_f_c m_b_4">
                                       <span class="_title_St">Audited Value</span>
                                       <span>
-                                        <span style="font-weight: normal">₹ </span>
-                                        <span class="received_${key}">0.00</span>
+                                        <span style="font-weight: normal">₹</span><span class="received_${key}">0.00</span>
                                       </span>
                                       <span class="received_wt received_wt_${key}">0.00 kg</span>
                                     </div>
                                     <div class="fnt_size d_f_c">
                                       <span class="_title_St">Variance</span>
                                       <span>
-                                        <span style="font-weight: normal">₹ </span>
-                                        <span class="variance_${key}">0.00</span>
+                                        <span class="variance_sign_${key}" style="font-weight: normal"></span>
+                                        <span style="font-weight: normal">₹</span><span class="variance_${key}">${(
+        totalSumValue - 0
+      ).toFixed(2)}</span>
                                       </span>
                                       <span class="variance_wt variance_wt_${key}">0.00 kg</span>
                                     </div>
@@ -648,7 +652,7 @@ $(document).ready(function () {
                             <div class="more_details_main">
                               
                               <div class="more_details" data-id=${key}>
-                                <span>${
+                                <span class="togleAngle">${
                                   value.length
                                 } SKU <i id="tog_angle_${key}"  class="${
         ct == 1 ? "fa fa-angle-up" : "fa fa-angle-down"
@@ -701,7 +705,7 @@ $(document).ready(function () {
                             </div>
                         </div>
                     </div>
-                    <div id="collapse_${key}" class="panel-collapse collapse ${
+                    <div id="collapse_${key}" class="collapse_table panel-collapse collapse ${
         ct == 1 ? "in" : ""
       }" role="tabpanel" aria-labelledby="heading_${key}">
                         <div class="panel-body">
@@ -1017,9 +1021,9 @@ $(document).ready(function () {
       }
       flag = true;
       t1 = [0, 0];
-      $(".expected_value").each(function () {
-        totalExpWt += Number($(this).html());
-      });
+      // $(".expected_value").each(function () {
+      //   totalExpWt += Number($(this).html());
+      // });
       totalItemSumval = _totalItemValSum;
     }
 
@@ -1028,7 +1032,7 @@ $(document).ready(function () {
     }, t1[0]);
 
     setTimeout(() => {
-      $("._totSumWght").html(totalExpWt.toFixed(2));
+      $("._totSumWght").html("0.00");
       $("._totSumItem").html(
         `<span style="font-weight: normal">₹ </span>${numberWithCommas(
           totalItemSumval.toFixed(2)
@@ -2193,14 +2197,28 @@ $(document).ready(function () {
       unit > 0 &&
       !String(unit).includes(".")
     ) {
-      let rwt = $(`.received_${catg.toUpperCase()}`).html();
+      let eval = $(`.expected_${catg.toUpperCase()}`).html();
+      let rval = $(`.received_${catg.toUpperCase()}`).html();
       let bgc = $(`.bagCount_${catg.toUpperCase()}`).html();
+      let variance = (
+        Number(eval.replace(",", "")) -
+        (Number(rval.replace(",", "")) + Number(inptWt) * unit)
+      ).toFixed(2);
+
       $(`.received_${catg.toUpperCase()}`).html(
-        numberWithCommas((Number(rwt) + Number(inptWt) * unit).toFixed(2))
+        numberWithCommas(
+          (Number(rval.replace(",", "")) + Number(inptWt) * unit).toFixed(2)
+        )
       );
       $(`.bagCount_${catg.toUpperCase()}`).html(
         numberWithCommas(Number(bgc) + Number(unit))
       );
+
+      $(`.variance_${catg.toUpperCase()}`).html(
+        numberWithCommas(Math.abs(variance).toFixed(2))
+      );
+
+      $(`.variance_sign_${catg.toUpperCase()}`).html(variance > 0 ? "" : "−");
 
       $("#agg_weight_input").val("");
       $("#agg_unit_input").val("1");
@@ -2214,7 +2232,7 @@ $(document).ready(function () {
         } else {
           idd = [100, 110];
         }
-        console.log(idd);
+
         let data = {
           bagId: `${Number(idd[0]) + 1}-${Number(idd[1]) + 1}`,
           grossWt: inptWt,
@@ -2514,8 +2532,187 @@ $(document).ready(function () {
     });
   });
 
+  //Create PDf from HTML...
+  function CreatePDFfromHTML() {
+    var HTML_Width = $(".second_page").width();
+    var HTML_Height = $(".second_page").height();
+    var top_left_margin = 30;
+    var PDF_Width = HTML_Width + top_left_margin * 2;
+    var PDF_Height = PDF_Width * 1.5 + top_left_margin * 2;
+    var canvas_image_width = HTML_Width;
+    var canvas_image_height = HTML_Height;
+
+    console.log(HTML_Width, HTML_Height);
+    console.log(PDF_Width, PDF_Height);
+    var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+
+    html2canvas($(".second_page")[0]).then(function (canvas) {
+      var imgData = canvas.toDataURL("image/jpeg", 1.0);
+      var pdf = new jsPDF("p", "pt", [PDF_Width, PDF_Height]);
+      pdf.addImage(
+        imgData,
+        "JPG",
+        top_left_margin,
+        top_left_margin,
+        canvas_image_width,
+        canvas_image_height
+      );
+      for (var i = 1; i <= totalPDFPages; i++) {
+        pdf.addPage(PDF_Width, PDF_Height);
+        pdf.addImage(
+          imgData,
+          "JPG",
+          top_left_margin,
+          -(PDF_Height * i) + top_left_margin * 4,
+          canvas_image_width,
+          canvas_image_height
+        );
+      }
+      pdf.save("mastersheet.pdf");
+
+      $(".loading").hide();
+      swal("Successfully Downloaded!", {
+        icon: "success",
+        buttons: false,
+        timer: 1000,
+      });
+
+      $(".panel_default").each(function () {
+        $(this).removeClass("panel_default_active");
+        $(this).find(".collapse_heading").removeClass("collapse_active");
+        $(this).find(".collapse_table").removeClass("in");
+        $(this).find(".togleAngle i").attr("class", "fa fa-angle-down");
+        $(this).find("._totalPacs").removeClass("_totalBagsActive");
+        $(this)
+          .find("._totalPacs .expand_icon")
+          .html(`<i class="fa fa-plus" aria-hidden="true"></i>`);
+      });
+    });
+  }
+
   $(document).on("click", ".exportPDF", function () {
-    console.log("exportPDF click");
+    $(".loading").show();
+    $(".panel_default").each(function () {
+      $(this).addClass("panel_default_active");
+      $(this).find(".collapse_heading").addClass("collapse_active");
+      $(this).find(".collapse_table").addClass("in");
+      $(this).find(".togleAngle i").attr("class", "fa fa-angle-up");
+      $(this).find("._totalPacs").addClass("_totalBagsActive");
+      $(this)
+        .find("._totalPacs .expand_icon")
+        .html(`<i class="fa fa-minus" aria-hidden="true"></i>`);
+    });
+
+    $("html, body").animate({ scrollTop: 0 }, "slow");
+    setTimeout(() => {
+      CreatePDFfromHTML();
+    }, 500);
+  });
+
+  $(document).on("click", ".exportExcel", function () {
+    $(".loading").show();
+
+    setTimeout(() => {
+      let results = resultArray.file_data;
+      let head = resultArray.headers;
+      let trData = ``;
+      let thData = ``;
+
+      let tb1 = `<table style="border:1px solid black;background:white;border-collapse:collapse;">
+                <tr>
+                  <td colspan="2" style="font-weight:600;border:none;">Master Sheet</td>
+                  <td colspan="1" style="font-weight:600;border:none;">From: 01/07/2020 To 30/09/2020</td>
+                  <td colspan="3" style="font-weight:600;border:none;">WD Name: <span style="font-weight:normal">AK GOEL TRADING CO</span></td>
+                  <td colspan="3" style="font-weight:600;border:none;">Date: <span style="font-weight:normal">03/11/2020</span></td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="font-weight:600;border:none;"></td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="font-weight:600;border:none;">Task Number: <span style="font-weight:normal">C5476</span></td>
+                  <td colspan="1" style="font-weight:600;border:none;">Category: <span style="font-weight:normal">AT,BI,CF,JU,ND,RT,SA,SI,SN,SX</span></td>
+                  <td colspan="3" style="font-weight:600;border:none;">WD Address: <span style="font-weight:normal">818 street no 5 janakpuri ludhiana (Punjab)818 street no 5 janakpuri ludhiana (Punjab)</span></td>
+                  <td colspan="3" style="font-weight:600;border:none;">Last Day Close Date: <span style="font-weight:normal">03/11/2020</span></td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="font-weight:600;border:none;"></td>
+                </tr>
+              </table>`;
+
+      var tb2 = `<table style="border:1px solid black;background:white;border-collapse:collapse;">
+        <tr><td></td></tr>
+        <tr>
+          <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          <td style="font-weight:600;text-align:right;">Total</td>
+          <td>29860</td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+          <td>Verified By:</td>
+          <td></td><td></td><td></td><td></td><td></td><td></td>
+          <td>Approved By:</td>
+          <td></td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+          <td colspan="9">Date of Destruction:_____________________________________________________________</td>
+        </tr>
+        <tr>
+          <td colspan="9">Place of Destruction:_____________________________________________________________</td>
+        </tr>
+        <tr>
+          <td colspan="9">Name of the Managers from ITC Ltd :__________________________________________________</td>
+        </tr>
+        <tr>
+          <td colspan="9">Name of the person from Independent Agency :_________________________________________</td>
+        </tr>
+        <tr><td></td></tr>
+      </table>`;
+
+      trData += `<tr><td colspan="100">${tb1}</td></tr>`;
+      head.forEach((v) => {
+        thData += `<th style="border:1px solid black;">${v}</th>`;
+      });
+      trData += `<tr>${thData}</tr>`;
+      results.forEach((val) => {
+        let tdData = ``;
+        val.forEach((v) => {
+          tdData += `<td style="border:1px solid black;">${v}</td>`;
+        });
+
+        trData += `<tr>${tdData}</tr>`;
+      });
+
+      trData += `<tr><td colspan="100">${tb2}</td></tr>`;
+
+      // let template =
+      //   '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
+
+      $(".tableToExcel").html(trData);
+      let tbl = $(".tableToExcel")[0];
+      let uri = "data:application/vnd.ms-excel;base64,";
+      let template =
+        '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>';
+
+      let base64 = function (s) {
+        return window.btoa(unescape(encodeURIComponent(s)));
+      };
+      let format = function (s, c) {
+        return s.replace(/{(\w+)}/g, function (m, p) {
+          return c[p];
+        });
+      };
+
+      var ctx = { worksheet: "Sheet1", table: tbl.innerHTML };
+      window.location.href = uri + base64(format(template, ctx));
+
+      $(".loading").hide();
+      swal("Successfully Downloaded!", {
+        icon: "success",
+        buttons: false,
+        timer: 1000,
+      });
+    }, 300);
   });
 
   document
