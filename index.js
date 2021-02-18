@@ -1593,7 +1593,7 @@ $(document).ready(function () {
       var temp1 = temp[0];
       for (let c = 0; c < temp1.length - 1; c++) {
         if (!emptyIndxArr.includes(c)) {
-          if (temp1[0]) {
+          if (temp1[0] || temp1[1] || temp1[2]) {
             temp1[c] = temp1[c] ? temp1[c] : "";
           }
         }
@@ -1607,7 +1607,7 @@ $(document).ready(function () {
           if (Array.isArray(arr) && arr.length > 0) {
             for (let c = 0; c < arr.length - 1; c++) {
               if (!emptyIndxArr.includes(c)) {
-                if (arr[0]) {
+                if (arr[0] || arr[1] || arr[2]) {
                   arr[c] = arr[c] ? arr[c] : "";
                 }
               }
